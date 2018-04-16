@@ -1,9 +1,15 @@
 package visualization.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+
+import java.io.*;
+
 
 public class inputController {
 
@@ -11,8 +17,40 @@ public class inputController {
     private TextField sentenceField;
 
     @FXML
-    private Button visualizeButton;
+    private ProgressBar visualizationProgressBar;
 
     @FXML
-    private ProgressBar visualizationProgressBar;
+    private ListView<String> listSentences;
+
+    private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
+
+    public void addSentence(){
+        if(sentenceField.getText() != null && sentenceField.getText() != ""){
+            listSentencesItems.add(sentenceField.getText().toString());
+            listSentences.setItems(listSentencesItems);
+        }
+    }
+
+    public void writeTxt(){
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("../sentences.txt"), "utf-8"))) {
+
+            //Browse the list and write each items to "sentences.txt"
+            for(String s : listSentencesItems){
+                writer.write(s);
+                ((BufferedWriter) writer).newLine();
+
+
+
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
