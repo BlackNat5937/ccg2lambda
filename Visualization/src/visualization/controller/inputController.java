@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.*;
+import java.util.Objects;
 
 
 public class inputController {
@@ -49,8 +50,8 @@ public class inputController {
     }
 
     public void addSentence() {
-        if (sentenceField.getText() != null && sentenceField.getText() != "") {
-            listSentencesItems.add(sentenceField.getText().toString());
+        if (sentenceField.getText() != null && !Objects.equals(sentenceField.getText(), "")) {
+            listSentencesItems.add(sentenceField.getText());
             listSentences.setItems(listSentencesItems);
             sentenceField.setText("");
         }
