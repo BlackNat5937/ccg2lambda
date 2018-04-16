@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -29,10 +30,6 @@
             <Font size="16.0" />
          </font>
       </Text>
-      <Text layoutX="-1.0" layoutY="349.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="zdanpeanfpzoenfzeponf" wrappingWidth="601.0000004315516">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
+      <ListView layoutX="-1.0" layoutY="330.0" prefHeight="60.0" prefWidth="601.0" />
    </children>
 </AnchorPane>
