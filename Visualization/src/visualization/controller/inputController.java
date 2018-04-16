@@ -89,7 +89,6 @@ public class inputController {
         writeTxt();
         visualizationProgressBar.setProgress(0.05);
         launchScript();
-        visualizationProgressBar.setProgress(0.15);
 
     }
 
@@ -114,16 +113,29 @@ public class inputController {
     public void launchScript() {
         //script
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-        
+
         String ccg_path = "../";
         Process process;
 
         if (isWindows) {
             //the launch on windows will be done later
-        } else {
+        }
+        else
+        {
             try {
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
                 process.waitFor();
+                visualizationProgressBar.setProgress(0.15);
+
+                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
+                process.waitFor();
+                visualizationProgressBar.setProgress(0.35);
+
+                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
+                process.waitFor();
+                visualizationProgressBar.setProgress(1);
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
