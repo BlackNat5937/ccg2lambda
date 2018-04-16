@@ -38,10 +38,15 @@ public class inputController {
             //Browse the list and write each items to "sentences.txt"
             for(String s : listSentencesItems){
                 writer.write(s);
+
+                //add a dot if there isn't
+                char[] sentenceChar = s.toCharArray();
+                if(sentenceChar[sentenceChar.length -1] != '.'){
+                    writer.write(".");
+                }
+
+                //next line
                 ((BufferedWriter) writer).newLine();
-
-
-
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
