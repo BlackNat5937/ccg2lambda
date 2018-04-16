@@ -85,6 +85,30 @@ public class inputController {
 
     public void launchScript() {
         //script
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
+
+        String ccg_path = "../";
+        Process process;
+
+        if (isWindows)
+        {
+            //the launch on windows will be done later
+        }
+        else
+        {
+            try {
+                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
+                process.waitFor();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
     }
 
     public void writeTxt() {
