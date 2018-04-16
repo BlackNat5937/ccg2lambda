@@ -15,7 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("view/input.fxml"));
-        primaryStage.setTitle("ccg2lambda Visualize");
+        primaryStage.setTitle(Tools.windowTitleBase);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

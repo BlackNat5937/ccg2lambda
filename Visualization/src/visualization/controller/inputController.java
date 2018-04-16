@@ -3,7 +3,12 @@ package visualization.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+import visualization.Tools;
 
 import java.io.*;
 import java.util.Objects;
@@ -61,16 +66,28 @@ public class inputController {
         }
     }
 
-    public void visualize(){
+    public void visualize() {
         writeTxt();
         launchScript();
     }
 
-    public void launchScript(){
+    private void openResultsWindow() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../view/output.fxml")));
+            Stage stage = new Stage();
+            stage.setTitle(Tools.windowTitleBase);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void launchScript() {
         //script
     }
 
-    public void writeTxt(){
+    public void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {
 
@@ -80,7 +97,7 @@ public class inputController {
 
                 //add a dot if there isn't
                 char[] sentenceChar = s.toCharArray();
-                if(sentenceChar[sentenceChar.length -1] != '.'){
+                if (sentenceChar[sentenceChar.length - 1] != '.') {
                     writer.write(".");
                 }
 
