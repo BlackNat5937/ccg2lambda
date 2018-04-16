@@ -13,7 +13,14 @@ import visualization.Tools;
 import java.io.*;
 import java.util.Objects;
 
-
+/**
+ * Controller for the input view.
+ *
+ * @author Nathan Joubert
+ * @author Thomas Guesdon
+ * @author Gaétan Basile
+ * @see visualization.view
+ */
 public class inputController {
 
     @FXML
@@ -27,11 +34,17 @@ public class inputController {
 
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
+    /**
+     * Initializes the view.
+     */
     @FXML
     public void initialize() {
         initListView();
     }
 
+    /**
+     * Initializes the context menus for each listView item.
+     */
     private void initListView() {
         listSentences.setCellFactory(lv -> {
             ListCell<String> cell = new ListCell<>();
@@ -58,6 +71,9 @@ public class inputController {
         });
     }
 
+    /**
+     * Adds the sentence in the textField to the list.
+     */
     public void addSentence() {
         if (sentenceField.getText() != null && !Objects.equals(sentenceField.getText(), "")) {
             listSentencesItems.add(sentenceField.getText());
@@ -66,11 +82,17 @@ public class inputController {
         }
     }
 
+    /**
+     * Launches processing of the sentences in the listView.
+     */
     public void visualize() {
         writeTxt();
         launchScript();
     }
 
+    /**
+     * Opens a window for consulting results.
+     */
     private void openResultsWindow() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../view/output.fxml")));
@@ -83,20 +105,19 @@ public class inputController {
         }
     }
 
+    /**
+     * Launches the python scripts, using ccg2lambda.
+     */
     public void launchScript() {
         //script
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-
-
+        
         String ccg_path = "../";
         Process process;
 
-        if (isWindows)
-        {
+        if (isWindows) {
             //the launch on windows will be done later
-        }
-        else
-        {
+        } else {
             try {
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
                 process.waitFor();
@@ -105,12 +126,12 @@ public class inputController {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
-
-
     }
 
+    /**
+     * Writes the sentences to the sentences.txt file.
+     */
     public void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {
@@ -127,8 +148,6 @@ public class inputController {
 
                 //next line
                 ((BufferedWriter) writer).newLine();
-
-
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -137,7 +156,5 @@ public class inputController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }
