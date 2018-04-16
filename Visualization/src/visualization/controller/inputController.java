@@ -55,13 +55,30 @@ public class inputController {
         }
     }
 
-    public void writeTxt() {
+    public void visualize(){
+        writeTxt();
+        launchScript();
+    }
+
+    public void launchScript(){
+        //script
+    }
+
+    public void writeTxt(){
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {
 
             //Browse the list and write each items to "sentences.txt"
             for (String s : listSentencesItems) {
                 writer.write(s);
+
+                //add a dot if there isn't
+                char[] sentenceChar = s.toCharArray();
+                if(sentenceChar[sentenceChar.length -1] != '.'){
+                    writer.write(".");
+                }
+
+                //next line
                 ((BufferedWriter) writer).newLine();
 
 
