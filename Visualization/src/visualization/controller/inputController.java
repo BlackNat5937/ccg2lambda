@@ -24,6 +24,10 @@ public class inputController {
 
     @FXML
     public void initialize() {
+        initListView();
+    }
+
+    private void initListView() {
         listSentences.setCellFactory(lv -> {
             ListCell<String> cell = new ListCell<>();
 
