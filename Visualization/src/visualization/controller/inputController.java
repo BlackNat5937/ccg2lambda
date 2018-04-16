@@ -52,6 +52,7 @@ public class inputController {
         if (sentenceField.getText() != null && sentenceField.getText() != "") {
             listSentencesItems.add(sentenceField.getText().toString());
             listSentences.setItems(listSentencesItems);
+            sentenceField.setText("");
         }
     }
 
