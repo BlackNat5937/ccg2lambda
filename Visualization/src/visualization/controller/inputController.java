@@ -87,7 +87,10 @@ public class inputController {
      */
     public void visualize() {
         writeTxt();
+        visualizationProgressBar.setProgress(0.05);
         launchScript();
+        visualizationProgressBar.setProgress(0.15);
+
     }
 
     /**
