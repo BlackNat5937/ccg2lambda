@@ -3,10 +3,7 @@ package visualization.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.*;
 
@@ -24,22 +21,48 @@ public class inputController {
 
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
-    public void addSentence(){
-        if(sentenceField.getText() != null && sentenceField.getText() != ""){
+    @FXML
+    public void initialize() {
+        listSentences.setCellFactory(lv -> {
+            ListCell<String> cell = new ListCell<>();
+
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem deleteItem = new MenuItem("Delete sentence");
+            deleteItem.setOnAction(event -> listSentencesItems.remove(
+                    listSentences.getSelectionModel().getSelectedIndex()
+            ));
+
+            contextMenu.getItems().add(deleteItem);
+
+            cell.textProperty().bind(cell.itemProperty());
+
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setContextMenu(contextMenu);
+                }
+            });
+            return cell;
+        });
+    }
+
+    public void addSentence() {
+        if (sentenceField.getText() != null && sentenceField.getText() != "") {
             listSentencesItems.add(sentenceField.getText().toString());
             listSentences.setItems(listSentencesItems);
         }
     }
 
-    public void writeTxt(){
+    public void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {
 
             //Browse the list and write each items to "sentences.txt"
-            for(String s : listSentencesItems){
+            for (String s : listSentencesItems) {
                 writer.write(s);
                 ((BufferedWriter) writer).newLine();
-
 
 
             }
