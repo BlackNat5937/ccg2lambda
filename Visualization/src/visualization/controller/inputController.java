@@ -31,6 +31,15 @@ public class inputController {
         }
     }
 
+    public void visualize(){
+        writeTxt();
+        launchScript();
+    }
+
+    public void launchScript(){
+        //script
+    }
+
     public void writeTxt(){
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {

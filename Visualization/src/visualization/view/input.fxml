@@ -47,7 +47,7 @@
             <children>
                 <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="NEVER">
                     <children>
-                        <Button fx:id="visualizeButton" mnemonicParsing="false" onAction="#writeTxt" text="Visualize" StackPane.alignment="TOP_CENTER" />
+                        <Button fx:id="visualizeButton" mnemonicParsing="false" onAction="#visualize" text="Visualize" StackPane.alignment="TOP_CENTER" />
                     </children>
                     <VBox.margin>
                         <Insets bottom="10.0" />
