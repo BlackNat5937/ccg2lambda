@@ -1,9 +1,3 @@
-FORK by Nathan Joubert, Thomas Guesdon and Gaètan Basile
-
-For Visualisation and other research for Intership
-
-
-
 # ccg2lambda: composing semantic representations guided by CCG derivations
 
 This is a tool to derive formal semantic representations of
