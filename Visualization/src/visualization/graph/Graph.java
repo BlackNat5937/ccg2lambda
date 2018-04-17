@@ -42,10 +42,15 @@ public class Graph {
 
         for(Node n : nodes){
             gc.setFill(Color.GREEN);
-            gc.fillRect(n.getX(), n.getY(), 10,10);
+            gc.fillRect(n.getX(), n.getY(), 20,20);
+            gc.setFill(Color.BLACK);
+            gc.fillText(n.getLabel(), n.getX(), n.getY());
             if(n.getLinkTo() != null){
                 gc.setStroke(Color.BLUE);
-                gc.strokeLine(n.getX(),n.getY(), n.getLinkTo().getDestination().getX(), n.getLinkTo().getDestination().getY());
+                gc.strokeLine(n.getX() + 10,n.getY() + 10, n.getLinkTo().getDestination().getX() + 10, n.getLinkTo().getDestination().getY() + 10);
+                int midX = (n.getLinkTo().getDestination().getX() + 10) - (n.getX() + 10);
+                int midY = (n.getLinkTo().getDestination().getY() + 10) - (n.getY() + 10);
+                gc.fillText(n.getLinkTo().getText(), midX, midY);
             }
         }
 
