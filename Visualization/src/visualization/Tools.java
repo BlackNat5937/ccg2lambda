@@ -1,5 +1,6 @@
 package visualization;
 
+import com.sun.istack.internal.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,6 +20,17 @@ public class Tools {
      * Base name for the windows.
      */
     public static String windowTitleBase = "ccg2lambda Visualize";
+    /**
+     * Output modes available. None means all.
+     */
+    public static final String[] outputModesOption = {
+            "--graph",
+            "--drt",
+    };
+    /**
+     * Option to get html output on the console.
+     */
+    public static String htmlOutputOption = "--htmlout";
 
     /**
      * Name of the tag containing the semantic definitions.
@@ -89,5 +101,30 @@ public class Tools {
     private static String simplifyFormula(String formula) {
         String simpFormula = formula.replace("&amp;", "&");
         return simpFormula;
+    }
+
+    public enum ApplicationModes {
+        UI, VIEWER, PIPELINE;
+    }
+
+    public enum VisualizationModes {
+        ALL(""),
+        GRAPH(outputModesOption[0]),
+        DRT(outputModesOption[1]);
+
+        private static final VisualizationModes[] vals = VisualizationModes.values();
+        private final String option;
+
+        VisualizationModes(String option) {
+            this.option = option;
+        }
+
+        public static VisualizationModes fromString(@NotNull String str) {
+            int i = 0;
+            while (i < vals.length)
+                if (vals[i].option.equals(str))
+                    return vals[i];
+            return ALL;
+        }
     }
 }
