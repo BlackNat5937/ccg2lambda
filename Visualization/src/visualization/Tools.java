@@ -88,7 +88,6 @@ public class Tools {
      */
     private static String simplifyFormula(String formula) {
         String simpFormula = formula.replace("&amp;", "&");
-        System.out.println(simpFormula);
         return simpFormula;
     }
 }

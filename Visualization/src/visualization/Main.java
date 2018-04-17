@@ -1,6 +1,7 @@
 package visualization;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ public class Main extends Application {
         else {
             String semanticsFilePath = args[0];
             List<String> formulas = Tools.getSemanticsFormulas(new File(args[0]));
+            Platform.exit();
         }
     }
 
