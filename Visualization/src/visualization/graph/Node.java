@@ -5,6 +5,7 @@ public class Node{
     private String label;
     private NodeType nodeType;
     private Link linkTo = null;
+    private int x, y;
 
     public Node(String label, NodeType nodeType){
         this.label = label;
@@ -48,5 +49,21 @@ public class Node{
 
     public void setLinkTo(Link linkTo) {
         this.linkTo = linkTo;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
     }
 }

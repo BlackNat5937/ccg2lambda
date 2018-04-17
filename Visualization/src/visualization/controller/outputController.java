@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import visualization.Tools;
 import visualization.graph.Graph;
 import visualization.graph.Node;
@@ -12,6 +13,9 @@ import visualization.graph.NodeType;
 import java.util.List;
 
 public class outputController {
+
+    @FXML
+    private AnchorPane anchorPaneGraph;
 
     private List<String> listFormula;
 
@@ -31,7 +35,7 @@ public class outputController {
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
-/*
+
         Graph g = new Graph();
         Node test = new Node("test", NodeType.NOUN);
         Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
@@ -41,7 +45,7 @@ public class outputController {
         g.getNodes().add(test2);
         g.getNodes().add(test3);
         System.out.println(g.toString());
-*/
-    }
 
+        anchorPaneGraph.getChildren().add(g.generateCanvas());
+    }
 }
