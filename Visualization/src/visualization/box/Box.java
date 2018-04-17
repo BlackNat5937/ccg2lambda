@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class Box {
     private ArrayList<Element> elements = new ArrayList<Element>();
 
+    private String title;
+    private String body;
 
     public ArrayList<Element> getElements() {
         return elements;
@@ -15,21 +17,37 @@ public class Box {
     }
 
     public String toString() {
-        String title = "";
-        String tmp = "";
+        title = "";
+        body = "";
         for (Element eTitle : elements) {
             title += eTitle.getLabel() + " ";
         }
 
         for (Element e : elements) {
-            tmp += e.toString() + "\n";
+            body += e.toString() + "\n";
 
             if (e.getLinkTo() != null) {
-                tmp += e.getLinkTo().toString();
+                body += e.getLinkTo().toString();
             }
 
         }
 
-        return title + "\n" + tmp;
+        return title + "\n" + body;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

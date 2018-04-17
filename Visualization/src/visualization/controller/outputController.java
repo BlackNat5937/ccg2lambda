@@ -4,7 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import visualization.Tools;
 import visualization.box.Box;
@@ -18,12 +20,28 @@ import java.util.List;
 
 public class outputController {
 
+    /**
+     * Graph
+     */
     @FXML
     private AnchorPane anchorPaneGraph;
 
- /*   @FXML
-    private TableView boxView;*/
 
+    /**
+     * Box
+     */
+    @FXML
+    private TableView<Box> tabBox;
+
+    @FXML
+    private TableColumn col;
+
+    private ObservableList<Box> listElements = FXCollections.observableArrayList();
+
+
+    /**
+     * Formula
+     */
     private List<String> listFormula;
 
     @FXML
@@ -65,7 +83,24 @@ public class outputController {
         b.getElements().add(eat);
         System.out.println(b.toString());
 
-     //   boxView.getItems().add(1, b.toString());
+
+     //   listElements = FXCollections.observableArrayList(b.getBody());
+
+
+
+
+
+        col.setCellValueFactory(new PropertyValueFactory<Box,String>("title"));
+
+
+        listElements.add(b);
+
+        tabBox.setItems(listElements);
+
+
+     //   tabBox.setItems(listElements);
+
+      //  tabBox.getColumns().addAll(col);
 
     }
 }
