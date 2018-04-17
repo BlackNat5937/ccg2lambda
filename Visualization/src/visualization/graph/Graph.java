@@ -1,0 +1,35 @@
+package visualization.graph;
+
+import java.util.ArrayList;
+
+public class Graph {
+    private ArrayList<Link> links;
+    private ArrayList<Node> nodes;
+
+    public ArrayList<Node> getNodes() {
+        return nodes;
+    }
+
+    public String toString(){
+        String tmp = "";
+        for(Node n : nodes){
+            tmp += n.toString() + "\n";
+        }
+        for(Link l : links){
+            tmp += l.toString() + "\n";
+        }
+        return tmp;
+    }
+
+    public void setNodes(ArrayList<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public ArrayList<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(ArrayList<Link> links) {
+        this.links = links;
+    }
+}
