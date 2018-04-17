@@ -16,7 +16,7 @@
 
 import copy
 import re
-import simplejson
+import json as simplejson
 
 from lxml import etree
 from nltk.sem.logic import ConstantExpression

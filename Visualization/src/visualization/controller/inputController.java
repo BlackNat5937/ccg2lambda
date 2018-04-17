@@ -85,7 +85,9 @@ public class inputController {
     /**
      * Launches processing of the sentences in the listView.
      */
-    public void visualize() {
+    public void visualize()
+    {
+        visualizationProgressBar.setProgress(0);
         writeTxt();
         visualizationProgressBar.setProgress(0.05);
         launchScript();
@@ -123,14 +125,17 @@ public class inputController {
         else
         {
             try {
+                System.out.println("tokenize");
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
                 process.waitFor();
                 visualizationProgressBar.setProgress(0.15);
 
+                System.out.println("ccgParser");
                 process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
                 process.waitFor();
                 visualizationProgressBar.setProgress(0.35);
 
+                System.out.println("python script");
                 process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
                 process.waitFor();
                 visualizationProgressBar.setProgress(1);
