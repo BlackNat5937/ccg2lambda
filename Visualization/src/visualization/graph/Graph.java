@@ -67,7 +67,7 @@ public class Graph {
         int midX = x2 - x1; //distance between x2 and x1
         int midY = y2 - y1; //distance between y2 and y1
         if(midX >= 0 && midY >= 0){
-            if((midX*midX) > (midY*midY)){
+            if((midX*midX) >= (midY*midY)){
                 gc.strokeLine(x2,y2,x2-5,y2-5);
                 gc.strokeLine(x2,y2,x2-5,y2+5);
             }else{
@@ -76,7 +76,7 @@ public class Graph {
             }
         }
         else if(midX >= 0 && midY < 0){
-            if((midX*midX) > (midY*midY)){
+            if((midX*midX) >= (midY*midY)){
                 gc.strokeLine(x2,y2,x2-5,y2-5);
                 gc.strokeLine(x2,y2,x2-5,y2+5);
             }else{
@@ -85,7 +85,7 @@ public class Graph {
             }
         }
         else if (midX < 0 && midY < 0){
-            if((midX*midX) > (midY*midY)){
+            if((midX*midX) >= (midY*midY)){
                 gc.strokeLine(x2,y2,x2+5,y2-5);
                 gc.strokeLine(x2,y2,x2+5,y2+5);
             }else{
@@ -94,7 +94,7 @@ public class Graph {
             }
         }
         else if (midX < 0 && midY >= 0){
-            if((midX*midX) > (midY*midY)){
+            if((midX*midX) >= (midY*midY)){
                 gc.strokeLine(x2,y2,x2-5,y2-5);
                 gc.strokeLine(x2,y2,x2+5,y2-5);
             }else{

@@ -44,9 +44,9 @@
           </Tab>
           <Tab fx:id="tableBox" text="Box">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane>
                      <children>
-                        <TableView fx:id="tabBox" layoutX="44.0" layoutY="-1.0" prefHeight="75.0" prefWidth="315.0">
+                        <TableView fx:id="tabBox" layoutX="44.0" layoutY="-1.0" prefHeight="75.0">
                           <columns>
                             <TableColumn fx:id="col" prefWidth="313.0" text="C1" />
                           </columns>

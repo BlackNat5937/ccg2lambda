@@ -88,6 +88,7 @@ public class outputController {
 
         col.setText(b.getTitle());
 
+    //faire dans des lignes
         col.setCellValueFactory(new PropertyValueFactory<Box,String>("body"));
 
 

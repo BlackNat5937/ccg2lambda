@@ -6,7 +6,7 @@ public class Box {
     private ArrayList<Element> elements = new ArrayList<Element>();
 
     private String title;
-    private String body;
+    private ArrayList<String> body = new ArrayList<String>();
 
     public ArrayList<Element> getElements() {
         return elements;
@@ -18,16 +18,16 @@ public class Box {
 
     public String toString() {
         title = "";
-        body = "";
+
         for (Element eTitle : elements) {
             title += eTitle.getLabel() + " ";
         }
 
         for (Element e : elements) {
-            body += e.toString() + "\n";
+            body.add(e.toString() + "\n");
 
             if (e.getLinkTo() != null) {
-                body += e.getLinkTo().toString();
+                body.add(e.getLinkTo().toString());
             }
 
         }
@@ -43,11 +43,11 @@ public class Box {
         this.title = title;
     }
 
-    public String getBody() {
+    public ArrayList<String> getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(ArrayList<String> body) {
         this.body = body;
     }
 }
