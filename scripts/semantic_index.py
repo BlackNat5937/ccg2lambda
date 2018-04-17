@@ -16,7 +16,7 @@
 
 import codecs
 from lxml import etree
-import simplejson
+import json as simplejson
 import yaml
 
 from category import Category
