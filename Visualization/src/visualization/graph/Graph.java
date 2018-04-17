@@ -3,8 +3,8 @@ package visualization.graph;
 import java.util.ArrayList;
 
 public class Graph {
-    private ArrayList<Link> links;
-    private ArrayList<Node> nodes;
+    private ArrayList<Link> links = new ArrayList<Link>();
+    private ArrayList<Node> nodes = new ArrayList<Node>();
 
     public ArrayList<Node> getNodes() {
         return nodes;
