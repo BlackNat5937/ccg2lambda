@@ -14,7 +14,7 @@ public class Graph {
         for(Node n : nodes){
             tmp += n.toString() + "\n";
             if(n.getLinkTo() != null){
-                System.out.println("there is a link from this node");
+                System.out.println("there is a link from this node : " + n.getLinkTo().toString());
             }
         }
 

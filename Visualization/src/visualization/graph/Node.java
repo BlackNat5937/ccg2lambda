@@ -18,7 +18,7 @@ public class Node{
     }
 
     public String toString(){
-        return nodeType.toString() + " " + label;
+        return nodeType.toString() + " : " + label;
     }
 
     public String getLabel() {
