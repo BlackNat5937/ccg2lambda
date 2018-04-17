@@ -49,6 +49,10 @@ public class inputController {
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
     private static File semanticsXmlFile;
+    /**
+     * Enables knowing if the host OS is windows.
+     */
+    private final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
 
     /**
@@ -131,8 +135,8 @@ public class inputController {
         writeTxt();
         progress.set(0.25);
         launchScript();
-
-        openResultsWindow();
+        if (!isWindows)
+            openResultsWindow();
     }
 
     /**
@@ -169,13 +173,15 @@ public class inputController {
      */
     public void launchScript() {
         //script
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+        System.out.println(System.getProperty("os.name"));
 
         String ccg_path = "../";
         Process process;
 
         if (isWindows) {
-            System.out.println("Windows isn't available yet");
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setContentText("Windows isn't available yet");
+            a.showAndWait();
         } else {
             try {
                 System.out.println("tokenize");
