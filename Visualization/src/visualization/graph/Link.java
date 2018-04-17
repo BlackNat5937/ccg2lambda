@@ -13,7 +13,7 @@ public class Link {
     }
 
     public String toString(){
-        return "Link " + text + " from " + origin.toString() + " to " + destination.toString();
+        return "Link  : " + text + " from " + origin.toString() + " to " + destination.toString();
     }
 
     public Node getOrigin() {

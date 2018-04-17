@@ -3,7 +3,6 @@ package visualization.graph;
 import java.util.ArrayList;
 
 public class Graph {
-    private ArrayList<Link> links = new ArrayList<Link>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
 
     public ArrayList<Node> getNodes() {
@@ -14,10 +13,11 @@ public class Graph {
         String tmp = "";
         for(Node n : nodes){
             tmp += n.toString() + "\n";
+            if(n.getLinkTo() != null){
+                System.out.println("there is a link from this node : " + n.getLinkTo().toString());
+            }
         }
-        for(Link l : links){
-            tmp += l.toString() + "\n";
-        }
+
         return tmp;
     }
 
@@ -25,11 +25,4 @@ public class Graph {
         this.nodes = nodes;
     }
 
-    public ArrayList<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(ArrayList<Link> links) {
-        this.links = links;
-    }
 }
