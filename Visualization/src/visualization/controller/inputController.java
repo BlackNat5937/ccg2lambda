@@ -172,22 +172,22 @@ public class inputController {
         //script
         System.out.println(System.getProperty("os.name"));
 
-        String ccg_path = "../";
+        String ccg2lambdaPath = "../";
         Process process;
 
         try {
             System.out.println("tokenize");
-            process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
+            process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
             progress.set(0.50);
             process.waitFor();
 
             System.out.println("ccgParser");
-            process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
+            process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
             progress.set(0.75);
             process.waitFor();
 
             System.out.println("python script");
-            process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
+            process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
             progress.set(1.00);
             process.waitFor();
 
@@ -198,7 +198,12 @@ public class inputController {
         }
     }
 
-    public void enterPressed(ActionEvent ae){
+    /**
+     * Fires when the return key is pressed.
+     *
+     * @param ae the event triggered by this action
+     */
+    public void enterPressed(ActionEvent ae) {
         visualize();
     }
 
