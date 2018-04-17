@@ -51,8 +51,8 @@ public class Graph {
             if(!n.getLinks().isEmpty()){
                 gc.setStroke(Color.BLUE);
                 for(Link l : n.getLinks()){
-                    drawArrow(gc,n.getX() + 10, n.getY() + 10, l.getDestination().getX() + 10,  l.getDestination().getY() + 10);
-                    //gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
+
+                    gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
                     int midX = (l.getDestination().getX() + 10) - (n.getX() + 10);
                     int midY = (l.getDestination().getY() + 10) - (n.getY() + 10);
                     gc.fillText(l.getText(), n.getX() + midX/2, n.getY() + midY/2);
@@ -60,31 +60,6 @@ public class Graph {
             }
         }
         return c;
-    }
-
-    /**
-     * Draw an arrow from (x1,y1) to (x2 , y2)
-     * inspired from : https://stackoverflow.com/questions/35751576/javafx-draw-line-with-arrow-canvas
-     * @param gc the graphic context
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     */
-    public void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2) {
-        gc.setFill(Color.BLUE);
-
-        double dx = x2 - x1, dy = y2 - y1;
-        double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx * dx + dy * dy);
-
-        Transform transform = Transform.translate(x1, y1);
-        transform = transform.createConcatenation(Transform.rotate(Math.toDegrees(angle), 0, 0));
-        gc.setTransform(new Affine(transform));
-
-        gc.strokeLine(0, 0, len, 0);
-        gc.fillPolygon(new double[]{len, len - 5, len - 5, len}, new double[]{0, -5, 5, 0},
-                4);
     }
 
     public int getNbNodes(){
