@@ -1,5 +1,6 @@
 package visualization.controller;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,6 +29,7 @@ public class inputController {
 
     @FXML
     private ProgressBar visualizationProgressBar;
+    SimpleDoubleProperty progress=new SimpleDoubleProperty(0.0);
 
     @FXML
     private ListView<String> listSentences;
@@ -40,6 +42,7 @@ public class inputController {
     @FXML
     public void initialize() {
         initListView();
+        visualizationProgressBar.progressProperty().bindBidirectional(progress);
     }
 
     /**
@@ -87,11 +90,11 @@ public class inputController {
      */
     public void visualize()
     {
-        visualizationProgressBar.setProgress(0);
         writeTxt();
-        visualizationProgressBar.setProgress(0.05);
+        progress.set(0.25);
         launchScript();
 
+    //    openResultsWindow();
     }
 
     /**
@@ -127,18 +130,19 @@ public class inputController {
             try {
                 System.out.println("tokenize");
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
+                progress.set(0.50);
                 process.waitFor();
-                visualizationProgressBar.setProgress(0.15);
 
                 System.out.println("ccgParser");
                 process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
+                progress.set(0.75);
                 process.waitFor();
-                visualizationProgressBar.setProgress(0.35);
 
                 System.out.println("python script");
                 process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
+                progress.set(1.00);
+
                 process.waitFor();
-                visualizationProgressBar.setProgress(1);
 
 
             } catch (IOException e) {
