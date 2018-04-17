@@ -134,9 +134,15 @@ public class inputController {
     public void visualize() {
         writeTxt();
         progress.set(0.25);
-        launchScript();
-        if (!isWindows)
+        if (!isWindows) {
+            launchScript();
             openResultsWindow();
+        } else {
+            progress.set(0.0);
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setContentText("Windows isn't available yet");
+            a.showAndWait();
+        }
     }
 
     /**
@@ -178,35 +184,27 @@ public class inputController {
         String ccg_path = "../";
         Process process;
 
-        if (isWindows) {
-            Alert a = new Alert(Alert.AlertType.WARNING);
-            a.setContentText("Windows isn't available yet");
-            a.showAndWait();
-        } else {
-            try {
-                System.out.println("tokenize");
-                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
-                progress.set(0.50);
-                process.waitFor();
+        try {
+            System.out.println("tokenize");
+            process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
+            progress.set(0.50);
+            process.waitFor();
 
-                System.out.println("ccgParser");
-                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
-                progress.set(0.75);
-                process.waitFor();
+            System.out.println("ccgParser");
+            process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
+            progress.set(0.75);
+            process.waitFor();
 
-                System.out.println("python script");
-                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
-                progress.set(1.00);
-                process.waitFor();
+            System.out.println("python script");
+            process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
+            progress.set(1.00);
+            process.waitFor();
 
-                semanticsXmlFile = new File("../sentences.sem.xml");
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            semanticsXmlFile = new File("../sentences.sem.xml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
