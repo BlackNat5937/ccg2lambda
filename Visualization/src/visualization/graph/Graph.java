@@ -63,7 +63,7 @@ public class Graph {
     }
 
     public void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2){
-        gc.strokeLine(x1,x2,y1,y2);
+        gc.strokeLine(x1,y1,x2,y2);
         int midX = x2 - x1; //distance between x2 and x1
         int midY = y2 - y1; //distance between y2 and y1
         if(midX >= 0 && midY >= 0){
