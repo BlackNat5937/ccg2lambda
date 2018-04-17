@@ -127,6 +127,7 @@ public class inputController {
         progress.set(0.25);
         if (!isWindows) {
             launchScript();
+            Tools.xmlSemanticsFile = new File("../sentences.sem.xml");
             openResultsWindow();
         } else {
             progress.set(0.0);
@@ -203,7 +204,7 @@ public class inputController {
      *
      * @param ae the event triggered by this action
      */
-    public void enterPressed(ActionEvent ae){
+    public void enterPressed(ActionEvent ae) {
         addSentence();
     }
 
