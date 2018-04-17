@@ -3,6 +3,8 @@ package visualization.graph;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
 
@@ -13,7 +15,6 @@ public class Graph {
         return nodes;
     }
 
-    //bbbbbbbbbb
     public String toString(){
         String tmp = "";
         for(Node n : nodes){
@@ -50,6 +51,7 @@ public class Graph {
             if(!n.getLinks().isEmpty()){
                 gc.setStroke(Color.BLUE);
                 for(Link l : n.getLinks()){
+
                     gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
                     int midX = (l.getDestination().getX() + 10) - (n.getX() + 10);
                     int midY = (l.getDestination().getY() + 10) - (n.getY() + 10);
@@ -57,7 +59,6 @@ public class Graph {
                 }
             }
         }
-
         return c;
     }
 
