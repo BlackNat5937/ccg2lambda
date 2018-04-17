@@ -1,10 +1,14 @@
 package visualization;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Main entry point for the application.
@@ -21,7 +25,13 @@ public class Main extends Application {
      * @param args command-line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+        if (args.length == 0)
+            launch(args);
+        else {
+            String semanticsFilePath = args[0];
+            List<String> formulas = Tools.getSemanticsFormulas(new File(args[0]));
+            Platform.exit();
+        }
     }
 
     /**
