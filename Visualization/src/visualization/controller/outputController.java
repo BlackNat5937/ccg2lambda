@@ -33,9 +33,8 @@ public class outputController {
         listViewFormula.setItems(listFormulaItems);
 
         Graph g = new Graph();
-        g.getNodes().add(new Node("test", NodeType.EVENT));
         g.getNodes().add(new Node("test2",NodeType.NOUN));
-        g.getLinks().add(new Link(g.getNodes().get(0), g.getNodes().get(1), "is a"));
+        g.getNodes().add(new Node("test", NodeType.EVENT, g.getNodes().get(0), "is a"));
         System.out.println(g.toString());
     }
 
