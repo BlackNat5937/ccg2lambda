@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0"
-            prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.121"
-            fx:controller="visualization.controller.outputController">
+
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.outputController">
     <bottom>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <Separator prefWidth="200.0" VBox.vgrow="NEVER"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Formula :" wrappingWidth="103.13671875"
-                      VBox.vgrow="NEVER">
+                <Separator prefWidth="200.0" VBox.vgrow="NEVER" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Formula :" wrappingWidth="103.13671875" VBox.vgrow="NEVER">
                     <font>
-                        <Font size="16.0"/>
+                        <Font size="16.0" />
                     </font>
                     <VBox.margin>
-                        <Insets left="10.0"/>
+                        <Insets left="10.0" />
                     </VBox.margin>
                 </Text>
-                <ListView maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" prefWidth="601.0"
-                          VBox.vgrow="ALWAYS">
+                <ListView fx:id="listViewFormula" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" prefWidth="601.0" VBox.vgrow="ALWAYS">
                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                     </VBox.margin>
                 </ListView>
             </children>
         </VBox>
     </bottom>
     <top>
-        <TabPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="400.0"
-                 tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
           <Tab text="Graph">
                <content>

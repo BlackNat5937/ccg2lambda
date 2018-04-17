@@ -36,6 +36,9 @@ public class inputController {
 
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
+    private static File semanticsXmlFile;
+
+
     /**
      * Initializes the view.
      */
@@ -94,7 +97,7 @@ public class inputController {
         progress.set(0.25);
         launchScript();
 
-    //    openResultsWindow();
+        openResultsWindow();
     }
 
     /**
@@ -141,8 +144,9 @@ public class inputController {
                 System.out.println("python script");
                 process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
                 progress.set(1.00);
-
                 process.waitFor();
+
+                semanticsXmlFile = new File("../sentences.sem.xml");
 
 
             } catch (IOException e) {
@@ -180,5 +184,13 @@ public class inputController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Get the semanticXMLFile
+     * @return
+     */
+    public static File getSemanticsXmlFile() {
+        return semanticsXmlFile;
     }
 }
