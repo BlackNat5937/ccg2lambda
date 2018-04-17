@@ -35,7 +35,7 @@ public class Graph {
         int cpt = 0;
 
         for(Node n : nodes){
-            n.setX((cpt % 8)*20);
+            n.setX((cpt % 8)*100);
             n.setY(20);
             cpt ++;
         }
@@ -50,7 +50,7 @@ public class Graph {
                 gc.strokeLine(n.getX() + 10,n.getY() + 10, n.getLinkTo().getDestination().getX() + 10, n.getLinkTo().getDestination().getY() + 10);
                 int midX = (n.getLinkTo().getDestination().getX() + 10) - (n.getX() + 10);
                 int midY = (n.getLinkTo().getDestination().getY() + 10) - (n.getY() + 10);
-                gc.fillText(n.getLinkTo().getText(), midX, midY);
+                gc.fillText(n.getLinkTo().getText(), n.getX() + midX/2, n.getY() + midY/2);
             }
         }
 
