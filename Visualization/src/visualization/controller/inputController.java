@@ -203,8 +203,8 @@ public class inputController {
      *
      * @param ae the event triggered by this action
      */
-    public void enterPressed(ActionEvent ae) {
-        visualize();
+    public void enterPressed(ActionEvent ae){
+        addSentence();
     }
 
 }
