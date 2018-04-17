@@ -3,6 +3,7 @@ package visualization.controller;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -48,7 +49,6 @@ public class inputController {
      */
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
-    private static File semanticsXmlFile;
     /**
      * Enables knowing if the host OS is windows.
      */
@@ -102,15 +102,6 @@ public class inputController {
             listSentences.setItems(listSentencesItems);
             sentenceField.setText("");
         }
-    }
-
-    /**
-     * Get the semantics xml file.
-     *
-     * @return the file
-     */
-    public static File getSemanticsXmlFile() {
-        return semanticsXmlFile;
     }
 
     /**
@@ -200,11 +191,15 @@ public class inputController {
             progress.set(1.00);
             process.waitFor();
 
-            semanticsXmlFile = new File("../sentences.sem.xml");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+    public void enterPressed(ActionEvent ae){
+        addSentence();
+    }
+
 }

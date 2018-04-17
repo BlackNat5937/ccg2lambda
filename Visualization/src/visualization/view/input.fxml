@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.inputController">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.inputController">
     <top>
         <HBox alignment="TOP_CENTER" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
@@ -20,7 +20,7 @@
                         <Insets right="10.0" />
                     </HBox.margin>
                 </Text>
-                <TextField fx:id="sentenceField" prefHeight="26.0" prefWidth="635.0" HBox.hgrow="ALWAYS">
+                <TextField fx:id="sentenceField" onAction="#enterPressed" prefHeight="26.0" prefWidth="635.0" HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets right="10.0" />
                     </HBox.margin>

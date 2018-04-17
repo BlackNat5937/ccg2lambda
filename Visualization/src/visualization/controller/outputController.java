@@ -55,7 +55,7 @@ public class outputController {
      */
     @FXML
     public void initialize() {
-        listFormula = Tools.getSemanticsFormulas(inputController.getSemanticsXmlFile());
+        listFormula = Tools.getSemanticsFormulas(Tools.xmlSemanticsFile);
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
@@ -76,7 +76,7 @@ public class outputController {
         Box b = new Box();
         Element shark = new Element("x", "shark", ElementType.SUBJECT);
         Element fish = new Element("z1", "fish", ElementType.NOUN);
-        Element eat  = new Element("e1", "eat", ElementType.VERB);
+        Element eat = new Element("e1", "eat", ElementType.VERB);
         eat.addLink(shark, fish);
         b.getElements().add(shark);
         b.getElements().add(fish);
