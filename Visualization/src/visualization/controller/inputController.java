@@ -199,7 +199,7 @@ public class inputController {
     }
 
     public void enterPressed(ActionEvent ae){
-        visualize();
+        addSentence();
     }
 
 }
