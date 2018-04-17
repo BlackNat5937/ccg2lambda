@@ -64,6 +64,7 @@ public class Graph {
 
     /**
      * Draw an arrow from (x1,y1) to (x2 , y2)
+     * inspired from : https://stackoverflow.com/questions/35751576/javafx-draw-line-with-arrow-canvas
      * @param gc the graphic context
      * @param x1
      * @param y1
