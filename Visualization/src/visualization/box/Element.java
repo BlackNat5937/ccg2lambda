@@ -4,6 +4,7 @@ public class Element {
     private String label;
     private String realName;
     private ElementType elementType;
+    private LinkBox linkTo = null;
 
     public Element(String label, String realName, ElementType elementType) {
         this.label = label;
@@ -19,6 +20,32 @@ public class Element {
         return label;
     }
 
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public ElementType getElementType() {
+        return elementType;
+    }
+
+    public void setElementType(ElementType elementType) {
+        this.elementType = elementType;
+    }
 
 
+    public LinkBox getLinkTo() {
+        return linkTo;
+    }
+
+    public void setLinkTo(LinkBox linkTo) {
+        this.linkTo = linkTo;
+    }
 }
