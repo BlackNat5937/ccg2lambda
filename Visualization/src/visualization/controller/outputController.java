@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import visualization.Tools;
 import visualization.graph.Graph;
-import visualization.graph.Link;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
 
@@ -32,15 +31,17 @@ public class outputController {
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
+/*
         Graph g = new Graph();
-        g.getNodes().add(new Node("test2",NodeType.NOUN));
-        g.getNodes().add(new Node("test", NodeType.EVENT, g.getNodes().get(0), "is a"));
+        Node test = new Node("test", NodeType.NOUN);
+        Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
+        Node test3 = new Node("test3", NodeType.NOUN);
+        test.addLink(test3, "le lien");
+        g.getNodes().add(test);
+        g.getNodes().add(test2);
+        g.getNodes().add(test3);
         System.out.println(g.toString());
-
-        g = new Graph();
-        Node test = new Node("test2", NodeType.NOUN);
-        Node test2 = new Node("test", NodeType.EVENT, test, "is a");
-        System.out.println(g.toString());
+*/
     }
 
 }

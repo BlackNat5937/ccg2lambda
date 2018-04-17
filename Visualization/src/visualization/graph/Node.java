@@ -21,6 +21,11 @@ public class Node{
         return nodeType.toString() + " : " + label;
     }
 
+    public void addLink(Node n, String textLink)
+    {
+        linkTo = new Link(this, n, textLink);
+    }
+
     public String getLabel() {
         return label;
     }
