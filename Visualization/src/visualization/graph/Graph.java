@@ -35,7 +35,7 @@ public class Graph {
         int cpt = 0;
 
         for(Node n : nodes){
-            n.setX(cpt % 8);
+            n.setX((cpt % 8)*20);
             n.setY(20);
             cpt ++;
         }

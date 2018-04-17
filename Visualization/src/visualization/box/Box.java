@@ -24,19 +24,10 @@ public class Box {
         for (Element e : elements) {
             tmp += e.toString() + "\n";
 
-            if(e.getLinkTo() != null)
-            {
-                System.out.println(e.getLinkTo().toString());
+            if (e.getLinkTo() != null) {
+                tmp += e.getLinkTo().toString();
             }
 
-
-
-           /*  meme idée avec ici les lien du type verbe
-            if(e.getLinkTo() != null){
-                System.out.println("there is a link from this node : " + n.getLinkTo().toString());
-            }
-
-            */
         }
 
         return title + "\n" + tmp;

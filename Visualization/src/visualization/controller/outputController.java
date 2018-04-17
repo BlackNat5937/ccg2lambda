@@ -50,6 +50,7 @@ public class outputController {
 
         anchorPaneGraph.getChildren().add(g.generateCanvas());
 
+        /*
         Box b = new Box();
         Element shark = new Element("x", "shark", ElementType.SUBJECT);
         Element fish = new Element("z1", "fish", ElementType.NOUN);
@@ -59,6 +60,7 @@ public class outputController {
         b.getElements().add(fish);
         b.getElements().add(eat);
         System.out.println(b.toString());
+*/
 
     }
 }

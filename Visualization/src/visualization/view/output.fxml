@@ -37,7 +37,7 @@
         <tabs>
           <Tab text="Graph">
                <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+                  <AnchorPane fx:id="anchorPaneGraph" prefHeight="200.0" prefWidth="200.0" />
                </content>
           </Tab>
           <Tab text="Box">
