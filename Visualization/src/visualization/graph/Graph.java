@@ -18,8 +18,10 @@ public class Graph {
         String tmp = "";
         for(Node n : nodes){
             tmp += n.toString() + "\n";
-            if(n.getLinkTo() != null){
-                System.out.println("there is a link from this node : " + n.getLinkTo().toString());
+            if(!n.getLinks().isEmpty()){
+                for(Link l : n.getLinks()){
+                    System.out.println("there is a link from this node : " + l.toString());
+                }
             }
         }
         return tmp;
@@ -45,12 +47,14 @@ public class Graph {
             gc.fillRect(n.getX(), n.getY(), 20,20);
             gc.setFill(Color.BLACK);
             gc.fillText(n.getLabel(), n.getX(), n.getY());
-            if(n.getLinkTo() != null){
+            if(!n.getLinks().isEmpty()){
                 gc.setStroke(Color.BLUE);
-                gc.strokeLine(n.getX() + 10,n.getY() + 10, n.getLinkTo().getDestination().getX() + 10, n.getLinkTo().getDestination().getY() + 10);
-                int midX = (n.getLinkTo().getDestination().getX() + 10) - (n.getX() + 10);
-                int midY = (n.getLinkTo().getDestination().getY() + 10) - (n.getY() + 10);
-                gc.fillText(n.getLinkTo().getText(), n.getX() + midX/2, n.getY() + midY/2);
+                for(Link l : n.getLinks()){
+                    gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
+                    int midX = (l.getDestination().getX() + 10) - (n.getX() + 10);
+                    int midY = (l.getDestination().getY() + 10) - (n.getY() + 10);
+                    gc.fillText(l.getText(), n.getX() + midX/2, n.getY() + midY/2);
+                }
             }
         }
 

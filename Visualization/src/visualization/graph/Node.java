@@ -1,10 +1,12 @@
 package visualization.graph;
 
+import java.util.ArrayList;
+
 public class Node{
 
     private String label;
     private NodeType nodeType;
-    private Link linkTo = null;
+    private ArrayList<Link> links = new ArrayList<>();
     private int x, y;
 
     public Node(String label, NodeType nodeType){
@@ -15,7 +17,7 @@ public class Node{
     public Node(String label, NodeType nodeType, Node linkTo, String textLink){
         this.label = label;
         this.nodeType = nodeType;
-        this.linkTo = new Link(this, linkTo, textLink);
+        links.add(new Link(this, linkTo, textLink));
     }
 
     public String toString(){
@@ -24,7 +26,11 @@ public class Node{
 
     public void addLink(Node n, String textLink)
     {
-        linkTo = new Link(this, n, textLink);
+        links.add(new Link(this, n, textLink));
+    }
+
+    public ArrayList<Link> getLinks() {
+        return links;
     }
 
     public String getLabel() {
@@ -41,14 +47,6 @@ public class Node{
 
     public void setNodeType(NodeType nodeType) {
         this.nodeType = nodeType;
-    }
-
-    public Link getLinkTo() {
-        return linkTo;
-    }
-
-    public void setLinkTo(Link linkTo) {
-        this.linkTo = linkTo;
     }
 
     public int getY() {
