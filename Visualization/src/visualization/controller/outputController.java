@@ -87,9 +87,6 @@ public class outputController {
      //   listElements = FXCollections.observableArrayList(b.getBody());
 
 
-
-
-
         col.setCellValueFactory(new PropertyValueFactory<Box,String>("title"));
 
 
@@ -98,7 +95,6 @@ public class outputController {
         tabBox.setItems(listElements);
 
 
-     //   tabBox.setItems(listElements);
 
       //  tabBox.getColumns().addAll(col);
 
