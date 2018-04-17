@@ -40,6 +40,7 @@ public class inputController {
     @FXML
     public void initialize() {
         initListView();
+
     }
 
     /**
@@ -118,7 +119,7 @@ public class inputController {
         Process process;
 
         if (isWindows) {
-            //the launch on windows will be done later
+            System.out.println("Windows isn't available yet");
         }
         else
         {
