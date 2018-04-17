@@ -86,8 +86,9 @@ public class outputController {
 
      //   listElements = FXCollections.observableArrayList(b.getBody());
 
+        col.setText(b.getTitle());
 
-        col.setCellValueFactory(new PropertyValueFactory<Box,String>("title"));
+        col.setCellValueFactory(new PropertyValueFactory<Box,String>("body"));
 
 
         listElements.add(b);
