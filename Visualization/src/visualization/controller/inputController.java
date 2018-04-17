@@ -49,7 +49,6 @@ public class inputController {
      */
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
-    private static File semanticsXmlFile;
     /**
      * Enables knowing if the host OS is windows.
      */
@@ -103,15 +102,6 @@ public class inputController {
             listSentences.setItems(listSentencesItems);
             sentenceField.setText("");
         }
-    }
-
-    /**
-     * Get the semantics xml file.
-     *
-     * @return the file
-     */
-    public static File getSemanticsXmlFile() {
-        return semanticsXmlFile;
     }
 
     /**
@@ -201,7 +191,6 @@ public class inputController {
             progress.set(1.00);
             process.waitFor();
 
-            semanticsXmlFile = new File("../sentences.sem.xml");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
