@@ -48,4 +48,9 @@ public class Element {
     public void setLinkTo(LinkBox linkTo) {
         this.linkTo = linkTo;
     }
+    public void addLink(Element e1, Element e2)
+    {
+        linkTo = new LinkBox(this, e1, e2);
+    }
+
 }

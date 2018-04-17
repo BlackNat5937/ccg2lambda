@@ -24,7 +24,10 @@ public class Box {
         for (Element e : elements) {
             tmp += e.toString() + "\n";
 
-
+            if(e.getLinkTo() != null)
+            {
+                System.out.println(e.getLinkTo().toString());
+            }
 
 
 
