@@ -22,7 +22,7 @@ public class Main extends Application {
     /**
      * Desired visualization outputs. All by default.
      */
-    public static Tools.VisualizationModes visualizationMode = Tools.VisualizationModes.ALL;
+    public static Tools.RepresentationModes visualizationMode = Tools.RepresentationModes.ALL;
     /**
      * Current mode of the application. Used to determine whether to open the graphic window or not.
      */
@@ -63,7 +63,7 @@ public class Main extends Application {
                 } else {
                     for (String option : Tools.outputModesOption) {
                         if (sc.findInLine(option).equals(option)) {
-                            visualizationMode = Tools.VisualizationModes.fromString(option);
+                            visualizationMode = Tools.RepresentationModes.fromString(option);
                         }
                     }
                     if (sc.findInLine(Tools.htmlOutputOption).equals(Tools.htmlOutputOption)) {
