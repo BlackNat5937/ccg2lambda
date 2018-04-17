@@ -45,6 +45,7 @@ public class Tools {
      * Name of the attribute containing the formulas.
      */
     private static String xmlSemElementAttributeName = "sem";
+    public static File xmlSemanticsFile = null;
 
     /**
      * Gets the formulas in the xml file representing the sentences as a xml tree.
@@ -90,6 +91,7 @@ public class Tools {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Tools.xmlSemanticsFile = semanticsXmlFile;
         return formulaList;
     }
 
