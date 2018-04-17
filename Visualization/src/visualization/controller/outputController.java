@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import visualization.Tools;
 import visualization.box.Box;
@@ -19,6 +20,9 @@ public class outputController {
 
     @FXML
     private AnchorPane anchorPaneGraph;
+
+ /*   @FXML
+    private TableView boxView;*/
 
     private List<String> listFormula;
 
@@ -42,7 +46,7 @@ public class outputController {
         Node test = new Node("test", NodeType.NOUN);
         Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
         Node test3 = new Node("test3", NodeType.NOUN);
-        test.addLink(test3, "le lien");
+        test2.addLink(test3, "le lien");
         g.getNodes().add(test);
         g.getNodes().add(test2);
         g.getNodes().add(test3);
@@ -50,7 +54,7 @@ public class outputController {
 
         anchorPaneGraph.getChildren().add(g.generateCanvas());
 
-        /*
+
         Box b = new Box();
         Element shark = new Element("x", "shark", ElementType.SUBJECT);
         Element fish = new Element("z1", "fish", ElementType.NOUN);
@@ -60,7 +64,8 @@ public class outputController {
         b.getElements().add(fish);
         b.getElements().add(eat);
         System.out.println(b.toString());
-*/
+
+     //   boxView.getItems().add(1, b.toString());
 
     }
 }
