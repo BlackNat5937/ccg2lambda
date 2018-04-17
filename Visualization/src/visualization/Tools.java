@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Tools {
     /**
@@ -99,7 +100,16 @@ public class Tools {
      * @return the simplified formula
      */
     private static String simplifyFormula(String formula) {
-        return formula.replace("&amp;", "&");
+        String corrFormula = formula.replace("&amp;", "&");
+        StringBuilder simpFormula = new StringBuilder();
+        Scanner sc = new Scanner(corrFormula);
+        sc.useDelimiter("\\s*& TrueP\\s*");
+        String part = "";
+        do {
+            part = sc.next();
+            simpFormula.append(' ').append(part);
+        } while (sc.hasNext());
+        return simpFormula.toString();
     }
 
     /**
