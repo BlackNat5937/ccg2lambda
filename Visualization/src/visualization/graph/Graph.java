@@ -51,8 +51,8 @@ public class Graph {
             if(!n.getLinks().isEmpty()){
                 gc.setStroke(Color.BLUE);
                 for(Link l : n.getLinks()){
-
-                    gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
+                    drawArrow(gc, n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
+                    //gc.strokeLine(n.getX() + 10,n.getY() + 10, l.getDestination().getX() + 10, l.getDestination().getY() + 10);
                     int midX = (l.getDestination().getX() + 10) - (n.getX() + 10);
                     int midY = (l.getDestination().getY() + 10) - (n.getY() + 10);
                     gc.fillText(l.getText(), n.getX() + midX/2, n.getY() + midY/2);
@@ -60,6 +60,49 @@ public class Graph {
             }
         }
         return c;
+    }
+
+    public void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2){
+        gc.strokeLine(x1,x2,y1,y2);
+        int midX = x2 - x1; //distance between x2 and x1
+        int midY = y2 - y1; //distance between y2 and y1
+        if(midX >= 0 && midY >= 0){
+            if((midX*midX) > (midY*midY)){
+                gc.strokeLine(x2,y2,x2-5,y2-5);
+                gc.strokeLine(x2,y2,x2-5,y2+5);
+            }else{
+                gc.strokeLine(x2,y2,x2-5,y2-5);
+                gc.strokeLine(x2,y2,x2+5,y2-5);
+            }
+        }
+        else if(midX >= 0 && midY < 0){
+            if((midX*midX) > (midY*midY)){
+                gc.strokeLine(x2,y2,x2-5,y2-5);
+                gc.strokeLine(x2,y2,x2-5,y2+5);
+            }else{
+                gc.strokeLine(x2,y2,x2-5,y2+5);
+                gc.strokeLine(x2,y2,x2+5,y2+5);
+            }
+        }
+        else if (midX < 0 && midY < 0){
+            if((midX*midX) > (midY*midY)){
+                gc.strokeLine(x2,y2,x2+5,y2-5);
+                gc.strokeLine(x2,y2,x2+5,y2+5);
+            }else{
+                gc.strokeLine(x2,y2,x2-5,y2+5);
+                gc.strokeLine(x2,y2,x2+5,y2+5);
+            }
+        }
+        else if (midX < 0 && midY >= 0){
+            if((midX*midX) > (midY*midY)){
+                gc.strokeLine(x2,y2,x2-5,y2-5);
+                gc.strokeLine(x2,y2,x2+5,y2-5);
+            }else{
+                gc.strokeLine(x2,y2,x2-5,y2+5);
+                gc.strokeLine(x2,y2,x2+5,y2+5);
+            }
+        }
+
     }
 
     public int getNbNodes(){
