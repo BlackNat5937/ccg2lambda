@@ -24,16 +24,28 @@ import java.util.Objects;
  */
 public class inputController {
 
+    /**
+     * TextField enabling the input of sentences from the user.
+     */
     @FXML
     private TextField sentenceField;
-
+    /**
+     * Progress bar indicating the completion status of the task.
+     */
     @FXML
     private ProgressBar visualizationProgressBar;
-    SimpleDoubleProperty progress=new SimpleDoubleProperty(0.0);
-
+    /**
+     * Progress of the conversion process.
+     */
+    private SimpleDoubleProperty progress = new SimpleDoubleProperty(0.0);
+    /**
+     * View of all the sentences the user has input.
+     */
     @FXML
     private ListView<String> listSentences;
-
+    /**
+     * List of all the sentences.
+     */
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
 
     private static File semanticsXmlFile;
@@ -89,15 +101,12 @@ public class inputController {
     }
 
     /**
-     * Launches processing of the sentences in the listView.
+     * Get the semantics xml file.
+     *
+     * @return the file
      */
-    public void visualize()
-    {
-        writeTxt();
-        progress.set(0.25);
-        launchScript();
-
-        openResultsWindow();
+    public static File getSemanticsXmlFile() {
+        return semanticsXmlFile;
     }
 
     /**
@@ -116,45 +125,14 @@ public class inputController {
     }
 
     /**
-     * Launches the python scripts, using ccg2lambda.
+     * Launches processing of the sentences in the listView.
      */
-    public void launchScript() {
-        //script
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    public void visualize() {
+        writeTxt();
+        progress.set(0.25);
+        launchScript();
 
-        String ccg_path = "../";
-        Process process;
-
-        if (isWindows) {
-            System.out.println("Windows isn't available yet");
-        }
-        else
-        {
-            try {
-                System.out.println("tokenize");
-                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
-                progress.set(0.50);
-                process.waitFor();
-
-                System.out.println("ccgParser");
-                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
-                progress.set(0.75);
-                process.waitFor();
-
-                System.out.println("python script");
-                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
-                progress.set(1.00);
-                process.waitFor();
-
-                semanticsXmlFile = new File("../sentences.sem.xml");
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        openResultsWindow();
     }
 
     /**
@@ -187,10 +165,42 @@ public class inputController {
     }
 
     /**
-     * Get the semanticXMLFile
-     * @return
+     * Launches the python scripts, using ccg2lambda.
      */
-    public static File getSemanticsXmlFile() {
-        return semanticsXmlFile;
+    public void launchScript() {
+        //script
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
+        String ccg_path = "../";
+        Process process;
+
+        if (isWindows) {
+            System.out.println("Windows isn't available yet");
+        } else {
+            try {
+                System.out.println("tokenize");
+                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", "../").start();
+                progress.set(0.50);
+                process.waitFor();
+
+                System.out.println("ccgParser");
+                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", "../").start();
+                progress.set(0.75);
+                process.waitFor();
+
+                System.out.println("python script");
+                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", "../").start();
+                progress.set(1.00);
+                process.waitFor();
+
+                semanticsXmlFile = new File("../sentences.sem.xml");
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
