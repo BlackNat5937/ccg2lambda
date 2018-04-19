@@ -130,7 +130,7 @@ public class outputController {
     private TitledPane initBox(String formula) {
         System.out.println("init box");
         TitledPane loadedPane = null;
-        boxController bCon = null;
+        Parametrable<String> bCon = null;
         System.out.println("box insertion");
         FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
         try {

@@ -8,12 +8,15 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class boxController implements Parametrable<String> {
     @FXML
     public VBox contentContainer;
     @FXML
     private TitledPane box;
+
+    private static final Pattern boxTokenMatcher = Pattern.compile("_\\w*\\(\\w\\)");
 
     private String formula;
     private String header;
@@ -22,13 +25,13 @@ public class boxController implements Parametrable<String> {
     public void initData(String formula) {
         this.formula = formula;
         box.setText(formula);
-        Scanner sc = new Scanner(formula);
-        sc.useDelimiter("&");
-        do {
-            String token = sc.next();
+        List<String> tokens = parseFormula();
+
+        for (String token : tokens) {
+            token = token.substring(1);
             Text display = new Text(token);
             contentContainer.getChildren().add(display);
-        } while (sc.hasNext());
+        }
     }
 
     private List<String> parseFormula() {
@@ -36,13 +39,11 @@ public class boxController implements Parametrable<String> {
         Scanner sc = new Scanner(formula);
         sc.useDelimiter("&");
         do {
-            String token = sc.next();
-            if (token.contains("exists"))
-                continue;
-            else {
-            }
+            String token;
+            token = sc.findInLine(boxTokenMatcher);
             tmp.add(token);
+            sc.next();
         } while (sc.hasNext());
-        return null;
+        return tmp;
     }
 }
