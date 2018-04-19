@@ -34,8 +34,7 @@ public class outputController {
      * Graph
      */
     @FXML
-    private AnchorPane anchorPaneGraph;
-
+    public VBox graphCont;
 
     /**
      * Box
@@ -63,29 +62,13 @@ public class outputController {
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
-        System.out.println(listFormula);
+        generateGraph();
 
-        System.out.println("list begin");
         int v = listFormula.size();
         for (int j = 0; j < v; j++)
         {
             System.out.println(listFormula.get(j) );
         }
-        System.out.println("list end");
-
-
-
-        Graph g = new Graph();
-        Node test = new Node("test", NodeType.NOUN);
-        Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
-        Node test3 = new Node("test3", NodeType.NOUN);
-        test2.addLink(test3, "le lien");
-        g.getNodes().add(test);
-        g.getNodes().add(test2);
-        g.getNodes().add(test3);
-        System.out.println(g.toString());
-
-        anchorPaneGraph.getChildren().add(g.generateCanvas());
 
 
         Box b = new Box();
@@ -96,7 +79,7 @@ public class outputController {
         b.getElements().add(shark);
         b.getElements().add(fish);
         b.getElements().add(eat);
-        System.out.println(b.toString());
+        //System.out.println(b.toString());
 
 
         tabBox.setPadding(new Insets(10, 50, 50, 50));
@@ -127,24 +110,57 @@ public class outputController {
         }
     }
 
+    private TitledPane initGraph(String formula){
+        TitledPane loadedPane = null;
+        Parametrable<String> gCon = null;
+        FXMLLoader graphLoader = new FXMLLoader(getClass().getResource("../view/graph.fxml"));
+        try {
+            loadedPane = graphLoader.load();
+            gCon = graphLoader.getController();
+            gCon.initData(formula);
+            graphCont.getChildren().add(loadedPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loadedPane;
+    }
+
     private TitledPane initBox(String formula) {
-        System.out.println("init box");
         TitledPane loadedPane = null;
         Parametrable<String> bCon = null;
         System.out.println("box insertion");
+
         FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
         try {
-            System.out.println("loader created");
             loadedPane = boxLoader.load();
             bCon = boxLoader.getController();
             bCon.initData(formula);
             cont.getChildren().add(loadedPane);
-            System.out.println("box inserted");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("er");
         }
-        System.out.println("box insertion end");
         return loadedPane;
+    }
+
+    public void generateGraph(){
+        //exists x.((x=_john) & ( _be(_john) & Prog(_walk(_john)))
+
+        /*Graph g = new Graph();
+        Node test = new Node("test", NodeType.NOUN);
+        Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
+        Node test3 = new Node("test3", NodeType.NOUN);
+        test2.addLink(test3, "le lien");
+        g.getNodes().add(test);
+        g.getNodes().add(test2);
+        g.getNodes().add(test3);
+        System.out.println(g.toString());
+    */
+
+
+        for(String s : listFormula){
+
+            initGraph(s);
+            //graphCont.getChildren().add(g.generateCanvas());
+        }
     }
 }
