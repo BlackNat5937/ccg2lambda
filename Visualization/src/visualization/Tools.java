@@ -105,7 +105,7 @@ public class Tools {
         String corrFormula = formula.replace("&amp;", "&");
         StringBuilder simpFormula = new StringBuilder();
         Scanner sc = new Scanner(corrFormula);
-        sc.useDelimiter("\\s*& TrueP\\s*");
+        sc.useDelimiter("\\s*& TrueP\\s*|\\s*TrueP &\\s*");
         String part = "";
         do {
             part = sc.next();
