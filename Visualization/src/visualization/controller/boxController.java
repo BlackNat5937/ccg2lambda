@@ -20,12 +20,12 @@ public class boxController implements Parametrable<String> {
 
     private String formula;
     private String header;
-    private List<String> elements;
+    private List<String> tokens = new ArrayList<>();
 
     public void initData(String formula) {
         this.formula = formula;
         box.setText(formula);
-        List<String> tokens = parseFormula();
+        parseFormula();
 
         for (String token : tokens) {
             token = token.substring(1);
@@ -35,15 +35,22 @@ public class boxController implements Parametrable<String> {
     }
 
     private List<String> parseFormula() {
-        ArrayList<String> tmp = new ArrayList<>();
         Scanner sc = new Scanner(formula);
         sc.useDelimiter("&");
         do {
             String token;
             token = sc.findInLine(boxTokenMatcher);
-            tmp.add(token);
+            tokens.add(token);
             sc.next();
         } while (sc.hasNext());
-        return tmp;
+        return tokens;
+    }
+
+    private String createHeader() {
+        Pattern variableName = Pattern.compile("\\(\\w+\\)");
+        List<String> used = new ArrayList<>();
+        for (String token : tokens) {
+        }
+        return header;
     }
 }
