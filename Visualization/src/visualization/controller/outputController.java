@@ -63,6 +63,17 @@ public class outputController {
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
+        System.out.println(listFormula);
+
+        System.out.println("list begin");
+        int v = listFormula.size();
+        for (int j = 0; j < v; j++)
+        {
+            System.out.println(listFormula.get(j) );
+        }
+        System.out.println("list end");
+
+
 
         Graph g = new Graph();
         Node test = new Node("test", NodeType.NOUN);

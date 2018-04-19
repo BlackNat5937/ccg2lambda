@@ -64,6 +64,8 @@ public class inputController {
         visualizationProgressBar.progressProperty().bindBidirectional(progress);
     }
 
+    private boolean firstTime;
+
     /**
      * Initializes the context menus for each listView item.
      */
@@ -186,6 +188,18 @@ public class inputController {
             process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
             progress.set(0.75);
             process.waitFor();
+
+            File f = new File("py3");
+            firstTime = !f.exists() && !f.isDirectory();
+
+            if(firstTime)
+            {
+                System.out.println("python virtual");
+                process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
+                process.waitFor();
+                firstTime = false;
+            }
+
 
             System.out.println("python script");
             process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
