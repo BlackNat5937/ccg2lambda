@@ -61,10 +61,6 @@ public class OutputController {
         generateGraph();
 
         int v = listFormula.size();
-        for (int j = 0; j < v; j++)
-        {
-            System.out.println(listFormula.get(j) );
-        }
 
 
         Box b = new Box();
@@ -124,7 +120,6 @@ public class OutputController {
     private TitledPane initBox(String formula) {
         TitledPane loadedPane = null;
         Parametrable<String> bCon = null;
-        System.out.println("box insertion");
 
         FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
         try {

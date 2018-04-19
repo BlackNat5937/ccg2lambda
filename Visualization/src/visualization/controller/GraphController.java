@@ -16,16 +16,18 @@ public class GraphController implements Parametrable<String>{
     @FXML
     private TitledPane box;
 
-    @FXML
-    private AnchorPane content;
+    //@FXML
+    //private AnchorPane content;
 
     public void initData(String formula){
         Graph g = new Graph();
-        System.out.println(formula);
         String parsedFormula[] = formula.split("&");
         for(String ss : parsedFormula){
             System.out.println(ss);
+
             if(ss.contains("exists")){
+
+                //add the variable
                 String variable = "";
                 int i = 7;
                 Character tmp = ss.charAt(i);
@@ -34,16 +36,29 @@ public class GraphController implements Parametrable<String>{
                     i++;
                     tmp = ss.charAt(i);
                 }
-                System.out.println(variable);
                 Node node = new Node(variable, NodeType.VARIABLE);
                 g.getNodes().add(node);
+
+                //add the node on which the variable point
+                i += 3; // exists z1.(_park(z1)) ; 3 to go grom . to p
+                tmp = ss.charAt(i);
+                variable = "";
+                while(!tmp.equals('(')){
+                    variable += tmp;
+                    i++;
+                    tmp = ss.charAt(i);
+                }
+
+                Node node2 = new Node(variable,NodeType.VARIABLE);
+                node.addLink(node2, "is-a");
+                g.getNodes().add(node2);
             }
         }
 
+
         box.setText(formula);
-        this.canvas = g.generateCanvas();
-        content.getChildren().add(canvas);
-        System.out.println(g.toString());
+        g.generateCanvas(canvas);
+        //content.getChildren().add(canvas);
     }
 
     public Canvas getCanvas() {
