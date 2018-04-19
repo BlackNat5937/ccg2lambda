@@ -8,7 +8,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -17,14 +16,11 @@ import visualization.Tools;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
-import visualization.graph.Graph;
-import visualization.graph.Node;
-import visualization.graph.NodeType;
 
 import java.io.IOException;
 import java.util.List;
 
-public class outputController {
+public class OutputController {
 
     @FXML
     public Pane container;

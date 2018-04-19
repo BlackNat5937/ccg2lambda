@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.VBox?>
 <TitledPane xmlns:fx="http://javafx.com/fxml/1" fx:id="box" animated="false" text="untitled"
-            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="visualization.controller.boxController">
+            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="visualization.controller.BoxController">
     <content>
         <VBox fx:id="contentContainer" prefHeight="200.0" prefWidth="100.0"/>
     </content>

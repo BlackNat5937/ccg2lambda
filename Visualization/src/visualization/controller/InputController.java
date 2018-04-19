@@ -23,7 +23,7 @@ import java.util.Objects;
  * @author Gaétan Basile
  * @see visualization.view
  */
-public class inputController {
+public class InputController {
 
     /**
      * TextField enabling the input of sentences from the user.

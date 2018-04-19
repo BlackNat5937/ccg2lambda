@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class boxController implements Parametrable<String> {
+public class BoxController implements Parametrable<String> {
     @FXML
     public VBox contentContainer;
     @FXML
