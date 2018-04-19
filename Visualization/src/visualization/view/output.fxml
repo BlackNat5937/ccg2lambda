@@ -44,7 +44,7 @@
             <content>
               <AnchorPane>
                      <children>
-                        <VBox fx:id="boxBox" layoutX="23.0" layoutY="13.0" prefHeight="57.0" prefWidth="349.0" />
+                        <VBox fx:id="tabBox" layoutX="23.0" layoutY="13.0" prefHeight="57.0" prefWidth="349.0" />
                      </children></AnchorPane>
             </content>
           </Tab>

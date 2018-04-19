@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -33,7 +32,7 @@ public class outputController {
      * Box
      */
     @FXML
-    private VBox boxBox = new VBox();
+    private VBox tabBox = new VBox();
 
     /**
      * Formula
@@ -80,19 +79,28 @@ public class outputController {
         System.out.println(b.toString());
 
 
-        boxBox.setPadding(new Insets(10, 50, 50, 50));
-        boxBox.setSpacing(10);
+        tabBox.setPadding(new Insets(10, 50, 50, 50));
+        tabBox.setSpacing(10);
+
+        String cssLayout = "-fx-padding: 20;" +
+                "-fx-border-style: solid inside;" +
+                "-fx-border-width: 2;" +
+                "-fx-border-insets: 5;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: black;";
+
+        tabBox.setStyle(cssLayout);
 
         Label lb1 = new Label(b.getTitle());
         lb1.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
-        boxBox.getChildren().add(lb1);
+        tabBox.getChildren().add(lb1);
 
 
         int u = b.getBody().size();
 
         for(int i = 0;  i < u; i++)
         {
-            boxBox.getChildren().add(new Label(b.getBody().get(i)));
+            tabBox.getChildren().add(new Label(b.getBody().get(i)));
         }
 
     }
