@@ -198,6 +198,16 @@ public class Graph {
 
     }
 
+    public Node getNodeByLabel(String label){
+        Node res = null;
+        for(Node n : nodes){
+            if(n.getLabel().equals(label)){
+                res =  n;
+            }
+        }
+        return res;
+    }
+
     public int getNbNodes() {
         int cpt = 0;
         for (Node n : nodes) {
