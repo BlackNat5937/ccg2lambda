@@ -5,8 +5,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -46,11 +44,7 @@
             <content>
               <AnchorPane>
                      <children>
-                        <TableView fx:id="tabBox" layoutX="44.0" layoutY="-1.0" prefHeight="75.0">
-                          <columns>
-                            <TableColumn fx:id="col" prefWidth="313.0" text="C1" />
-                          </columns>
-                        </TableView>
+                        <VBox fx:id="boxBox" layoutX="23.0" layoutY="13.0" prefHeight="57.0" prefWidth="349.0" />
                      </children></AnchorPane>
             </content>
           </Tab>

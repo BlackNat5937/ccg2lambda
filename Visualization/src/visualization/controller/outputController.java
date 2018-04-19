@@ -3,19 +3,21 @@ package visualization.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import visualization.Tools;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
-import visualization.graph.Graph;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
 
+import visualization.graph.Graph;
 import java.util.List;
 
 public class outputController {
@@ -31,13 +33,7 @@ public class outputController {
      * Box
      */
     @FXML
-    private TableView<Box> tabBox;
-
-    @FXML
-    private TableColumn col;
-
-    private ObservableList<Box> listElements = FXCollections.observableArrayList();
-
+    private VBox boxBox = new VBox();
 
     /**
      * Formula
@@ -84,21 +80,20 @@ public class outputController {
         System.out.println(b.toString());
 
 
-     //   listElements = FXCollections.observableArrayList(b.getBody());
+        boxBox.setPadding(new Insets(10, 50, 50, 50));
+        boxBox.setSpacing(10);
 
-        col.setText(b.getTitle());
-
-    //faire dans des lignes
-        col.setCellValueFactory(new PropertyValueFactory<Box,String>("body"));
-
-
-        listElements.add(b);
-
-        tabBox.setItems(listElements);
+        Label lb1 = new Label(b.getTitle());
+        lb1.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
+        boxBox.getChildren().add(lb1);
 
 
+        int u = b.getBody().size();
 
-      //  tabBox.getColumns().addAll(col);
+        for(int i = 0;  i < u; i++)
+        {
+            boxBox.getChildren().add(new Label(b.getBody().get(i)));
+        }
 
     }
 }
