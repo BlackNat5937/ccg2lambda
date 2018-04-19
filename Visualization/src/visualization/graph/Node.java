@@ -8,6 +8,7 @@ public class Node{
     private NodeType nodeType;
     private ArrayList<Link> links = new ArrayList<>();
     private int x, y;
+    private boolean visited;
 
     public Node(String label, NodeType nodeType){
         this.label = label;
@@ -63,5 +64,13 @@ public class Node{
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 }
