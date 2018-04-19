@@ -110,14 +110,14 @@ public class outputController {
         }
     }
 
-    private TitledPane initGraph(String formula, Graph g){
+    private TitledPane initGraph(String formula){
         TitledPane loadedPane = null;
-        GraphController gCon = null;
+        Parametrable<String> gCon = null;
         FXMLLoader graphLoader = new FXMLLoader(getClass().getResource("../view/graph.fxml"));
         try {
             loadedPane = graphLoader.load();
             gCon = graphLoader.getController();
-            gCon.initData(formula,g);
+            gCon.initData(formula);
             graphCont.getChildren().add(loadedPane);
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,7 +127,9 @@ public class outputController {
 
     private TitledPane initBox(String formula) {
         TitledPane loadedPane = null;
-        boxController bCon = null;
+        Parametrable<String> bCon = null;
+        System.out.println("box insertion");
+
         FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
         try {
             loadedPane = boxLoader.load();
@@ -156,27 +158,8 @@ public class outputController {
 
 
         for(String s : listFormula){
-            Graph g = new Graph();
-            System.out.println(s);
-            String parsedFormula[] = s.split("&");
-            for(String ss : parsedFormula){
-                System.out.println(ss);
-                if(ss.contains("exists")){
-                    String variable = "";
-                    int i = 7;
-                    Character tmp = ss.charAt(i);
-                    while(!tmp.equals('.')){
-                        variable += tmp;
-                        i++;
-                        tmp = ss.charAt(i);
-                    }
-                    System.out.println(variable);
-                    Node node = new Node(variable, NodeType.VARIABLE);
-                    g.getNodes().add(node);
-                }
-            }
 
-            initGraph(s, g);
+            initGraph(s);
             //graphCont.getChildren().add(g.generateCanvas());
         }
     }

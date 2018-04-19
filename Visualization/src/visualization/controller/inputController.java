@@ -64,6 +64,9 @@ public class inputController {
         visualizationProgressBar.progressProperty().bindBidirectional(progress);
     }
 
+    /**
+     * For first time program is launch, install the virtual environment for python
+     */
     private boolean firstTime;
 
     /**
