@@ -30,8 +30,7 @@ public class Graph {
      * generate a canvas with the graphic representation of the graph
      * @return canvas
      */
-    public Canvas generateCanvas() {
-        Canvas c = new Canvas(400, 400);
+    public void generateCanvas(Canvas c) {
         GraphicsContext gc = c.getGraphicsContext2D();
         int cpt = 0;
 
@@ -60,7 +59,6 @@ public class Graph {
                 }
             }
         }
-        return c;
     }
 
     public void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2){
