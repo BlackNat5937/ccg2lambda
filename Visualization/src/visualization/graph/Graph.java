@@ -87,7 +87,7 @@ public class Graph {
                 gc.strokeLine(x2,y2,x2+5,y2+5);
             }
         }
-        else if (midX < 0 && midY < 0){
+        else if (midX < 0 && midY <= 0){
             if((midX*midX) >= (midY*midY)){
                 gc.strokeLine(x2,y2,x2+5,y2-5);
                 gc.strokeLine(x2,y2,x2+5,y2+5);
