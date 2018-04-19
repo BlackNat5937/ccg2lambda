@@ -3,9 +3,13 @@ package visualization.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -13,14 +17,19 @@ import visualization.Tools;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
+import visualization.graph.Graph;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
 
-import visualization.graph.Graph;
+import java.io.IOException;
 import java.util.List;
 
 public class outputController {
 
+    @FXML
+    public Pane container;
+    @FXML
+    public VBox cont;
     /**
      * Graph
      */
@@ -98,10 +107,33 @@ public class outputController {
 
         int u = b.getBody().size();
 
-        for(int i = 0;  i < u; i++)
-        {
+        for (int i = 0; i < u; i++) {
             tabBox.getChildren().add(new Label(b.getBody().get(i)));
         }
 
+        for (String s : listFormula) {
+            initBox(s);
+        }
+    }
+
+    private TitledPane initBox(String formula) {
+        System.out.println("init box");
+        TitledPane loadedPane = null;
+        boxController bCon = null;
+        System.out.println("box insertion");
+        FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
+        try {
+            System.out.println("loader created");
+            loadedPane = boxLoader.load();
+            bCon = boxLoader.getController();
+            bCon.initData(formula);
+            cont.getChildren().add(loadedPane);
+            System.out.println("box inserted");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("er");
+        }
+        System.out.println("box insertion end");
+        return loadedPane;
     }
 }
