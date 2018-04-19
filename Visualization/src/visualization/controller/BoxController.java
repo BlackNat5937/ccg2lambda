@@ -28,7 +28,8 @@ public class BoxController implements Parametrable<String> {
         parseFormula();
 
         for (String token : tokens) {
-            token = token.substring(1);
+            if (token.length() > 1)
+                token = token.substring(1);
             Text display = new Text(token);
             contentContainer.getChildren().add(display);
         }
