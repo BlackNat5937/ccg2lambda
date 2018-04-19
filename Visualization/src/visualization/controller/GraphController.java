@@ -42,17 +42,14 @@ public class GraphController implements Parametrable<String>{
 
                 //add the node on which the variable point
                 // exists z1.(_park(z1)) ; 3 to go grom . to p
-                tmp = ss.charAt(i);
                 variable = "";
-                while(!tmp.equals('_')){
+                while(!((Character)ss.charAt(i)).equals('_')){
                     i++;
-                    tmp = ss.charAt(i);
                 }
                 i++;
-                while(Character.isLetter(tmp)){
-                    variable += tmp;
+                while(Character.isLetter(ss.charAt(i))){
+                    variable += ss.charAt(i);
                     i++;
-                    tmp = ss.charAt(i);
                 }
 
 
@@ -66,7 +63,22 @@ public class GraphController implements Parametrable<String>{
             if(ss.matches(".*_\\w+\\(.*") && !ss.contains("exists")){
 
                 System.out.println("EVENT :" + ss);
+                int i = 0;
+                String event = "";
+                while(!((Character)ss.charAt(i)).equals('_')){
+                    i++;
+                }
+                i++;
+                while(Character.isLetter(ss.charAt(i))){
+                    System.out.println(ss.charAt(i));
+                    event += ss.charAt(i);
+                    i++;
+                }
 
+                System.out.println("Event tag : " + event);
+
+                Node nodeEvent = new Node(event,NodeType.VARIABLE);
+                g.getNodes().add(nodeEvent);
             }
 
         }
