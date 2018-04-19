@@ -41,11 +41,11 @@ public class BoxController implements Parametrable<String> {
     /**
      * The formula output by ccg2lambda.
      */
-    private String formula;
+    private String formula = "";
     /**
      * The header of the box.
      */
-    private String header;
+    private String header = "";
     /**
      * The content of the box, line by line.
      */
@@ -89,8 +89,9 @@ public class BoxController implements Parametrable<String> {
      * Creates the content of the box by using the tokens.
      */
     private void createContent() {
+        List<String> variables = new ArrayList<>();
         for (String token : tokens) {
-            if (token.length() > 1)
+            if (token.length() > 1 && token.charAt(0) == '_')
                 token = token.substring(1);
             Text display = new Text(token);
             contentContainer.getChildren().add(display);
@@ -105,7 +106,13 @@ public class BoxController implements Parametrable<String> {
         StringBuilder sb = new StringBuilder(header);
         List<String> used = new ArrayList<>();
         for (String token : tokens) {
-            sb.append(token);
+            if (variableName.matcher(token).find()) {
+                sb.append(token);
+                used.add(token);
+            }
+            sb.append(1);
         }
+        header = sb.toString();
+        box.setText(header);
     }
 }
