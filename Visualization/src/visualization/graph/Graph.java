@@ -36,7 +36,7 @@ public class Graph {
         int cpt = 0;
 
 
-       // setPosNodes(nodes.get(0), true, 0);
+        setPosNodes(nodes.get(0), true, 0);
 
 
         /**
@@ -44,8 +44,8 @@ public class Graph {
          */
         for (Node n : nodes) {
 
-                n.setX((cpt % 8) * 100);
-              n.setY(20);
+            //      n.setX((cpt % 8) * 100);
+            //  n.setY(20);
             cpt++;
 
         }
@@ -54,7 +54,20 @@ public class Graph {
          * fill the rects
          */
         for (Node n : nodes) {
-            gc.setFill(Color.GREEN);
+            switch (n.getNodeType()) {
+                case NOUN:
+                    gc.setFill(Color.RED);
+                    break;
+                case EVENT:
+                    gc.setFill(Color.BLUE);
+                    break;
+                case VARIABLE:
+                    gc.setFill(Color.GREEN);
+                    break;
+                default:
+                    gc.setFill(Color.GREEN);
+                    break;
+            }
             gc.fillRect(n.getX(), n.getY(), 20, 20);
             gc.setFill(Color.BLACK);
             gc.fillText(n.getLabel(), n.getX(), n.getY());
@@ -99,7 +112,7 @@ public class Graph {
             biggest.setX(0);
             biggest.setY(20);
             biggest.setVisited(true);
-            setPosNodes(biggest, false, cpt+1);
+            setPosNodes(biggest, false, cpt + 1);
 
         } else {
             /**
@@ -133,12 +146,12 @@ public class Graph {
 
             if (!(biggest == null)) {
 
-                biggest.setX((cpt % 8)*50);
-                biggest.setY((cpt % 8)*50);
+                biggest.setX((cpt % 8) * 50);
+                biggest.setY((cpt % 8) * 50);
 
                 biggest.setVisited(true);
 
-                setPosNodes(biggest, false, cpt+1);
+                setPosNodes(biggest, false, cpt + 1);
             }
 
         }
