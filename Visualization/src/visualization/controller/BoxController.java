@@ -41,7 +41,8 @@ public class BoxController implements Parametrable<String> {
         do {
             String token;
             token = sc.findInLine(boxTokenMatcher);
-            tokens.add(token);
+            if (token != null)
+                tokens.add(token);
             sc.next();
         } while (sc.hasNext());
         return tokens;
