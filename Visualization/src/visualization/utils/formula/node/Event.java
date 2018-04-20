@@ -31,6 +31,15 @@ public class Event extends BaseNode {
     }
 
     /**
+     * Get the actors for this event.
+     *
+     * @return a List of the actors taking part in this event
+     */
+    public List<Actor> getActors() {
+        return actors;
+    }
+
+    /**
      * Converts an event to a String.
      *
      * @return a String containing a representation similar to the one found in the lambda.

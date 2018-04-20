@@ -3,7 +3,11 @@ package visualization.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import visualization.utils.formula.Formula;
+import visualization.utils.formula.node.Actor;
+import visualization.utils.formula.node.Conjunction;
+import visualization.utils.formula.node.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +21,15 @@ import java.util.List;
  */
 public class BoxController implements Parametrable<String> {
     /**
-     * Container for the content of the box.
-     */
-    @FXML
-    public VBox contentContainer;
-    /**
      * Box structure. Contains the title.
      */
     @FXML
     private TitledPane box;
+    /**
+     * Container for the content of the box.
+     */
+    @FXML
+    public VBox contentContainer;
     /**
      * The formula output by ccg2lambda.
      */
@@ -33,7 +37,7 @@ public class BoxController implements Parametrable<String> {
     /**
      * The header of the box.
      */
-    private String header = "";
+    private StringBuilder header = new StringBuilder();
     /**
      * The contents of the box. One entry=one line.
      */
@@ -52,14 +56,38 @@ public class BoxController implements Parametrable<String> {
     }
 
     /**
-     * Creates the content of the box by using the tokens.
+     * Creates the content of the box by using the formula.
      */
     private void createContent() {
+        for (Actor actor : formula.getActors().values()) {
+            boxContent.add(actor.toString());
+        }
+        for (Event event : formula.getEvents().values()) {
+            boxContent.add(event.getName() + '(' + event.getId() + ')');
+            boxContent.add(event.toString().substring(5, event.toString().length() - 1));
+        }
+        for (Conjunction conjunction : formula.getConjunctions().values()) {
+            boxContent.add(conjunction.toString());
+        }
+        for (String s : boxContent) {
+            Text display = new Text(s);
+            contentContainer.getChildren().add(display);
+        }
     }
 
     /**
-     * Creates the header of the box by using the tokens.
+     * Creates the header of the box by using the formula.
      */
     private void createHeader() {
+        for (String s : formula.getActors().keySet()) {
+            header.append(s).append(' ');
+        }
+        for (String s : formula.getEvents().keySet()) {
+            header.append(s).append(' ');
+        }
+        for (String s : formula.getConjunctions().keySet()) {
+            header.append(s).append(' ');
+        }
+        box.setText(header.toString());
     }
 }

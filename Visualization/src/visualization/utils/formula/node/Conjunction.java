@@ -23,6 +23,15 @@ public class Conjunction extends BaseNode {
     }
 
     /**
+     * Gets the nodes for this conjunction.
+     *
+     * @return a List of the nodes joined by this conjunction
+     */
+    public List<FormulaNode> getJoined() {
+        return joined;
+    }
+
+    /**
      * Converts a conjunction to a String.
      *
      * @return a String containing a representation close to one found in the lambda.
