@@ -48,6 +48,10 @@ public class Graph {
 
         }
 
+
+        setPosNodes(null, true, 0);
+
+
         /**
          * fill the rects
          */
@@ -89,16 +93,141 @@ public class Graph {
         }
     }
 
-    public void setPosNodes(Node visit, boolean first, int cpt) {
-        Node biggest = null;
+    private void setPosNodes(Node root, boolean first, int line) {
+        int jumpY = 60;
         /**
-         * for first time entering, no node is the biggest
+         * for first time entering, find the root
          */
         if (first) {
             for (Node n : nodes) {
-                /**
-                 * if first time, take the first
-                 */
+
+                if (root == null) {
+                    root = n;
+                }
+
+                if (n.getLinks().size() > root.getLinks().size()) {
+                    root = n;
+                }
+            }
+            /**
+             * set the pos of the root
+             */
+
+            System.out.println("in first, root :" + root);
+
+            root.setX(50);
+            root.setY(10);
+            line++;
+            root.setVisited(true);
+            switch (root.getLinks().size()) {
+                case 1:
+                    root.getLinks().get(0).getDestination().setX(50);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+                    break;
+                case 2:
+                    root.getLinks().get(0).getDestination().setX(25);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
+                    root.getLinks().get(1).getDestination().setX(75);
+                    root.getLinks().get(1).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
+                    break;
+                case 3:
+                    root.getLinks().get(0).getDestination().setX(15);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
+                    root.getLinks().get(1).getDestination().setX(50);
+                    root.getLinks().get(1).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
+
+                    root.getLinks().get(2).getDestination().setX(85);
+                    root.getLinks().get(2).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(2).getDestination(), false, line + 1);
+                    break;
+            }
+
+
+
+        }
+        /**
+         * when not first line
+         */
+        else {
+            root.setVisited(true);
+            switch (root.getLinks().size()) {
+                case 0:
+                    System.out.println("node no branch, root :" + root);
+                    break;
+                case 1:
+                    root.getLinks().get(0).getDestination().setX(50);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+                    break;
+                case 2:
+                    root.getLinks().get(0).getDestination().setX(25);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
+
+                    root.getLinks().get(1).getDestination().setX(75);
+                    root.getLinks().get(1).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
+                    break;
+                case 3:
+                    root.getLinks().get(0).getDestination().setX(15);
+                    root.getLinks().get(0).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
+                    root.getLinks().get(1).getDestination().setX(50);
+                    root.getLinks().get(1).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
+
+                    root.getLinks().get(2).getDestination().setX(85);
+                    root.getLinks().get(2).getDestination().setY(jumpY * line);
+                    setPosNodes(root.getLinks().get(2).getDestination(), false, line + 1);
+                    break;
+            }
+
+            System.out.println("in not first, root : "+ root);
+        }
+
+
+        for (Node n : nodes) {
+
+           if(!n.isVisited())
+           {
+               System.out.println("n not visited :" + n);
+               for(int i = 0; i < n.getLinks().size(); i++)
+               {
+                   n.setX(n.getLinks().get(i).getDestination().getX());
+                    n.setY(n.getLinks().get(i).getDestination().getY()+jumpY*line);
+               }
+/**
+ * problème avec park parce que pas lien avec lui, retravailler les liens obligatoires
+ */
+           }
+
+        }
+
+
+
+    }
+
+
+
+/*    public void setPosNodes(Node visit, boolean first, int cpt, int cptEvent, int cptVariable) {
+        Node biggest = null;
+        *//**
+     * for first time entering, no node is the biggest
+     *//*
+        if (first) {
+            for (Node n : nodes) {
+                *//**
+     * if first time, take the first
+     *//*
                 if (biggest == null) {
                     biggest = n;
                 }
@@ -107,28 +236,33 @@ public class Graph {
                     biggest = n;
                 }
             }
+
+            System.out.println("biggest " + cpt + " : " + biggest);
+
             biggest.setX(0);
             biggest.setY(20);
             biggest.setVisited(true);
-            setPosNodes(biggest, false, cpt + 1);
+            setPosNodes(biggest, false, cpt + 1, cptEvent, cptVariable);
 
         } else {
-            /**
-             * when entering, node visited is not put again
-             */
+            *//**
+     * when entering, node visited is not put again
+     *//*
             for (Node n : nodes) {
 
-                /**
-                 *  if the one above, not enter
-                 */
+                *//**
+     *  if the one above, not enter
+     *//*
                 if (!n.equals(visit)) {
-                    /**
-                     * if already visited, not enter
-                     */
+                    *//**
+     * if already visited, not enter
+     *//*
                     if (!n.isVisited()) {
-                        /**
-                         * if first time, take the first
-                         */
+                        */
+
+    /**
+     * if first time, take the first
+     *//*
                         if (biggest == null) {
                             biggest = n;
                         }
@@ -144,24 +278,34 @@ public class Graph {
 
             if (!(biggest == null)) {
 
-                biggest.setX((cpt % 8) * 50);
-                biggest.setY((cpt % 8) * 50);
+                System.out.println("biggest " + cpt + " : " + biggest);
 
-                /*
-                if(biggest.getY() > canvas.getHeight()) {
-                    canvas.setHeight(canvas.getHeight() + (biggest.getY() - canvas.getHeight()) + 10);
-                }*/
+                if (biggest.getNodeType() == NodeType.VARIABLE) {
+                    if (cptVariable % 2 != 0) {
+                        biggest.setX((cpt % 8) * 50);
+                        biggest.setY((cpt % 8) * 50 - ((cptVariable % 8) * 50));
+                    } else {
+                        biggest.setX((cpt % 8) * 50);
+                        biggest.setY((cpt % 8) * 50);
+                    }
+
+                    cptVariable++;
+                    biggest.setVisited(true);
+                } else if (biggest.getNodeType() == NodeType.EVENT) {
+
+                    biggest.setX(0 + ((cptEvent % 8) * 30));
+                    biggest.setY((cpt % 8) * 30);
+                    cptEvent++;
+                    biggest.setVisited(true);
+                }
 
 
-                biggest.setVisited(true);
-
-                setPosNodes(biggest, false, cpt + 1);
+                setPosNodes(biggest, false, cpt + 1, cptEvent, cptVariable);
             }
 
         }
 
-    }
-
+    }*/
     public void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2) {
         gc.strokeLine(x1, y1, x2, y2);
         int midX = x2 - x1; //distance between x2 and x1
@@ -202,11 +346,11 @@ public class Graph {
 
     }
 
-    public Node getNodeByLabel(String label){
+    public Node getNodeByLabel(String label) {
         Node res = null;
-        for(Node n : nodes){
-            if(n.getLabel().equals(label)){
-                res =  n;
+        for (Node n : nodes) {
+            if (n.getLabel().equals(label)) {
+                res = n;
             }
         }
         return res;
