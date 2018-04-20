@@ -2,6 +2,10 @@ package visualization.box;
 
 import java.util.ArrayList;
 
+/**
+ * @author Nathan Joubert
+ *
+ */
 public class Box {
     private ArrayList<Element> elements = new ArrayList<Element>();
 

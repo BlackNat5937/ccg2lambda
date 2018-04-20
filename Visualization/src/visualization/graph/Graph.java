@@ -6,6 +6,9 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
+/**
+ * @author Thomas Guesdon
+ */
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<Node>();
 
@@ -93,6 +96,10 @@ public class Graph {
         }
     }
 
+    /**
+     * @author Nathan Joubert
+     * Function to set the position of the node, dependeding of the links
+     */
     private void setPosNodes(Node root, boolean first, int line) {
         int jumpY = 60;
         /**
