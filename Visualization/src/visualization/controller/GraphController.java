@@ -25,17 +25,15 @@ public class GraphController implements Parametrable<String>{
         Graph g = new Graph();
         String parsedFormula[] = formula.split("&");
         for(String ss : parsedFormula){
-            System.out.println(ss);
 
             //all variables
             if(ss.contains("exists")){
                 String variable = "";
-                int i = 7;
+                int i = 8;
                 Character tmp = ss.charAt(i);
-                while(!tmp.equals('.')){
-                    variable += tmp;
+                while(!((Character)ss.charAt(i)).equals('.')){
+                    variable += ss.charAt(i);
                     i++;
-                    tmp = ss.charAt(i);
                 }
                 Node node = new Node(variable, NodeType.VARIABLE);
                 g.getNodes().add(node);
@@ -62,7 +60,6 @@ public class GraphController implements Parametrable<String>{
             //Pattern pattern = Pattern.compile("_\\w+\\(");
             if(ss.matches(".*_\\w+\\(.*") && !ss.contains("exists")){
 
-                System.out.println("EVENT :" + ss);
                 int i = 0;
                 String event = "";
                 while(!((Character)ss.charAt(i)).equals('_')){
@@ -70,15 +67,27 @@ public class GraphController implements Parametrable<String>{
                 }
                 i++;
                 while(Character.isLetter(ss.charAt(i))){
-                    System.out.println(ss.charAt(i));
                     event += ss.charAt(i);
                     i++;
                 }
+                //i is now where there is the variables which the events concern
+                String variables = "";
+                i++;
+                while(!((Character)ss.charAt(i)).equals(')')){
+                    //System.out.println(ss.charAt(i));
+                    variables += ss.charAt(i);
+                    i++;
+                }
+                System.out.println("variables :"  + variables);
+                String variable[] = variables.split(",");
 
-                System.out.println("Event tag : " + event);
-
-                Node nodeEvent = new Node(event,NodeType.VARIABLE);
+                Node nodeEvent = new Node(event,NodeType.EVENT);
+                for(String s : variable){
+                    g.getNodeByLabel(s).addLink(nodeEvent,"event");
+                }
                 g.getNodes().add(nodeEvent);
+                System.out.println(g.toString());
+
             }
 
         }

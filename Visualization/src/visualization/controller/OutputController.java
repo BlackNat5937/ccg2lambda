@@ -58,20 +58,14 @@ public class OutputController {
         listFormulaItems.addAll(listFormula);
         listViewFormula.setItems(listFormulaItems);
 
+        System.out.println(listFormulaItems);
+
         generateGraph();
 
         int v = listFormula.size();
 
 
-        Box b = new Box();
-        Element shark = new Element("x", "shark", ElementType.SUBJECT);
-        Element fish = new Element("z1", "fish", ElementType.NOUN);
-        Element eat = new Element("e1", "eat", ElementType.VERB);
-        eat.addLink(shark, fish);
-        b.getElements().add(shark);
-        b.getElements().add(fish);
-        b.getElements().add(eat);
-        //System.out.println(b.toString());
+        Box b = getBox();
 
 
         tabBox.setPadding(new Insets(10, 50, 50, 50));
@@ -100,6 +94,18 @@ public class OutputController {
         for (String s : listFormula) {
             initBox(s);
         }
+    }
+
+    private Box getBox() {
+        Box b = new Box();
+        Element shark = new Element("x", "shark", ElementType.SUBJECT);
+        Element fish = new Element("z1", "fish", ElementType.NOUN);
+        Element eat = new Element("e1", "eat", ElementType.VERB);
+        eat.addLink(shark, fish);
+        b.getElements().add(shark);
+        b.getElements().add(fish);
+        b.getElements().add(eat);
+        return b;
     }
 
     private TitledPane initGraph(String formula){
