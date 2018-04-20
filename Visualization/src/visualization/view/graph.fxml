@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.Pane?>
 
 <TitledPane fx:id="box" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
    <content>
-      <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+      <ScrollPane fx:id="graphScroll" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <content>
-            <Canvas fx:id="canvas" height="374.0" width="600.0" />
+            <Pane fx:id="testPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
          </content>
       </ScrollPane>
    </content>
