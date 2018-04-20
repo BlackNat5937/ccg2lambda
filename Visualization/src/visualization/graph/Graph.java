@@ -35,9 +35,7 @@ public class Graph {
         GraphicsContext gc = c.getGraphicsContext2D();
         int cpt = 0;
 
-
         setPosNodes(nodes.get(0), true, 0);
-
 
         /**
          * cout node
@@ -148,6 +146,12 @@ public class Graph {
 
                 biggest.setX((cpt % 8) * 50);
                 biggest.setY((cpt % 8) * 50);
+
+                /*
+                if(biggest.getY() > canvas.getHeight()) {
+                    canvas.setHeight(canvas.getHeight() + (biggest.getY() - canvas.getHeight()) + 10);
+                }*/
+
 
                 biggest.setVisited(true);
 

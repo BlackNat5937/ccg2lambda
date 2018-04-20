@@ -140,24 +140,8 @@ public class OutputController {
     }
 
     public void generateGraph(){
-        //exists x.((x=_john) & ( _be(_john) & Prog(_walk(_john)))
-
-        /*Graph g = new Graph();
-        Node test = new Node("test", NodeType.NOUN);
-        Node test2 = new Node("test2", NodeType.EVENT, test, "is a");
-        Node test3 = new Node("test3", NodeType.NOUN);
-        test2.addLink(test3, "le lien");
-        g.getNodes().add(test);
-        g.getNodes().add(test2);
-        g.getNodes().add(test3);
-        System.out.println(g.toString());
-    */
-
-
         for(String s : listFormula){
-
             initGraph(s);
-            //graphCont.getChildren().add(g.generateCanvas());
         }
     }
 }

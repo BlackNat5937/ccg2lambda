@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TitledPane?>
 
-<TitledPane fx:id="box" animated="false" prefHeight="400.0" prefWidth="600.0" text="untitled" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
+<TitledPane fx:id="box" animated="false" prefHeight="400.0" prefWidth="600.0" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
    <content>
-      <Canvas fx:id="canvas" height="197.0" width="598.0" />
+      <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+         <content>
+            <Canvas fx:id="canvas" height="374.0" width="600.0" />
+         </content>
+      </ScrollPane>
    </content>
 </TitledPane>
