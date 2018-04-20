@@ -38,7 +38,6 @@ public class Graph {
         GraphicsContext gc = c.getGraphicsContext2D();
         int cpt = 0;
 
-        setPosNodes(nodes.get(0), true, 0);
 
         /**
          * cout node
@@ -64,7 +63,7 @@ public class Graph {
                     gc.setFill(Color.RED);
                     break;
                 case EVENT:
-                    gc.setFill(Color.BLUE);
+                    gc.setFill(Color.YELLOW);
                     break;
                 case VARIABLE:
                     gc.setFill(Color.GREEN);
@@ -156,70 +155,110 @@ public class Graph {
                     break;
             }
 
+            for (Node n : nodes) {
+
+                if (!n.isVisited()) {
+                    System.out.println("n not visited :" + n);
 
 
+                    for (Link l : n.getLinks()) {
+
+                        if (l.getDestination().isVisited()) {
+
+                            n.setX(l.getDestination().getX());
+                            n.setY(l.getDestination().getY() + jumpY * line);
+
+
+                            System.out.println("---------visited-----------");
+                            System.out.println("n origin : " +l.getOrigin());
+                            System.out.println("n origin X : " + l.getOrigin().getX());
+                            System.out.println("n origin Y :" + l.getOrigin().getY());
+
+                            System.out.println("n : " +n);
+                            System.out.println("n X : " + n.getX());
+                            System.out.println("n Y :" + n.getY());
+
+                            System.out.println("n destination : " + l.getDestination());
+
+                            System.out.println("n destination X : " +  l.getDestination().getX());
+                            System.out.println("n destination y : " +  l.getDestination().getY());
+                        }
+                        else  if (!(l.getDestination().isVisited()))
+                        {
+
+                            //n.setX(l.getDestination().getX());
+                            n.setY(l.getOrigin().getY() + jumpY * line);
+
+                            l.getDestination().setX(n.getX());
+                            l.getDestination().setY(n.getY() + jumpY * line);
+
+                            System.out.println("---------NOT visited-----------");
+                            System.out.println("n origin : " +l.getOrigin());
+                            System.out.println("n origin X : " + l.getOrigin().getX());
+                            System.out.println("n origin Y :" + l.getOrigin().getY());
+
+                            System.out.println("n : " +n);
+                            System.out.println("n X : " + n.getX());
+                            System.out.println("n Y :" + n.getY());
+
+                            System.out.println("n destination : " + l.getDestination());
+
+                            System.out.println("n destination X : " +  l.getDestination().getX());
+                            System.out.println("n destination y : " +  l.getDestination().getY());
+                        }
+                    }
+                    n.setVisited(true);
+
+/**
+ * problème avec park parce que pas lien avec lui, retravailler les liens obligatoires
+ */
+                }
+
+            }
         }
         /**
          * when not first line
          */
-        else {
+        else if (!first) {
             root.setVisited(true);
             switch (root.getLinks().size()) {
                 case 0:
-                    System.out.println("node no branch, root :" + root);
+                    // System.out.println("node no branch, root :" + root);
                     break;
                 case 1:
                     root.getLinks().get(0).getDestination().setX(50);
                     root.getLinks().get(0).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
                     break;
                 case 2:
                     root.getLinks().get(0).getDestination().setX(25);
                     root.getLinks().get(0).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
 
-
                     root.getLinks().get(1).getDestination().setX(75);
                     root.getLinks().get(1).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
+
                     break;
                 case 3:
                     root.getLinks().get(0).getDestination().setX(15);
                     root.getLinks().get(0).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
 
+
                     root.getLinks().get(1).getDestination().setX(50);
                     root.getLinks().get(1).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(1).getDestination(), false, line + 1);
 
+
                     root.getLinks().get(2).getDestination().setX(85);
                     root.getLinks().get(2).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(2).getDestination(), false, line + 1);
+
                     break;
             }
-
-            System.out.println("in not first, root : "+ root);
-        }
-
-
-        for (Node n : nodes) {
-
-           if(!n.isVisited())
-           {
-               System.out.println("n not visited :" + n);
-               for(int i = 0; i < n.getLinks().size(); i++)
-               {
-                   n.setX(n.getLinks().get(i).getDestination().getX());
-                    n.setY(n.getLinks().get(i).getDestination().getY()+jumpY*line);
-               }
-/**
- * problème avec park parce que pas lien avec lui, retravailler les liens obligatoires
- */
-           }
-
-        }
-
-
+   }
 
     }
 
