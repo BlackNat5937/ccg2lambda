@@ -74,11 +74,9 @@ public class GraphController implements Parametrable<String>{
                 String variables = "";
                 i++;
                 while(!((Character)ss.charAt(i)).equals(')')){
-                    //System.out.println(ss.charAt(i));
                     variables += ss.charAt(i);
                     i++;
                 }
-                System.out.println("variables :"  + variables);
                 String variable[] = variables.split(",");
 
                 Node nodeEvent = new Node(event,NodeType.EVENT);
@@ -86,7 +84,6 @@ public class GraphController implements Parametrable<String>{
                     g.getNodeByLabel(s).addLink(nodeEvent,"event");
                 }
                 g.getNodes().add(nodeEvent);
-                System.out.println(g.toString());
 
             }
 
