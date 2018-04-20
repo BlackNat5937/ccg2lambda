@@ -3,11 +3,11 @@ package visualization.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -49,7 +49,7 @@ public class BoxController implements Parametrable<String> {
     /**
      * The content of the box, line by line.
      */
-    private List<String> tokens = new ArrayList<>();
+    private Map<String, String> tokens = new HashMap<>();
 
     /**
      * Initializes the data for this box. Parses the formula, and creates content and header.
@@ -68,41 +68,61 @@ public class BoxController implements Parametrable<String> {
      * Parses the formula and creates the tokens.
      */
     private void parseFormula() {
+        Pattern varNamePattern = Pattern.compile("_\\w+");
+        Pattern varIdPattern = Pattern.compile("(\\w+\\.)|(\\w+,\\w+)");
+
+        String token;
+        String varId;
+        String varName;
+
+        int eventNumber = 0;
+
         Scanner sc = new Scanner(formula);
-        Scanner sc2 = new Scanner(formula);
         sc.useDelimiter("&");
-        sc2.useDelimiter("&");
         do {
-            String token, tokenBis;
-            token = sc.findInLine(boxTokenMatcher);
-            tokenBis = sc2.findInLine(boxTokenMatcherBis);
-            if (token != null)
-                tokens.add(token);
-            if (tokenBis != null)
-                tokens.add(tokenBis);
-            sc.next();
-            sc2.next();
-        } while (sc.hasNext() && sc.hasNext());
+            token = sc.next();
+            if ("&".equals(token)) {
+            } else if (token.matches(".*exists \\w+\\..*")) {
+                Matcher m = varIdPattern.matcher(token);
+                Matcher n = varNamePattern.matcher(token);
+                if (m.find() && n.find()) {
+                    varId = m.group();
+                    varId = varId.substring(0, varId.length() - 1);
+                    varName = n.group().substring(1);
+
+                    tokens.put(varId, varName);
+                }
+            } else if (token.matches(".*Prog\\(.*")) {
+                Matcher m = varNamePattern.matcher(token);
+                if (m.find()) {
+                    varName = m.group();
+                    varId = "e" + eventNumber;
+                    eventNumber++;
+
+                    tokens.put(varId, varName);
+                }
+            }
+        } while (sc.hasNext());
     }
 
     /**
      * Creates the content of the box by using the tokens.
      */
     private void createContent() {
-        List<String> variables = new ArrayList<>();
+        /*List<String> variables = new ArrayList<>();
         for (String token : tokens) {
             if (token.length() > 1 && token.charAt(0) == '_')
                 token = token.substring(1);
             Text display = new Text(token);
             contentContainer.getChildren().add(display);
-        }
+        }*/
     }
 
     /**
      * Creates the header of the box by using the tokens.
      */
     private void createHeader() {
-        Pattern variableName = Pattern.compile("\\(\\w+\\)");
+        /*Pattern variableName = Pattern.compile("\\(\\w+\\)");
         StringBuilder sb = new StringBuilder(header);
         List<String> used = new ArrayList<>();
         for (String token : tokens) {
@@ -113,6 +133,6 @@ public class BoxController implements Parametrable<String> {
             sb.append(1);
         }
         header = sb.toString();
-        box.setText(header);
+        box.setText(header);*/
     }
 }

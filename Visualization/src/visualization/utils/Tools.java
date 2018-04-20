@@ -1,4 +1,4 @@
-package visualization;
+package visualization.utils;
 
 import com.sun.istack.internal.NotNull;
 import org.w3c.dom.Document;

@@ -12,10 +12,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import visualization.Tools;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
+import visualization.utils.Tools;
 
 import java.io.IOException;
 import java.util.List;

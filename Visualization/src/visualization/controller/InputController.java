@@ -10,7 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import visualization.Tools;
+import visualization.utils.Tools;
 
 import java.io.*;
 import java.util.Objects;
