@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Represents a formula output by ccg2lambda.
+ * @author Gaétan Basile
  */
 public class Formula {
     /**

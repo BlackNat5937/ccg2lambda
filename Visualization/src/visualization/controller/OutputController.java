@@ -25,7 +25,7 @@ public class OutputController {
     @FXML
     public Pane container;
     @FXML
-    public VBox cont;
+    public VBox boxCont;
     /**
      * Graph
      */
@@ -60,7 +60,7 @@ public class OutputController {
 
         System.out.println(listFormulaItems);
 
-        generateGraph();
+        //generateGraph();
 
         int v = listFormula.size();
 
@@ -92,7 +92,13 @@ public class OutputController {
         }
 
         for (String s : listFormula) {
-            initBox(s);
+            TitledPane boxPane = initBox(s);
+            //TitledPane graphPane = initGraph(s);
+            boxCont.getChildren().addAll(
+                    boxPane
+                    //        graphPane
+            );
+
         }
     }
 
@@ -108,18 +114,26 @@ public class OutputController {
         return b;
     }
 
-    private TitledPane initGraph(String formula){
+    private TitledPane getLoadedPane(String formula, String viewPath) {
         TitledPane loadedPane = null;
-        Parametrable<String> gCon = null;
-        FXMLLoader graphLoader = new FXMLLoader(getClass().getResource("../view/graph.fxml"));
+        Parametrable<String> stringParametrable;
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(viewPath));
+
         try {
-            loadedPane = graphLoader.load();
-            gCon = graphLoader.getController();
-            gCon.initData(formula);
-            graphCont.getChildren().add(loadedPane);
+            loadedPane = fxmlLoader.load();
+            stringParametrable = fxmlLoader.getController();
+            stringParametrable.initData(formula);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return loadedPane;
+    }
+
+    private TitledPane initGraph(String formula) {
+        TitledPane loadedPane = null;
+        Parametrable<String> gCon = null;
+
+        loadedPane = getLoadedPane(formula, "../view/graph.fxml");
         return loadedPane;
     }
 
@@ -127,20 +141,12 @@ public class OutputController {
         TitledPane loadedPane = null;
         Parametrable<String> bCon = null;
 
-        FXMLLoader boxLoader = new FXMLLoader(getClass().getResource("../view/box.fxml"));
-        try {
-            loadedPane = boxLoader.load();
-            bCon = boxLoader.getController();
-            bCon.initData(formula);
-            cont.getChildren().add(loadedPane);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadedPane = getLoadedPane(formula, "../view/box.fxml");
         return loadedPane;
     }
 
-    public void generateGraph(){
-        for(String s : listFormula){
+    public void generateGraph() {
+        for (String s : listFormula) {
             initGraph(s);
         }
     }
