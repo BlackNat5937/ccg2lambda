@@ -162,14 +162,37 @@ public class Graph {
 
 
                     for (Link l : n.getLinks()) {
-                        if (!l.getDestination().isVisited()) {
 
-                            n.setX(l.getOrigin().getX());
+                        if (l.getDestination().isVisited()) {
+
+                            n.setX(l.getDestination().getX());
+                            n.setY(l.getDestination().getY() + jumpY * line);
+
+
+                            System.out.println("---------visited-----------");
+                            System.out.println("n origin : " +l.getOrigin());
+                            System.out.println("n origin X : " + l.getOrigin().getX());
+                            System.out.println("n origin Y :" + l.getOrigin().getY());
+
+                            System.out.println("n : " +n);
+                            System.out.println("n X : " + n.getX());
+                            System.out.println("n Y :" + n.getY());
+
+                            System.out.println("n destination : " + l.getDestination());
+
+                            System.out.println("n destination X : " +  l.getDestination().getX());
+                            System.out.println("n destination y : " +  l.getDestination().getY());
+                        }
+                        else  if (!(l.getDestination().isVisited()))
+                        {
+
+                            //n.setX(l.getDestination().getX());
                             n.setY(l.getOrigin().getY() + jumpY * line);
 
                             l.getDestination().setX(n.getX());
                             l.getDestination().setY(n.getY() + jumpY * line);
 
+                            System.out.println("---------NOT visited-----------");
                             System.out.println("n origin : " +l.getOrigin());
                             System.out.println("n origin X : " + l.getOrigin().getX());
                             System.out.println("n origin Y :" + l.getOrigin().getY());
@@ -206,6 +229,7 @@ public class Graph {
                     root.getLinks().get(0).getDestination().setX(50);
                     root.getLinks().get(0).getDestination().setY(jumpY * line);
                     setPosNodes(root.getLinks().get(0).getDestination(), false, line + 1);
+
                     break;
                 case 2:
                     root.getLinks().get(0).getDestination().setX(25);
@@ -234,22 +258,7 @@ public class Graph {
 
                     break;
             }
-            for (Link l : root.getLinks()) {
-            System.out.println("n origin : " +l.getOrigin());
-            System.out.println("n origin X : " + l.getOrigin().getX());
-            System.out.println("n origin Y :" + l.getOrigin().getY());
-
-            System.out.println("n : " +root);
-            System.out.println("n X : " + root.getX());
-            System.out.println("n Y :" + root.getY());
-
-            System.out.println("n destination : " + l.getDestination());
-
-            System.out.println("n destination X : " +  l.getDestination().getX());
-            System.out.println("n destination y : " +  l.getDestination().getY());
-
-            //   System.out.println("in not first, root : " + root);
-        }}
+   }
 
     }
 

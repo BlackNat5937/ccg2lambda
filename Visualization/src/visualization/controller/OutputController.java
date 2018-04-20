@@ -89,7 +89,7 @@ public class OutputController {
                 "-fx-border-radius: 5;" +
                 "-fx-border-color: black;";
 
-        tabBox.setStyle(cssLayout);
+       // tabBox.setStyle(cssLayout);
 
         Label lb1 = new Label(b.getTitle());
         lb1.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
