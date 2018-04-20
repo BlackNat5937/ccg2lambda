@@ -1,8 +1,11 @@
 package visualization.utils.formula;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import visualization.utils.formula.node.Actor;
+import visualization.utils.formula.node.BaseNode;
+import visualization.utils.formula.node.Conjunction;
+import visualization.utils.formula.node.Event;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,15 +36,15 @@ public class Formula {
     /**
      * The actors of this formula. They are the ones to initiate or to endure events.
      */
-    private Map<String, String> actors = new HashMap<>();
+    private Map<String, Actor> actors = new HashMap<>();
     /**
      * The events of this formula. They represent actions and have effect on the actors.
      */
-    private Map<String, String> events = new HashMap<>();
+    private Map<String, Event> events = new HashMap<>();
     /**
      * The conjunctions of this formula. They link other items or provide additionnal info (time, place...)
      */
-    private Map<String, String> conjunctions = new HashMap<>();
+    private Map<String, Conjunction> conjunctions = new HashMap<>();
 
     /**
      * Private constructor for a formula, they must be created using the static parse method.
@@ -73,51 +76,91 @@ public class Formula {
         String varName;
 
         int eventNumber = 0;
+        int conjunctionNumber = 0;
 
         Scanner sc = new Scanner(formula);
         sc.useDelimiter("&");
         do {
             token = sc.next();
             // if the token is a &, do not do anything
-            if ("&".equals(token)) {
-            }
-            // if the token is an actor declaration, add it to the actors map
-            else if (token.matches(".*exists \\w+\\..*")) {
-                Matcher m = varIdPattern.matcher(token);
-                Matcher n = varNamePattern.matcher(token);
-                if (m.find() && n.find()) {
-                    varId = m.group();
-                    varId = varId.substring(0, varId.length() - 1);
-                    varName = n.group().substring(1);
+            if (!"&".equals(token)) {
+                // if the token is an actor declaration, add it to the actors map
+                if (token.matches(".*exists \\w+\\..*")) {
+                    Matcher m = varIdPattern.matcher(token);
+                    Matcher n = varNamePattern.matcher(token);
+                    if (m.find() && n.find()) {
+                        varId = m.group();
+                        varId = varId.substring(0, varId.length() - 1);
+                        varName = n.group().substring(1);
 
-                    newFormula.actors.put(varId, varName);
+                        newFormula.actors.put(varId, new Actor(varId, varName));
+                    }
                 }
-            }
-            // if the token is an event, add it to the events map
-            else if (token.matches(".*Prog\\(.*")) {
-                Matcher m = varNamePattern.matcher(token);
-                if (m.find()) {
-                    varName = m.group().substring(1);
-                    varId = "e" + eventNumber;
-                    eventNumber++;
+                // if the token is an event, add it to the events map
+                else if (token.matches(".*Prog\\(.*")) {
+                    Matcher m = varNamePattern.matcher(token);
+                    Matcher n = varIdPattern.matcher(token);
+                    String actorId;
 
-                    newFormula.events.put(varId, varName);
+                    if (m.find() && n.find()) {
+                        varName = m.group().substring(1);
+                        varId = "e" + eventNumber;
+                        actorId = n.group();
+                        actorId = actorId.substring(1, actorId.length() - 1);
+                        // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
+                        if (actorId.startsWith("_")) {
+                            actorId = newFormula.getActorByName(actorId.substring(1));
+                        }
+                        eventNumber++;
+
+                        newFormula.events.put(varId, new Event(varId, varName, newFormula.actors.get(actorId)));
+                    }
                 }
-            }
-            // if it is not anything else, then it is a conjunction, we need to add it to the conjunctions map
-            else {
-                Matcher m = varNamePattern.matcher(token);
-                Matcher n = varIdPattern.matcher(token);
-                if (m.find() && n.find()) {
-                    varName = m.group().substring(1);
-                    varId = n.group();
-                    varId = varId.substring(1, varId.length() - 1);
+                // if it is not anything else, then it is a conjunction, we need to add it to the conjunctions map
+                else {
+                    String joinedId;
+                    Matcher m = varNamePattern.matcher(token);
+                    Matcher n = varIdPattern.matcher(token);
 
-                    newFormula.conjunctions.put(varId, varName);
+                    if (m.find() && n.find()) {
+                        varName = m.group().substring(1);
+                        varId = "c" + conjunctionNumber;
+
+                        joinedId = n.group();
+                        joinedId = joinedId.substring(1, joinedId.length() - 1);
+                        String[] ids = joinedId.split(",");
+                        List<Actor> joined = new ArrayList<>();
+                        for (String id : ids) {
+                            if (!(id.startsWith("e") || id.startsWith("c"))) {
+                                // if the id stats with "_" then it is a proper noun and we have to search for it in the map
+                                if (id.startsWith("_")) {
+                                    id = newFormula.getActorByName(id.substring(1));
+                                }
+                                // else we just add it to the list of actors joined
+                                joined.add(newFormula.actors.get(id));
+                            }
+                        }
+                        newFormula.conjunctions.put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
+                    }
                 }
             }
         } while (sc.hasNext());
         return newFormula;
+    }
+
+    /**
+     * Get the key to an actor by searching for its name.
+     *
+     * @param name the name of the actor we search for.
+     * @return the key if found; null otherwise
+     */
+    private String getActorByName(String name) {
+        for (Map.Entry<String, Actor> entry : actors.entrySet()) {
+            if (entry.getValue().getName().equals(name)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     /**
@@ -143,7 +186,7 @@ public class Formula {
      *
      * @return a map containing all the actors by id->value
      */
-    public Map<String, String> getActors() {
+    public Map<String, Actor> getActors() {
         return actors;
     }
 
@@ -152,7 +195,7 @@ public class Formula {
      *
      * @return a map containing all the events by actor_executing_the_event->value
      */
-    public Map<String, String> getEvents() {
+    public Map<String, Event> getEvents() {
         return events;
     }
 
@@ -161,7 +204,7 @@ public class Formula {
      *
      * @return a map containing all conjunctions by actors_and_events_whom_this_applies->value
      */
-    public Map<String, String> getConjunctions() {
+    public Map<String, Conjunction> getConjunctions() {
         return conjunctions;
     }
 }
