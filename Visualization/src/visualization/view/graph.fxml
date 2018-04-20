@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TitledPane?>
 
-<TitledPane fx:id="box" animated="false" prefHeight="400.0" prefWidth="600.0" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
+<TitledPane fx:id="box" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
    <content>
       <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <content>

@@ -60,7 +60,7 @@ public class OutputController {
 
         System.out.println(listFormulaItems);
 
-        //generateGraph();
+        generateGraph();
 
         int v = listFormula.size();
 
@@ -93,12 +93,9 @@ public class OutputController {
 
         for (String s : listFormula) {
             TitledPane boxPane = initBox(s);
-            //TitledPane graphPane = initGraph(s);
-            boxCont.getChildren().addAll(
-                    boxPane
-                    //        graphPane
-            );
-
+            TitledPane graphPane = initGraph(s);
+            boxCont.getChildren().add(boxPane);
+            graphCont.getChildren().add(graphPane);
         }
     }
 

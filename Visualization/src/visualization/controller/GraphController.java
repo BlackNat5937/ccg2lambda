@@ -81,7 +81,10 @@ public class GraphController implements Parametrable<String>{
 
                 Node nodeEvent = new Node(event,NodeType.EVENT);
                 for(String s : variable){
-                    g.getNodeByLabel(s).addLink(nodeEvent,"event");
+                    System.out.println(s);
+                    if(g.getNodeByLabel(s) != null){
+                        g.getNodeByLabel(s).addLink(nodeEvent,"event");
+                    }
                 }
                 g.getNodes().add(nodeEvent);
 

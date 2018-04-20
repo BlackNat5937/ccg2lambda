@@ -12,3 +12,5 @@ python $CCG2LAMBDA_LOCATION/scripts/semparse.py $CCG2LAMBDA_LOCATION/sentences.x
 
 
 python $CCG2LAMBDA_LOCATION/scripts/prove.py $CCG2LAMBDA_LOCATION/sentences.sem.xml --graph_out graphdebug.html
+
+python $CCG2LAMBDA_LOCATION/scripts/visualize.py $CCG2LAMBDA_LOCATION/sentences.xml > $CCG2LAMBDA_LOCATION/sentences.html
