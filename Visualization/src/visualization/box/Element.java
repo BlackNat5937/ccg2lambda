@@ -1,5 +1,9 @@
 package visualization.box;
 
+/**
+ * @author Nathan Joubert
+ *
+ */
 public class Element {
     private String label;
     private String realName;

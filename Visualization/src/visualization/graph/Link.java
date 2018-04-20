@@ -1,5 +1,8 @@
 package visualization.graph;
 
+/**
+ * @author Thomas Guesdon
+ */
 public class Link {
 
     private Node origin;
