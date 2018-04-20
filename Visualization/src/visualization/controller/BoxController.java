@@ -3,7 +3,10 @@ package visualization.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-import visualization.utils.Formula;
+import visualization.utils.formula.Formula;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for the view of a formula in DRS notation.
@@ -31,6 +34,10 @@ public class BoxController implements Parametrable<String> {
      * The header of the box.
      */
     private String header = "";
+    /**
+     * The contents of the box. One entry=one line.
+     */
+    private List<String> boxContent = new ArrayList<>();
 
     /**
      * Initializes the data for this box. Parses the formula, and creates content and header.
