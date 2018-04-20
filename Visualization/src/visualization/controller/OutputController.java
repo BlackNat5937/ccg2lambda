@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
@@ -12,18 +13,21 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
 import visualization.utils.Tools;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class OutputController {
 
-    @FXML
-    public Pane container;
     @FXML
     public VBox boxCont;
     /**
@@ -37,6 +41,12 @@ public class OutputController {
      */
     @FXML
     private VBox tabBox = new VBox();
+
+    /**
+     * Tree
+     */
+    @FXML
+    private WebView treeView;
 
     /**
      * Formula
@@ -61,6 +71,7 @@ public class OutputController {
         System.out.println(listFormulaItems);
 
         generateGraph();
+        displayTreeFromHtml();
 
         int v = listFormula.size();
 
@@ -97,6 +108,13 @@ public class OutputController {
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
         }
+    }
+
+    public void displayTreeFromHtml(){
+        final WebEngine webEngine = treeView.getEngine();
+        treeView.setZoom(2.0);
+        webEngine.load(Paths.get("../sentences.html").toUri().toString());
+
     }
 
     private Box getBox() {
