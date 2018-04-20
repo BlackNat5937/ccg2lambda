@@ -1,5 +1,9 @@
 package visualization.box;
 
+/**
+ * @author Nathan Joubert
+ *
+ */
 public class LinkBox {
     private Element verb;
     private Element subject;

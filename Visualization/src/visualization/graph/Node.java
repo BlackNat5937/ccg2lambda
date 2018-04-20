@@ -2,6 +2,9 @@ package visualization.graph;
 
 import java.util.ArrayList;
 
+/**
+ * @author Thomas Guesdon
+ */
 public class Node{
 
     private String label;
