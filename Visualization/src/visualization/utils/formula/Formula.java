@@ -143,6 +143,7 @@ public class Formula {
                     if (m.find() && n.find()) {
                         varName = m.group().substring(1);
                         varId = "c" + conjunctionNumber;
+                        conjunctionNumber++;
 
                         joinedId = n.group();
                         joinedId = joinedId.substring(1, joinedId.length() - 1);
