@@ -21,7 +21,12 @@ import java.util.List;
  */
 public class BoxController implements Parametrable<String> {
     /**
-     * Box structure. Contains the title.
+     * Container box.
+     */
+    @FXML
+    public TitledPane cont;
+    /**
+     * Main box structure. Contains the title.
      */
     @FXML
     private TitledPane box;
@@ -55,6 +60,8 @@ public class BoxController implements Parametrable<String> {
 
         createContent();
         createHeader();
+        box.setDisable(true);
+        cont.setText(formula.getLambda());
     }
 
     /**
