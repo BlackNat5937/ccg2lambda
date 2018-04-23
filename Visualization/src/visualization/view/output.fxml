@@ -34,16 +34,13 @@
         <tabs>
             <Tab fx:id="graphTab" text="Graph">
                <content>
-                   <ScrollPane>
-                       <content>
-                           <VBox fx:id="graphCont" prefHeight="65.0" prefWidth="388.0"/>
-                       </content>
-                   </ScrollPane>
+                   <VBox fx:id="graphCont" prefHeight="65.0" prefWidth="388.0"/>
                </content>
           </Tab>
             <Tab fx:id="boxTab" text="Box">
             <content>
-                <VBox fx:id="boxCont" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0"/>
+                <VBox fx:id="boxCont" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      prefHeight="200.0" prefWidth="100.0"/>
             </content>
           </Tab>
             <Tab fx:id="treeTab" disable="true" text="Tree">
