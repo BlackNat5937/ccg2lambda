@@ -2,7 +2,6 @@ package visualization.controller;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
@@ -20,6 +19,8 @@ import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.FormulaNode;
 
 import java.awt.*;
+import java.awt.geom.*;
+
 
 public class GraphController implements Parametrable<String> {
 
@@ -89,17 +90,31 @@ public class GraphController implements Parametrable<String> {
                 return link.getText();
             }
         });
-        vv.getRenderContext().setEdgeLabelClosenessTransformer(new Transformer<Context<edu.uci.ics.jung.graph.Graph<Node, Link>, Link>, Number>() {
-            @Override
-            public Number transform(Context<edu.uci.ics.jung.graph.Graph<Node, Link>, Link> graphLinkContext) {
-                return 35;
-            }
-        });
+
         //node text
         vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>() {
             @Override
             public String transform(Node node) {
                 return node.getLabel();
+            }
+        });
+
+        vv.getRenderContext().setVertexShapeTransformer(new Transformer<Node, Shape>() {
+            @Override
+            public Shape transform(Node node) {
+                Shape s = null;
+                switch (node.getNodeType()) {
+                    case ACTOR:
+                        s = new Ellipse2D.Double(-10, -10, 20, 20);
+                        break;
+                    case EVENT:
+                        s = new Rectangle(-10, -10, 20, 20);
+                        break;
+                    case CONJUNCTION:
+                        s = new Ellipse2D.Double(-10, -10, 20, 20);
+                        break;
+                }
+                return s;
             }
         });
         //node color
