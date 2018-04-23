@@ -18,7 +18,11 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class OutputController {
-
+    /**
+     * ccg2lambda tree representations tab.
+     */
+    @FXML
+    public Tab treeTab;
     /**
      * Box representations container.
      */
@@ -33,29 +37,16 @@ public class OutputController {
      * ccg2lambda tree representations container.
      */
     @FXML
-    public Tab treeTab;
-
+    private WebView treeCont;
     /**
-     * Box
+     * Lambdas/Base Sentences list.
      */
-    @FXML
-    private VBox tabBox = new VBox();
-
-    /**
-     * Tree
-     */
-    @FXML
-    private WebView treeView;
-
-    /**
-     * Formula
-     */
-    private List<String> listFormula;
+    private List<String[]> lambdaList;
 
     @FXML
-    private ListView<String> listViewFormula;
+    private ListView<String> lambdaListView;
 
-    private ObservableList<String> listFormulaItems = FXCollections.observableArrayList();
+    private ObservableList<String> lambdaListViewItems = FXCollections.observableArrayList();
 
 
     /**
@@ -63,16 +54,19 @@ public class OutputController {
      */
     @FXML
     public void initialize() {
-        listFormula = Tools.getSemanticsFormulas(Tools.xmlSemanticsFile);
-        listFormulaItems.addAll(listFormula);
-        listViewFormula.setItems(listFormulaItems);
+        lambdaList = Tools.getSemanticsFormulas(Main.xmlSemanticsFile);
+        for (String[] strings : lambdaList) {
+            lambdaListViewItems.add(strings[0]);
+        }
+        lambdaListViewItems.addAll();
+        lambdaListView.setItems(lambdaListViewItems);
 
-        System.out.println(listFormulaItems);
+        System.out.println(lambdaListViewItems);
 
         if (Main.applicationMode == Tools.ApplicationModes.UI)
             displayTreeFromHtml();
 
-        for (String s : listFormula) {
+        for (String[] s : lambdaList) {
             TitledPane boxPane = initBox(s);
             TitledPane graphPane = initGraph(s);
             boxPane.setExpanded(false);
@@ -86,13 +80,13 @@ public class OutputController {
 
     public void displayTreeFromHtml() {
         treeTab.setDisable(false);
-        final WebEngine webEngine = treeView.getEngine();
-        treeView.setZoom(2.0);
+        final WebEngine webEngine = treeCont.getEngine();
+        treeCont.setZoom(2.0);
         webEngine.load(Paths.get("../sentences.html").toUri().toString());
 
     }
 
-    private TitledPane getLoadedPane(String formula, String viewPath) {
+    private TitledPane getLoadedPane(String[] formula, String viewPath) {
         TitledPane loadedPane = null;
         Parametrable<String> stringParametrable;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(viewPath));
@@ -107,17 +101,15 @@ public class OutputController {
         return loadedPane;
     }
 
-    private TitledPane initGraph(String formula) {
-        TitledPane loadedPane = null;
-        Parametrable<String> gCon = null;
+    private TitledPane initGraph(String... formula) {
+        TitledPane loadedPane;
 
         loadedPane = getLoadedPane(formula, "../view/graph.fxml");
         return loadedPane;
     }
 
-    private TitledPane initBox(String formula) {
-        TitledPane loadedPane = null;
-        Parametrable<String> bCon = null;
+    private TitledPane initBox(String... formula) {
+        TitledPane loadedPane;
 
         loadedPane = getLoadedPane(formula, "../view/box.fxml");
         return loadedPane;

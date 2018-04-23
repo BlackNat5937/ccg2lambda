@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import visualization.Main;
 import visualization.utils.Tools;
 
 import java.io.*;
@@ -132,7 +133,7 @@ public class InputController {
         progress.set(0.25);
         if (!isWindows) {
             launchScript();
-            Tools.xmlSemanticsFile = new File("../sentences.sem.xml");
+            Main.xmlSemanticsFile = new File("../sentences.sem.xml");
             openResultsWindow();
         } else {
             progress.set(0.0);
@@ -162,10 +163,6 @@ public class InputController {
                 //next line
                 ((BufferedWriter) writer).newLine();
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

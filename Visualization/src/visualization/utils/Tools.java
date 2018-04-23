@@ -6,15 +6,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import visualization.Main;
+import visualization.utils.formula.Formula;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Tools {
     /**
@@ -45,20 +48,19 @@ public class Tools {
      * Name of the attribute containing the formulas.
      */
     private static String xmlSemElementAttributeName = "sem";
-    public static File xmlSemanticsFile = null;
 
     /**
      * Gets the formulas in the xml file representing the sentences as a xml tree.
      *
-     * @param semanticsXmlFile the file in which to get the formulas
+     * @param xmlSemanticsFile the file in which to get the formulas
      * @return a list containing all the formulas in the file
      */
-    public static List<String> getSemanticsFormulas(File semanticsXmlFile) {
-        List<String> formulaList = new ArrayList<>();
+    public static List<String[]> getSemanticsFormulas(File xmlSemanticsFile) {
+        List<String[]> stringsList = new ArrayList<>();
         try {
             DocumentBuilderFactory dBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dBuilderFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(semanticsXmlFile);
+            Document doc = dBuilder.parse(xmlSemanticsFile);
             doc.getDocumentElement().normalize();
 
             NodeList sentences = doc.getElementsByTagName(xmlSemanticsTagName);
@@ -67,22 +69,36 @@ public class Tools {
                 Node sentenceSemantics = sentences.item(i);
                 String formulaId = sentenceSemantics.getAttributes().getNamedItem(xmlSemanticsRootAttributeName).getTextContent();
                 NodeList parts = sentenceSemantics.getChildNodes();
-                String formula = "";
+                String strings[] = {"", ""};
+
+                if (Main.applicationMode == ApplicationModes.UI) {
+                    File sentenceFile = new File("../sentences.txt");
+                    if (sentenceFile.isFile() && sentenceFile.canRead()) {
+                        BufferedReader br = new BufferedReader(new FileReader(sentenceFile));
+                        int line = 0;
+                        String sentence = br.readLine();
+                        while (line < i && sentence != null) {
+                            sentence = br.readLine();
+                            line++;
+                        }
+                        strings[1] = sentence != null ? sentence : "";
+                    }
+                }
 
                 int j = 0;
-                Element e = null;
-                Node tmp = null;
+                Element e;
+                Node tmp;
                 do {
                     tmp = parts.item(j);
                     j++;
                 } while (j < parts.getLength() && tmp.getNodeType() != Node.ELEMENT_NODE);
                 e = (Element) tmp;
                 if (e != null) {
-                    formula = e.getAttribute(xmlSemElementAttributeName);
+                    strings[0] = e.getAttribute(xmlSemElementAttributeName);
                 }
 
-                formula = simplifyFormula(formula);
-                formulaList.add(formula);
+                strings[0] = Formula.simplifyLambda(strings[0]);
+                stringsList.add(strings);
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -91,27 +107,8 @@ public class Tools {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Tools.xmlSemanticsFile = semanticsXmlFile;
-        return formulaList;
-    }
-
-    /**
-     * Simplifies the formula. Replaces some chars and deletes tautologies.
-     *
-     * @param formula the formula to simplify
-     * @return the simplified formula
-     */
-    private static String simplifyFormula(String formula) {
-        String corrFormula = formula.replace("&amp;", "&");
-        StringBuilder simpFormula = new StringBuilder();
-        Scanner sc = new Scanner(corrFormula);
-        sc.useDelimiter("\\s*& TrueP\\s*|\\s*TrueP &\\s*");
-        String part = "";
-        do {
-            part = sc.next();
-            simpFormula.append(' ').append(part);
-        } while (sc.hasNext());
-        return simpFormula.toString();
+        Main.xmlSemanticsFile = xmlSemanticsFile;
+        return stringsList;
     }
 
     /**

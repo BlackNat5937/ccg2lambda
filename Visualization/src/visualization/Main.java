@@ -29,6 +29,10 @@ public class Main extends Application {
      * Current mode of the application. Used to determine whether to open the graphic window or not.
      */
     public static Tools.ApplicationModes applicationMode = Tools.ApplicationModes.UI;
+    /**
+     * The file containing the semantics representations output by ccg2lambda.
+     */
+    public static File xmlSemanticsFile;
 
     /**
      * Main method
@@ -59,7 +63,7 @@ public class Main extends Application {
             validFile = validFile && semanticsXmlFile.isFile();
 
             if (validFile) {
-                List<String> formulas = Tools.getSemanticsFormulas(semanticsXmlFile);
+                List<String[]> formulas = Tools.getSemanticsFormulas(semanticsXmlFile);
                 if (!sc.hasNext()) {
                     applicationMode = Tools.ApplicationModes.VIEWER;
                 } else {

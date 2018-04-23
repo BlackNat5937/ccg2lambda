@@ -44,12 +44,14 @@ public class BoxController implements Parametrable<String> {
     private List<String> boxContent = new ArrayList<>();
 
     /**
-     * Initializes the data for this box. Parses the formula, and creates content and header.
+     * Initializes the data for this box. Parses the data, and creates content and header.
      *
-     * @param formula the string of the formula
+     * @param data the data needed for the initialisation. first is the lambda, second is the base sentence
      */
-    public void initData(String formula) {
-        this.formula = Formula.parse(formula);
+    public void initData(String... data) {
+        if (data.length < 2)
+            throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
+        this.formula = Formula.parse(data[0], data[1]);
 
         createContent();
         createHeader();

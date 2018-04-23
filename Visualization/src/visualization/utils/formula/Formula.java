@@ -48,7 +48,7 @@ public class Formula {
 
     /**
      * Private constructor for a formula, they must be created using the static parse method.
-     * See {@link #parse(String)}
+     * See {@link #parse(String, String)}
      */
     private Formula() {
     }
@@ -65,11 +65,29 @@ public class Formula {
     }
 
     /**
-     * Parses the formula and creates the actors and the events.
+     * Simplifies the lambda. Replaces some chars and deletes tautologies.
+     *
+     * @param lambda the lambda to simplify
+     * @return the simplified lambda
      */
-    public static Formula parse(String formula) {
-        Formula newFormula = new Formula();
-        newFormula.lambda = formula;
+    public static String simplifyLambda(String lambda) {
+        String correctedLambda = lambda.replace("&amp;", "&");
+        StringBuilder simpLambda = new StringBuilder();
+        Scanner sc = new Scanner(correctedLambda);
+        sc.useDelimiter("\\s*& TrueP\\s*|\\s*TrueP &\\s*");
+        String part;
+        do {
+            part = sc.next();
+            simpLambda.append(' ').append(part);
+        } while (sc.hasNext());
+        return simpLambda.toString();
+    }
+
+    /**
+     * Parses the lambda and creates the actors and the events.
+     */
+    public static Formula parse(String lambda, String sentence) {
+        Formula newFormula = new Formula(lambda, sentence);
 
         String token;
         String varId;
@@ -78,7 +96,7 @@ public class Formula {
         int eventNumber = 0;
         int conjunctionNumber = 0;
 
-        Scanner sc = new Scanner(formula);
+        Scanner sc = new Scanner(lambda);
         sc.useDelimiter("&");
         do {
             token = sc.next();
