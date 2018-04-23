@@ -75,9 +75,13 @@ public class OutputController {
         for (String s : listFormula) {
             TitledPane boxPane = initBox(s);
             TitledPane graphPane = initGraph(s);
+            boxPane.setExpanded(false);
+            graphPane.setExpanded(false);
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
         }
+        ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
+        ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
     }
 
     public void displayTreeFromHtml() {

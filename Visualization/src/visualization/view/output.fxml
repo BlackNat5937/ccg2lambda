@@ -9,8 +9,8 @@
 <SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.5" orientation="VERTICAL"
            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="visualization.controller.OutputController">
     <items>
-        <TabPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="400.0"
-                 tabClosingPolicy="UNAVAILABLE">
+        <TabPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0"
+                 prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" SplitPane.resizableWithParent="false">
         <tabs>
             <Tab fx:id="graphTab" text="Graph">
                <content>
@@ -30,10 +30,8 @@
             </Tab>
         </tabs>
       </TabPane>
-        <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0"
-              SplitPane.resizableWithParent="false">
+        <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0">
             <children>
-                <Separator prefWidth="200.0" VBox.vgrow="NEVER"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Formulas :" wrappingWidth="103.13671875"
                       VBox.vgrow="NEVER">
                     <font>
