@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import visualization.Main;
 import visualization.utils.Tools;
@@ -222,4 +223,30 @@ public class InputController {
         addSentence();
     }
 
+    /**
+     * See the information about the software
+     */
+    public void informations(){
+        Alert popupInfo = new Alert(Alert.AlertType.INFORMATION);
+        popupInfo.setTitle("About");
+        popupInfo.setHeaderText("About this software ");
+        popupInfo.setContentText("This software has been created by Gaétan BASILE, Thomas GUESDON and Nathan JOUBERT for the Bekki Lab at the Ochanomizu University" + "\n"
+        + "This software uses the ccg2lambda Application created by Pascual MARTINEZ-GOMEZ, Koji MINESHIMA, Yusuke MIYAO and Daisuke BEKKI, " + "\n"
+       + "a tool to derive formal semantic representations of natural language sentences given CCG derivation trees and semantic templates.");
+        popupInfo.getDialogPane().setMinWidth(1000);
+        popupInfo.getDialogPane().setMinHeight(100);
+        popupInfo.showAndWait();
+    }
+
+    /**
+     * Redirect to the readme
+     */
+    public void readme()
+    {
+        try {
+            String url = "https://github.com/mynlp/ccg2lambda#ccg2lambda-composing-semantic-representations-guided-by-ccg-derivations";
+            new ProcessBuilder("x-www-browser", url).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }    }
 }
