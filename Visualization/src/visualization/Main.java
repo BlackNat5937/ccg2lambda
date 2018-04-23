@@ -122,4 +122,8 @@ public class Main extends Application {
     public void stop() throws Exception {
         super.stop();
     }
+
+    public static void openLink(String link) {
+        new Main().getHostServices().showDocument(link);
+    }
 }
