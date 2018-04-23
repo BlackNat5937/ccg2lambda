@@ -2,6 +2,7 @@ package visualization.controller;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
@@ -36,75 +37,6 @@ public class GraphController implements Parametrable<String>{
 
     public void initData(String formula){
         Graph g = new Graph();
-        /*
-        String parsedFormula[] = formula.split("&");
-        for(String ss : parsedFormula){
-
-            //all variables
-            if(ss.contains("exists")){
-                String variable = "";
-                int i = 8;
-                Character tmp = ss.charAt(i);
-                while(!((Character)ss.charAt(i)).equals('.')){
-                    variable += ss.charAt(i);
-                    i++;
-                }
-                Node node = new Node(variable, NodeType.VARIABLE);
-                g.getNodes().add(node);
-
-                //add the node on which the variable point
-                // exists z1.(_park(z1)) ; 3 to go grom . to p
-                variable = "";
-                while(!((Character)ss.charAt(i)).equals('_')){
-                    i++;
-                }
-                i++;
-                while(Character.isLetter(ss.charAt(i))){
-                    variable += ss.charAt(i);
-                    i++;
-                }
-
-
-                Node node2 = new Node(variable,NodeType.VARIABLE);
-                node.addLink(node2, "is-a");
-                g.getNodes().add(node2);
-            }
-
-            //all events
-            //Pattern pattern = Pattern.compile("_\\w+\\(");
-            if(ss.matches(".*_\\w+\\(.*") && !ss.contains("exists")){
-
-                int i = 0;
-                String event = "";
-                while(!((Character)ss.charAt(i)).equals('_')){
-                    i++;
-                }
-                i++;
-                while(Character.isLetter(ss.charAt(i))){
-                    event += ss.charAt(i);
-                    i++;
-                }
-                //i is now where there is the variables which the events concern
-                String variables = "";
-                i++;
-                while(!((Character)ss.charAt(i)).equals(')')){
-                    variables += ss.charAt(i);
-                    i++;
-                }
-                String variable[] = variables.split(",");
-
-                Node nodeEvent = new Node(event,NodeType.EVENT);
-                for(String s : variable){
-                    System.out.println(s);
-                    if(g.getNodeByLabel(s) != null){
-                        g.getNodeByLabel(s).addLink(nodeEvent,"event");
-                    }
-                }
-                g.getNodes().add(nodeEvent);
-
-            }
-
-        } */
 
         this.formula = Formula.parse(formula);
 
@@ -132,7 +64,13 @@ public class GraphController implements Parametrable<String>{
             g.getNodes().add(c);
 
             for(FormulaNode f : conjunction.getJoined()){
-                g.getNodeByLabel(f.getId()).addLink(c,"conj");
+                if(f == conjunction.getJoined().get(conjunction.getJoined().size() - 1)){
+                    c.addLink(g.getNodeByLabel(f.getId()),"conj");
+                }
+                else{
+                    g.getNodeByLabel(f.getId()).addLink(c,"conj");
+                }
+
             }
         }
         box.setText(formula);
@@ -154,11 +92,74 @@ public class GraphController implements Parametrable<String>{
                 return link.getText();
             }
         });
+        vv.getRenderContext().setEdgeLabelClosenessTransformer(new Transformer<Context<edu.uci.ics.jung.graph.Graph<Node, Link>, Link>, Number>() {
+            @Override
+            public Number transform(Context<edu.uci.ics.jung.graph.Graph<Node, Link>, Link> graphLinkContext) {
+                return 35;
+            }
+        });
         //node text
         vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>() {
             @Override
             public String transform(Node node) {
                 return node.getLabel();
+            }
+        });
+        //node color
+        vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Node, Paint>() {
+            @Override
+            public Paint transform(Node node) {
+                Paint p = null;
+                switch (node.getNodeType()){
+                    case ACTOR:
+                        p = Color.BLUE;
+                        break;
+                    case EVENT:
+                        p = Color.RED;
+                        break;
+                    case CONJUNCTION:
+                        p = Color.GREEN;
+                        break;
+                }
+                return p;
+            }
+        });
+        //link color
+        vv.getRenderContext().setEdgeDrawPaintTransformer(new Transformer<Link, Paint>() {
+            @Override
+            public Paint transform(Link link) {
+                Paint p = null;
+                switch (link.getDestination().getNodeType()){
+                    case ACTOR:
+                        p = Color.BLUE;
+                        break;
+                    case EVENT:
+                        p = Color.RED;
+                        break;
+                    case CONJUNCTION:
+                        p = Color.GREEN;
+                        break;
+                }
+                return p;
+            }
+        });
+
+        vv.getRenderContext().setArrowFillPaintTransformer(new Transformer<Link, Paint>() {
+            @Override
+            public Paint transform(Link link) {
+                Paint p = null;
+                switch (link.getDestination().getNodeType()){
+                    case ACTOR:
+                        p = Color.BLUE;
+                        break;
+                    case EVENT:
+                        p = Color.RED;
+                        break;
+                    case CONJUNCTION:
+                        p = Color.GREEN;
+                        break;
+                }
+                return p;
             }
         });
 
