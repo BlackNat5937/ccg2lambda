@@ -100,6 +100,8 @@ public class Main extends Application {
                 Stageable controller = loader.getController();
                 primaryStage.setTitle(Tools.windowTitleBase);
                 controller.initStage(primaryStage);
+                primaryStage.setMinWidth(Tools.windowSize[0].doubleValue());
+                primaryStage.setMinHeight(Tools.windowSize[1].doubleValue());
                 Platform.setImplicitExit(true);
                 break;
             case PIPELINE:

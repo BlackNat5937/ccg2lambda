@@ -25,7 +25,7 @@ public class Tools {
      */
     public static final String windowTitleBase = "ccg2lambda Visualize";
     public static final Number[] windowSize = {
-            600, 400
+            800, 600
     };
     /**
      * Output modes available. None means all.

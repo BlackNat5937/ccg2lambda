@@ -121,6 +121,8 @@ public class InputController {
             stage.setTitle(Tools.windowTitleBase);
             stage.setScene(new Scene(root));
             Stageable controller = loader.getController();
+            stage.setMinWidth(Tools.windowSize[0].doubleValue());
+            stage.setMinHeight(Tools.windowSize[1].doubleValue());
             stage.show();
             controller.initStage(stage);
         } catch (IOException e) {
@@ -230,7 +232,7 @@ public class InputController {
         popupInfo.setTitle("About");
         popupInfo.setHeaderText("About this software ");
         popupInfo.setContentText("This software has been created by Gaétan BASILE, Thomas GUESDON and Nathan JOUBERT for the Bekki Lab at the Ochanomizu University" + "\n"
-                + "This software uses the ccg2lambda Application created by Pascual MARTINEZ-GOMEZ, Koji MINESHIMA, Yusuke MIYAO and Daisuke BEKKI, " + "\n"
+                + "Using ccg2lambda created by Pascual MARTINEZ-GOMEZ, Koji MINESHIMA, Yusuke MIYAO and Daisuke BEKKI, " + "\n"
                 + "a tool to derive formal semantic representations of natural language sentences given CCG derivation trees and semantic templates.");
         popupInfo.getDialogPane().setMinWidth(1000);
         popupInfo.getDialogPane().setMinHeight(100);
