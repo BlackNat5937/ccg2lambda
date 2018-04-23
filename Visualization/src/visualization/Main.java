@@ -1,6 +1,7 @@
 package visualization;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,7 +28,7 @@ public class Main extends Application {
     /**
      * Current mode of the application. Used to determine whether to open the graphic window or not.
      */
-    private static Tools.ApplicationModes applicationMode = Tools.ApplicationModes.UI;
+    public static Tools.ApplicationModes applicationMode = Tools.ApplicationModes.UI;
 
     /**
      * Main method
@@ -91,6 +92,7 @@ public class Main extends Application {
             case VIEWER:
                 content = FXMLLoader.load(getClass().getResource("view/output.fxml"));
                 primaryStage.setTitle(Tools.windowTitleBase);
+                Platform.setImplicitExit(true);
                 break;
             case PIPELINE:
                 break;
@@ -110,5 +112,10 @@ public class Main extends Application {
         initializeStage(primaryStage);
         if (applicationMode != Tools.ApplicationModes.PIPELINE)
             primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
     }
 }
