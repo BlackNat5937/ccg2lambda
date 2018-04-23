@@ -8,7 +8,8 @@
 <?import javafx.scene.web.WebView?>
 <SplitPane xmlns:fx="http://javafx.com/fxml/1" fx:id="splitContainer" dividerPositions="0.8" orientation="VERTICAL"
            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="visualization.controller.OutputController">
-    <TabPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0"
+    <TabPane fx:id="tabPanel" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+             prefHeight="303.0"
              prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" SplitPane.resizableWithParent="false">
         <Tab fx:id="graphTab" text="Graph">
             <VBox fx:id="graphCont" prefHeight="65.0" prefWidth="388.0"/>
