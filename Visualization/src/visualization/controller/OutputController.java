@@ -7,12 +7,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import visualization.Main;
 import visualization.box.Box;
 import visualization.box.Element;
 import visualization.box.ElementType;
@@ -24,13 +26,21 @@ import java.util.List;
 
 public class OutputController {
 
+    /**
+     * Box representations container.
+     */
     @FXML
     public VBox boxCont;
     /**
-     * Graph
+     * Graph representations container.
      */
     @FXML
     public VBox graphCont;
+    /**
+     * ccg2lambda tree representations container.
+     */
+    @FXML
+    public Tab treeTab;
 
     /**
      * Box
@@ -66,8 +76,8 @@ public class OutputController {
 
         System.out.println(listFormulaItems);
 
-        generateGraph();
-        displayTreeFromHtml();
+        if (Main.applicationMode == Tools.ApplicationModes.UI)
+            displayTreeFromHtml();
 
         int v = listFormula.size();
 
@@ -97,6 +107,7 @@ public class OutputController {
     }
 
     public void displayTreeFromHtml() {
+        treeTab.setDisable(false);
         final WebEngine webEngine = treeView.getEngine();
         treeView.setZoom(2.0);
         webEngine.load(Paths.get("../sentences.html").toUri().toString());

@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
-
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.OutputController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0"
+            prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.121"
+            fx:controller="visualization.controller.OutputController">
     <bottom>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
@@ -33,15 +29,15 @@
             </children>
         </VBox>
     </bottom>
-   <center>
+    <top>
         <TabPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
-          <Tab text="Graph">
+            <Tab fx:id="graphTab" text="Graph">
                <content>
                   <VBox fx:id="graphCont" prefHeight="65.0" prefWidth="388.0" />
                </content>
           </Tab>
-          <Tab fx:id="tableBox" text="Box">
+            <Tab fx:id="boxTab" text="Box">
             <content>
               <AnchorPane>
                      <children>
@@ -50,12 +46,12 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-            <Tab text="Tree">
+            <Tab fx:id="treeTab" disable="true" text="Tree">
                <content>
                   <WebView fx:id="treeView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
                </content>
             </Tab>
         </tabs>
       </TabPane>
-   </center>
+    </top>
 </BorderPane>
