@@ -4,20 +4,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import visualization.Main;
-import visualization.box.Box;
-import visualization.box.Element;
-import visualization.box.ElementType;
 import visualization.utils.Tools;
 
 import java.io.IOException;
@@ -79,25 +72,6 @@ public class OutputController {
         if (Main.applicationMode == Tools.ApplicationModes.UI)
             displayTreeFromHtml();
 
-        int v = listFormula.size();
-
-
-        Box b = getBox();
-
-        tabBox.setPadding(new Insets(10, 50, 50, 50));
-        tabBox.setSpacing(10);
-
-        Label lb1 = new Label(b.getTitle());
-        lb1.setFont(Font.font("Amble CN", FontWeight.BOLD, 24));
-        tabBox.getChildren().add(lb1);
-
-
-        int u = b.getBody().size();
-
-        for (int i = 0; i < u; i++) {
-            tabBox.getChildren().add(new Label(b.getBody().get(i)));
-        }
-
         for (String s : listFormula) {
             TitledPane boxPane = initBox(s);
             TitledPane graphPane = initGraph(s);
@@ -112,18 +86,6 @@ public class OutputController {
         treeView.setZoom(2.0);
         webEngine.load(Paths.get("../sentences.html").toUri().toString());
 
-    }
-
-    private Box getBox() {
-        Box b = new Box();
-        Element shark = new Element("x", "shark", ElementType.SUBJECT);
-        Element fish = new Element("z1", "fish", ElementType.NOUN);
-        Element eat = new Element("e1", "eat", ElementType.VERB);
-        eat.addLink(shark, fish);
-        b.getElements().add(shark);
-        b.getElements().add(fish);
-        b.getElements().add(eat);
-        return b;
     }
 
     private TitledPane getLoadedPane(String formula, String viewPath) {
@@ -155,11 +117,5 @@ public class OutputController {
 
         loadedPane = getLoadedPane(formula, "../view/box.fxml");
         return loadedPane;
-    }
-
-    public void generateGraph() {
-        for (String s : listFormula) {
-            initGraph(s);
-        }
     }
 }
