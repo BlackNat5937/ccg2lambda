@@ -1,5 +1,7 @@
 package visualization.controller;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import visualization.Main;
 import visualization.utils.Tools;
 
@@ -18,7 +21,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class OutputController {
+public class OutputController implements Stageable {
+    /**
+     * The view this controller manages.
+     */
+    private Stage view;
     /**
      * The container for both the visualisation panels and the formulas panel.
      */
@@ -130,5 +137,19 @@ public class OutputController {
 
         loadedPane = getLoadedPane(formula, "../view/box.fxml");
         return loadedPane;
+    }
+
+    @Override
+    public void initStage(Stage primaryStage) {
+        this.view = primaryStage;
+        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
+            Platform.runLater(this::setDividerPosition);
+        };
+        view.widthProperty().addListener(stageSizeListener);
+        view.heightProperty().addListener(stageSizeListener);
+    }
+
+    private void setDividerPosition() {
+        splitContainer.setDividerPositions(0.8);
     }
 }

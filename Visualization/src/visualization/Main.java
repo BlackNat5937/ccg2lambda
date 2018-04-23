@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import visualization.controller.Stageable;
 import visualization.utils.Tools;
 
 import java.io.File;
@@ -94,8 +95,11 @@ public class Main extends Application {
                 primaryStage.setTitle(Tools.windowTitleBase);
                 break;
             case VIEWER:
-                content = FXMLLoader.load(getClass().getResource("view/output.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("view/output.fxml"));
+                content = loader.load();
+                Stageable controller = loader.getController();
                 primaryStage.setTitle(Tools.windowTitleBase);
+                controller.initStage(primaryStage);
                 Platform.setImplicitExit(true);
                 break;
             case PIPELINE:

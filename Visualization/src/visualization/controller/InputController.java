@@ -115,11 +115,14 @@ public class InputController {
      */
     private void openResultsWindow() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../view/output.fxml")));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/output.fxml"));
+            Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle(Tools.windowTitleBase);
             stage.setScene(new Scene(root));
+            Stageable controller = loader.getController();
             stage.show();
+            controller.initStage(stage);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,7 +149,7 @@ public class InputController {
     /**
      * Writes the sentences to the sentences.txt file.
      */
-    public void writeTxt() {
+    private void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("../sentences.txt"), "utf-8"))) {
 
@@ -171,7 +174,7 @@ public class InputController {
     /**
      * Launches the python scripts, using ccg2lambda.
      */
-    public void launchScript() {
+    private void launchScript() {
         //script
         System.out.println(System.getProperty("os.name"));
 
@@ -205,9 +208,7 @@ public class InputController {
             progress.set(1.00);
             process.waitFor();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -224,7 +225,7 @@ public class InputController {
     /**
      * See the information about the software
      */
-    public void informations() {
+    public void displayInformation() {
         Alert popupInfo = new Alert(Alert.AlertType.INFORMATION);
         popupInfo.setTitle("About");
         popupInfo.setHeaderText("About this software ");
@@ -237,9 +238,9 @@ public class InputController {
     }
 
     /**
-     * Redirect to the readme
+     * Redirect to the displayReadme
      */
-    public void readme() {
+    public void displayReadme() {
         String url = "https://github.com/mynlp/ccg2lambda#ccg2lambda-composing-semantic-representations-guided-by-ccg-derivations";
         //new ProcessBuilder("x-www-browser", url).start();
         Main.openLink(url);
