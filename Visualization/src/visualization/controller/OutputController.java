@@ -60,10 +60,15 @@ public class OutputController implements Stageable {
     @FXML
     public VBox graphCont;
     /**
+     * tree representation container
+     */
+    @FXML
+    private VBox treeCont;
+    /**
      * ccg2lambda tree representations container.
      */
     @FXML
-    private WebView treeCont;
+    private WebView treeContHtml;
     /**
      * Currently selected tab index.
      */
@@ -117,7 +122,8 @@ public class OutputController implements Stageable {
     private void changeFocusedElement(int selectedIndex) {
         Pane[] containers = {
                 boxCont,
-                graphCont
+                graphCont,
+                treeCont
         };
         for (Pane container : containers) {
             container.getChildren().forEach(node -> {
@@ -138,13 +144,18 @@ public class OutputController implements Stageable {
         for (String[] s : lambdaList) {
             TitledPane boxPane = initBox(s);
             TitledPane graphPane = initGraph(s);
+            TitledPane treePane = initTree(s);
             boxPane.setExpanded(false);
             graphPane.setExpanded(false);
+            treePane.setExpanded(false);
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
+            treeCont.getChildren().add(treePane);
+
         }
         ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
         ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
+        ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
     }
 
     /**
@@ -164,8 +175,8 @@ public class OutputController implements Stageable {
      */
     private void displayTreeFromHtml() {
         treeTab.setDisable(false);
-        final WebEngine webEngine = treeCont.getEngine();
-        treeCont.setZoom(2.0);
+        final WebEngine webEngine = treeContHtml.getEngine();
+        treeContHtml.setZoom(2.0);
         webEngine.load(Paths.get("../sentences.html").toUri().toString());
 
     }
@@ -215,6 +226,18 @@ public class OutputController implements Stageable {
         TitledPane loadedPane;
 
         loadedPane = getLoadedPane(lambda, "../view/box.fxml");
+        return loadedPane;
+    }
+
+    /**
+     * Initializes a Tree representation of a lambda
+     * @param lambda the lambda to get a representation of
+     * @return a TitledPane with the Tree representation of the lambda
+     */
+    private TitledPane initTree(String... lambda){
+        TitledPane loadedPane;
+
+        loadedPane = getLoadedPane(lambda,"../view/tree.fxml");
         return loadedPane;
     }
 
