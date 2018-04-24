@@ -115,23 +115,17 @@ public class OutputController implements Stageable {
      * @param selectedIndex the index of the selected element
      */
     private void changeFocusedElement(int selectedIndex) {
-        Pane container;
-        switch (currentTabIndex) {
-            case 0:
-                container = graphCont;
-                break;
-            case 1:
-                container = boxCont;
-                break;
-            default:
-                container = graphCont;
-                break;
+        Pane[] containers = {
+                boxCont,
+                graphCont
+        };
+        for (Pane container : containers) {
+            container.getChildren().forEach(node -> {
+                TitledPane titledPane = (TitledPane) node;
+                titledPane.setExpanded(false);
+            });
+            ((TitledPane) container.getChildren().get(selectedIndex)).setExpanded(true);
         }
-        container.getChildren().forEach(node -> {
-            TitledPane titledPane = (TitledPane) node;
-            titledPane.setExpanded(false);
-        });
-        ((TitledPane) container.getChildren().get(selectedIndex)).setExpanded(true);
     }
 
     /**
