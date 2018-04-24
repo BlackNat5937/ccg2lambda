@@ -3,9 +3,18 @@ package visualization.controller;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import org.apache.commons.collections15.Transformer;
 import visualization.graph.Graph;
@@ -18,8 +27,14 @@ import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.FormulaNode;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 
 public class GraphController implements Parametrable<String> {
@@ -63,12 +78,7 @@ public class GraphController implements Parametrable<String> {
             g.getNodes().add(c);
 
             for (FormulaNode f : conjunction.getJoined()) {
-                if (f == conjunction.getJoined().get(conjunction.getJoined().size() - 1)) {
-                    c.addLink(g.getNodeByLabel(f.getId()), "conj");
-                } else {
-                    g.getNodeByLabel(f.getId()).addLink(c, "conj");
-                }
-
+                g.getNodeByLabel(f.getId()).addLink(c, "conj");
             }
         }
         box.setText(data[0]);
@@ -177,7 +187,9 @@ public class GraphController implements Parametrable<String> {
 
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
-
         testPane.getChildren().add(sn);
     }
+
+
+
 }
