@@ -240,12 +240,24 @@ public class InputController implements Stageable {
 
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() && Tools.configFile.isFile());
+        // firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) && (!Tools.configFile.exists() && Tools.configFile.isFile());
+
+
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists());
+
+        System.out.println("firsttime : " + firstTime);
+        System.out.println("py3Directory : " + !py3Directory.isDirectory());
 
         Process process;
         if (firstTime) {
-            boolean ok = Tools.configFile.mkdirs();
-            ok = ok && Tools.configFile.createNewFile();
+            //boolean ok = Tools.configFile.mkdirs();
+           boolean ok = true;
+            try {
+                 ok = Tools.configFile.createNewFile();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (!ok)
                 throw new IOException();
 
@@ -257,7 +269,12 @@ public class InputController implements Stageable {
                             "Please redo the configuration."
             );
             firstTimeAlert.showAndWait();
-            setccg2lambdaLocation();
+            File f = setccg2lambdaLocation();
+
+            FileWriter fw = new FileWriter(Tools.configFile);
+
+            fw.write(f.getAbsolutePath());
+            fw.close();
 
             System.out.println("python virtual");
             process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
@@ -309,7 +326,7 @@ public class InputController implements Stageable {
         Main.openLink(url);
     }
 
-    public void setccg2lambdaLocation() {
+    public File setccg2lambdaLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select ccg2lambda installation directory");
         File selected = null;
@@ -320,6 +337,7 @@ public class InputController implements Stageable {
                 Main.ccg2lambdaLocation = selected;
         }
         System.out.println(Main.ccg2lambdaLocation);
+        return Main.ccg2lambdaLocation;
     }
 
     @Override

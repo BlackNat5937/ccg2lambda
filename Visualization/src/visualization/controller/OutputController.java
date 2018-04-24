@@ -249,8 +249,10 @@ public class OutputController implements Stageable {
     @Override
     public void initStage(Stage primaryStage) {
         this.view = primaryStage;
-        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->
+        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
                 Platform.runLater(this::setDividerPosition);
+            System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
+        System.out.println("test initStage");};
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
     }
