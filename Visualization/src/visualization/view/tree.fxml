@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
+
+<TitledPane fx:id="box" animated="false" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.TreeController">
+   <content>
+      <ScrollPane>
+         <content>
+            <TreeView fx:id="treeViewCont" prefHeight="200.0" prefWidth="200.0" />
+         </content></ScrollPane>
+   </content>
+</TitledPane>
