@@ -4,30 +4,32 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.InputController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
+            fx:controller="visualization.controller.InputController">
    <center>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0">
           <top>
               <HBox alignment="TOP_CENTER" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                  <children>
-                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Write a sentence" textAlignment="CENTER" textOrigin="TOP" wrappingWidth="115.626953125" HBox.hgrow="NEVER">
-                          <HBox.margin>
-                              <Insets right="10.0" />
-                          </HBox.margin>
-                      </Text>
-                      <TextField fx:id="sentenceField" onAction="#enterPressed" prefHeight="26.0" prefWidth="635.0" HBox.hgrow="ALWAYS">
-                          <HBox.margin>
-                              <Insets right="10.0" />
-                          </HBox.margin>
-                      </TextField>
-                      <Button fx:id="addButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addSentence" text="Add" HBox.hgrow="NEVER" />
-                  </children>
                   <opaqueInsets>
                       <Insets />
                   </opaqueInsets>
                   <BorderPane.margin>
                       <Insets left="10.0" right="10.0" top="10.0" />
                   </BorderPane.margin>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Write a sentence" textAlignment="CENTER"
+                        textOrigin="TOP" wrappingWidth="115.626953125" HBox.hgrow="NEVER">
+                      <HBox.margin>
+                          <Insets right="10.0"/>
+                      </HBox.margin>
+                  </Text>
+                  <TextField fx:id="sentenceField" onAction="#enterPressed" prefHeight="26.0" prefWidth="635.0"
+                             HBox.hgrow="ALWAYS">
+                      <HBox.margin>
+                          <Insets right="10.0"/>
+                      </HBox.margin>
+                  </TextField>
+                  <Button fx:id="addSentenceButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addSentence"
+                          text="Add" HBox.hgrow="NEVER"/>
               </HBox>
           </top>
           <center>
@@ -39,44 +41,36 @@
           </center>
           <bottom>
               <VBox minHeight="-Infinity" prefHeight="45.0" prefWidth="100.0" BorderPane.alignment="TOP_CENTER">
-                  <children>
-                      <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="NEVER">
-                          <children>
-                              <Button fx:id="visualizeButton" mnemonicParsing="false" onAction="#visualize" text="Visualize" />
-                          </children>
-                          <VBox.margin>
-                              <Insets bottom="10.0" />
-                          </VBox.margin>
-                      </StackPane>
-                      <ProgressBar fx:id="visualizationProgressBar" maxWidth="1.7976931348623157E308" progress="0.0">
-                          <VBox.margin>
-                              <Insets />
-                          </VBox.margin>
-                      </ProgressBar>
-                  </children>
                   <BorderPane.margin>
-                      <Insets bottom="10.0" />
+                      <Insets bottom="10.0"/>
                   </BorderPane.margin>
+                  <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                      <VBox.margin>
+                          <Insets bottom="10.0"/>
+                      </VBox.margin>
+                      <Button fx:id="startProcessingButton" mnemonicParsing="false" onAction="#visualize"
+                              text="Visualize"/>
+                  </StackPane>
+                  <ProgressBar fx:id="visualizationProgressBar" maxWidth="1.7976931348623157E308" progress="0.0">
+                      <VBox.margin>
+                          <Insets/>
+                      </VBox.margin>
+                  </ProgressBar>
               </VBox>
           </bottom>
       </BorderPane>
    </center>
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="Settings">
-            <items>
-              <MenuItem mnemonicParsing="false" text="ccg2lambda location" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-                <MenuItem fx:id="informationsButton" mnemonicParsing="false" onAction="#displayInformation"
-                          text="About"/>
-                <MenuItem fx:id="readmeButton" mnemonicParsing="false" onAction="#displayReadme" text="ReadMe"/>
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
+       <MenuBar BorderPane.alignment="CENTER">
+           <Menu mnemonicParsing="false" text="Settings">
+               <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation"
+                         text="ccg2lambda location"/>
+           </Menu>
+           <Menu mnemonicParsing="false" text="Help">
+               <MenuItem fx:id="showInformationItem" mnemonicParsing="false" onAction="#displayInformation"
+                         text="About"/>
+               <MenuItem fx:id="showReadMeItem" mnemonicParsing="false" onAction="#displayReadme" text="ReadMe"/>
+           </Menu>
+       </MenuBar>
    </top>
 </BorderPane>

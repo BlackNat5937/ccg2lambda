@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import visualization.Main;
 import visualization.utils.Tools;
@@ -24,8 +25,32 @@ import java.util.Objects;
  * @author Gaétan Basile
  * @see visualization.view
  */
-public class InputController {
-
+public class InputController implements Stageable {
+    /**
+     * Button for adding a sentence to the list.
+     */
+    @FXML
+    public Button addSentenceButton;
+    /**
+     * Button for starting the processing of the sentences in the list.
+     */
+    @FXML
+    public Button startProcessingButton;
+    /**
+     * MenuItem for setting the location of ccg2lambda.
+     */
+    @FXML
+    public MenuItem setccg2lambdaLocationItem;
+    /**
+     * MenuItem for showing information about the software.
+     */
+    @FXML
+    public MenuItem showInformationItem;
+    /**
+     * MenuItem for showing the readme for ccg2lambda (on the web)
+     */
+    @FXML
+    public MenuItem showReadMeItem;
     /**
      * TextField enabling the input of sentences from the user.
      */
@@ -54,6 +79,10 @@ public class InputController {
      * Enables knowing if the host OS is windows.
      */
     private final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    /**
+     * The view this controller manages.
+     */
+    private Stage view;
 
 
     /**
@@ -180,7 +209,7 @@ public class InputController {
         //script
         System.out.println(System.getProperty("os.name"));
 
-        String ccg2lambdaPath = "../";
+        String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
 
         try {
@@ -246,5 +275,22 @@ public class InputController {
         String url = "https://github.com/mynlp/ccg2lambda#ccg2lambda-composing-semantic-representations-guided-by-ccg-derivations";
         //new ProcessBuilder("x-www-browser", url).start();
         Main.openLink(url);
+    }
+
+    public void setccg2lambdaLocation() {
+        DirectoryChooser locationChooser = new DirectoryChooser();
+        locationChooser.setTitle("select ccg2lambda installation directory");
+        File selected = locationChooser.showDialog(view);
+        if (selected != null)
+            if (selected.exists() && selected.isDirectory()) {
+                if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                    Main.ccg2lambdaLocation = selected;
+            }
+        System.out.println(Main.ccg2lambdaLocation);
+    }
+
+    @Override
+    public void initStage(Stage primaryStage) {
+        this.view = primaryStage;
     }
 }

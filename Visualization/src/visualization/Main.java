@@ -21,11 +21,11 @@ import java.util.Scanner;
  * @author Gaétan Basile
  */
 public class Main extends Application {
-
+    public static File ccg2lambdaLocation;
     /**
      * Desired visualization outputs. All by default.
      */
-    public static Tools.RepresentationModes visualizationMode = Tools.RepresentationModes.ALL;
+    private static Tools.RepresentationModes visualizationMode = Tools.RepresentationModes.ALL;
     /**
      * Current mode of the application. Used to determine whether to open the graphic window or not.
      */
@@ -89,15 +89,22 @@ public class Main extends Application {
      */
     private void initializeStage(Stage primaryStage) throws java.io.IOException {
         Parent content = null;
+        FXMLLoader loader;
+        Stageable controller;
         switch (applicationMode) {
             case UI:
-                content = FXMLLoader.load(getClass().getResource("view/input.fxml"));
+                loader = new FXMLLoader(getClass().getResource("view/input.fxml"));
+                content = loader.load();
+                controller = loader.getController();
                 primaryStage.setTitle(Tools.windowTitleBase);
+                controller.initStage(primaryStage);
+                primaryStage.setMinWidth(400);
+                primaryStage.setMinHeight(225);
                 break;
             case VIEWER:
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("view/output.fxml"));
+                loader = new FXMLLoader(getClass().getResource("view/output.fxml"));
                 content = loader.load();
-                Stageable controller = loader.getController();
+                controller = loader.getController();
                 primaryStage.setTitle(Tools.windowTitleBase);
                 controller.initStage(primaryStage);
                 primaryStage.setMinWidth(Tools.windowSize[0].doubleValue());
