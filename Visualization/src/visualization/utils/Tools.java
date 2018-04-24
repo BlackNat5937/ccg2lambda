@@ -28,6 +28,10 @@ public class Tools {
             800, 600
     };
     /**
+     * Config file path.
+     */
+    public static final File configFile = new File("./config/conf.ini");
+    /**
      * Output modes available. None means all.
      */
     public static final String[] outputModesOption = {
@@ -103,11 +107,7 @@ public class Tools {
                 strings[0] = Formula.simplifyLambda(strings[0]);
                 stringsList.add(strings);
             }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
         Main.xmlSemanticsFile = xmlSemanticsFile;
@@ -129,7 +129,7 @@ public class Tools {
         /**
          * the pipeline mode, outputting the representation as a HTML document on stdout
          */
-        PIPELINE;
+        PIPELINE
     }
 
     /**

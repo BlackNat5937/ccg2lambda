@@ -90,8 +90,13 @@ public class InputController implements Stageable {
      */
     @FXML
     public void initialize() {
-        initListView();
-        visualizationProgressBar.progressProperty().bindBidirectional(progress);
+        try {
+            checkConfigAndInitializeEnvironment();
+            initListView();
+            visualizationProgressBar.progressProperty().bindBidirectional(progress);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -223,17 +228,6 @@ public class InputController implements Stageable {
             progress.set(0.75);
             process.waitFor();
 
-            File f = new File("py3");
-            firstTime = !f.exists() && !f.isDirectory();
-
-            if (firstTime) {
-                System.out.println("python virtual");
-                process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
-                process.waitFor();
-                firstTime = false;
-            }
-
-
             System.out.println("python script");
             process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
             progress.set(1.00);
@@ -241,6 +235,44 @@ public class InputController implements Stageable {
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
+        File py3Directory = new File("py3");
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() && Tools.configFile.isFile());
+
+        Process process;
+        if (firstTime) {
+            boolean ok = Tools.configFile.mkdirs();
+            ok = ok && Tools.configFile.createNewFile();
+            if (!ok)
+                throw new IOException();
+
+            Alert firstTimeAlert = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlert.setTitle("First time configuration needed");
+            firstTimeAlert.setHeaderText("First time configuration");
+            firstTimeAlert.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            firstTimeAlert.showAndWait();
+            setccg2lambdaLocation();
+
+            System.out.println("python virtual");
+            process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
+            process.waitFor();
+            Alert py3InstallEnded = new Alert(Alert.AlertType.CONFIRMATION);
+            py3InstallEnded.setTitle("First time configuration success");
+            py3InstallEnded.setContentText(
+                    "Configuration is now complete." + '\n' +
+                            "ccg2lambda location registered & python 3 virtual environment installed in :" + '\n' +
+                            py3Directory.getAbsolutePath());
+            firstTime = false;
+        } else {
+            BufferedReader br = new BufferedReader(new FileReader(Tools.configFile));
+            String ccg2lambdaPath = br.readLine();
+            Main.ccg2lambdaLocation = ccg2lambdaPath != null ? new File(ccg2lambdaPath) : null;
         }
     }
 
@@ -280,12 +312,13 @@ public class InputController implements Stageable {
     public void setccg2lambdaLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select ccg2lambda installation directory");
-        File selected = locationChooser.showDialog(view);
-        if (selected != null)
-            if (selected.exists() && selected.isDirectory()) {
-                if (selected.canRead() && selected.canExecute() && selected.canWrite())
-                    Main.ccg2lambdaLocation = selected;
-            }
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showDialog(view);
+        if (selected.isDirectory()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                Main.ccg2lambdaLocation = selected;
+        }
         System.out.println(Main.ccg2lambdaLocation);
     }
 

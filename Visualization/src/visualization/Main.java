@@ -21,6 +21,9 @@ import java.util.Scanner;
  * @author Gaétan Basile
  */
 public class Main extends Application {
+    /**
+     * The location of ccg2lambda.
+     */
     public static File ccg2lambdaLocation;
     /**
      * Desired visualization outputs. All by default.
