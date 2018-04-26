@@ -19,17 +19,13 @@ public class EventParser extends BaseParser {
      * Pattern for the declaration of an events subject
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
-    /**
-     * Last actor declared.
-     */
-    Actor lastActor;
 
     EventParser() {
     }
 
     @Override
     public Formula parse(String lambda, String sentence) {
-        parseResult = new Formula(BaseParser.simplifyLambda(lambda), sentence);
+        parseResult = new Formula(FormulaParser.simplifyLambda(lambda), sentence);
 
         actorNumber = 0;
         eventNumber = 0;
@@ -68,19 +64,17 @@ public class EventParser extends BaseParser {
         if (parts[0].equals("exists") && parts.length >= 2) {
             String[] declaration = parts[1].split("\\.");
 
-            String varId = declaration[0] + actorNumber;
+            String varId = declaration[0];
             String varName = declaration[1].substring(
                     declaration[1].indexOf("_") + 1,
                     declaration[1].length() - (1 + 2));
-            actorNumber++;
             //then it is either an event,
             if (declaration[0].matches("e\\d*")) {
                 parseResult.getEvents().put(varId, new Event(varId, varName));
             }
             //or a standard variable.
             else {
-                lastActor = new Actor(varId, varName);
-                parseResult.getActors().put(varId, lastActor);
+                parseResult.getActors().put(varId, new Actor(varId, varName));
             }
         }
     }
@@ -91,7 +85,7 @@ public class EventParser extends BaseParser {
             String varId = parts[0].substring(parts[0].length() - 1);
             String subjId = parts[1].substring(parts[1].length() - 1);
 
-            Actor subject = lastActor;
+            Actor subject = parseResult.getActors().get(subjId);
 
             Event event = parseResult.getEvents().get(varId);
             event.setSubject(subject);
@@ -117,7 +111,7 @@ public class EventParser extends BaseParser {
                     //its a conjunction
                 else if (s.startsWith("c")) node = parseResult.getConjunctions().get(s);
                     //its an actor
-                else node = lastActor;
+                else node = parseResult.getActors().get(s);
                 if (node != null)
                     joinedNodes.add(node);
             }
