@@ -269,9 +269,8 @@ public class InputController implements Stageable {
                 File parsedDirectory = new File("../parsed");
                 File resultDirectory = new File("../result");
 
-
-                    Files.deleteIfExists(parsedDirectory.toPath());
-                    Files.deleteIfExists(resultDirectory.toPath());
+                Files.deleteIfExists(parsedDirectory.toPath());
+                Files.deleteIfExists(resultDirectory.toPath());
 
 
                 System.out.println("python parser event script");

@@ -4,7 +4,9 @@ import visualization.Main;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
+import visualization.utils.formula.node.Negation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,11 @@ public class Formula {
      * The conjunctions of this formula. They link other items or provide additionnal info (time, place...)
      */
     private Map<String, Conjunction> conjunctions = new HashMap<>();
+
+    /**
+     * THe negation of this formula.
+     */
+    private ArrayList<Negation> negations = new ArrayList<>();
 
     /**
      * Private constructor for a formula, they must be created using the formula parser.

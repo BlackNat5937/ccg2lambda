@@ -1,9 +1,6 @@
 package visualization.utils.formula;
 
-import visualization.utils.formula.node.Actor;
-import visualization.utils.formula.node.BaseNode;
-import visualization.utils.formula.node.Conjunction;
-import visualization.utils.formula.node.Event;
+import visualization.utils.formula.node.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +97,56 @@ public class ClassicParser extends BaseParser {
                     }
                 }
             }
-        } while (sc.hasNext());
+        }while (sc.hasNext());
+
+        //check if there is any negation in the sentence
+        if (parseResult.getLambda().contains("-")) {
+            int indexStart = parseResult.getLambda().indexOf('-');
+            int indexEnd = indexStart;
+            int cptBracket = 0;
+            boolean firstTime = true;
+
+            while ((firstTime || cptBracket > 0) && indexEnd < parseResult.getLambda().length()) {
+                if (parseResult.getLambda().charAt(indexEnd) == '(') {
+                    if (firstTime) {
+                        firstTime = false;
+                    }
+                    cptBracket++;
+                }
+                if (parseResult.getLambda().charAt(indexEnd) == ')') {
+                    cptBracket--;
+                }
+                indexEnd++;
+            }
+
+            String scope = parseResult.getLambda().substring(indexStart, indexEnd);
+            Negation n = getNegationFromScope(scope);
+
+        }
+
         return parseResult;
+    }
+
+    /**
+     * Parse the scope of the negation
+     * @param scope
+     * @return the node Negation containing all nodes that are negated
+     */
+    public Negation getNegationFromScope(String scope){
+        Negation n = new Negation();
+        System.out.println(scope);
+
+        // two cases : exists or directly the event being negated
+
+        if(scope.matches(varDeclaration)){
+            String subScope =  scope.substring(scope.indexOf(".("), scope.indexOf("))"));
+            System.out.println(subScope);
+            String[] subStringScope = subScope.split("&");
+            System.out.println(subStringScope.toString());
+        }
+        else{
+
+        }
+        return n;
     }
 }
