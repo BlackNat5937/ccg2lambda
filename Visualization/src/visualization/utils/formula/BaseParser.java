@@ -22,6 +22,10 @@ public abstract class BaseParser implements FormulaParser {
      */
     static String varDeclaration = ".*exists \\w+\\..*";
     /**
+     * The pattern for a negation declaration.
+     */
+    static String negationPattern = "-.*?" ;
+    /**
      * The formula this ClassicParser returns.
      */
     Formula parseResult;
