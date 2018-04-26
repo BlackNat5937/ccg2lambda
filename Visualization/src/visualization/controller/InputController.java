@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,6 +46,21 @@ public class InputController implements Stageable {
      * MenuItem for showing information about the software.
      */
     @FXML
+    public Menu menuParser;
+    /**
+     * Menu for choosing the parser
+     */
+    @FXML
+    public RadioMenuItem radioParserEvent;
+    /**
+     * Radio menu parser for the parser event
+     */
+    @FXML
+    public RadioMenuItem radioParserClassic;
+    /**
+     * Radio menu parser for the parser classic
+     */
+    @FXML
     public MenuItem showInformationItem;
     /**
      * MenuItem for showing the readme for ccg2lambda (on the web)
@@ -84,6 +100,10 @@ public class InputController implements Stageable {
      */
     private Stage view;
 
+    /**
+     * For first time program is launch, install the virtual environment for python
+     */
+    private boolean firstTime;
 
     /**
      * Initializes the view.
@@ -93,16 +113,18 @@ public class InputController implements Stageable {
         try {
             checkConfigAndInitializeEnvironment();
             initListView();
+            initMenuParser();
             visualizationProgressBar.progressProperty().bindBidirectional(progress);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * For first time program is launch, install the virtual environment for python
-     */
-    private boolean firstTime;
+    private void initMenuParser() {
+        radioParserClassic.setSelected(false);
+        radioParserEvent.setSelected(false);
+    }
+
 
     /**
      * Initializes the context menus for each listView item.
@@ -132,6 +154,7 @@ public class InputController implements Stageable {
             return cell;
         });
     }
+
 
     /**
      * Adds the sentence in the textField to the list.
@@ -238,6 +261,12 @@ public class InputController implements Stageable {
         }
     }
 
+    /**
+     * Check if the user already got the python virtual environment, if not, the software install it
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
         // firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) && (!Tools.configFile.exists() && Tools.configFile.isFile());
@@ -251,9 +280,9 @@ public class InputController implements Stageable {
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
-           boolean ok = true;
+            boolean ok = true;
             try {
-                 ok = Tools.configFile.createNewFile();
+                ok = Tools.configFile.createNewFile();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -326,6 +355,11 @@ public class InputController implements Stageable {
         Main.openLink(url);
     }
 
+    /**
+     * for choosing ghe ccg2lambda location file
+     *
+     * @return
+     */
     public File setccg2lambdaLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select ccg2lambda installation directory");
@@ -344,4 +378,40 @@ public class InputController implements Stageable {
     public void initStage(Stage primaryStage) {
         this.view = primaryStage;
     }
+
+    /**
+     * For setting the parser
+     */
+    public void setParser() {
+        System.out.println("test radio");
+
+
+        if (radioParserEvent.isSelected()) {
+            System.out.println("radio event");
+        }
+        else if (radioParserClassic.isSelected()) {
+            System.out.println("radio classic");
+        }
+
+
+    }
+
+    /**
+     * set the event parser
+     */
+    public void setParserEvent(){
+        radioParserEvent.setSelected(true);
+        radioParserClassic.setSelected(false);
+        setParser();
+    }
+
+    /**
+     * set the classic parser
+     */
+    public void setParserClassic(){
+        radioParserClassic.setSelected(true);
+        radioParserEvent.setSelected(false);
+        setParser();
+    }
+
 }
