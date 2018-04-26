@@ -120,7 +120,6 @@ public class ClassicParser extends BaseParser {
             }
 
             String scope = parseResult.getLambda().substring(indexStart, indexEnd);
-            System.out.println(scope);
             Negation n = getNegationFromScope(scope);
 
         }
@@ -135,17 +134,19 @@ public class ClassicParser extends BaseParser {
      */
     public Negation getNegationFromScope(String scope){
         Negation n = new Negation();
+        System.out.println(scope);
 
         // two cases : exists or directly the event being negated
 
         if(scope.matches(varDeclaration)){
-            System.out.println(scope.substring(scope.charAt('('),scope.indexOf("))")).split("&").toString());
+            String subScope =  scope.substring(scope.indexOf(".("), scope.indexOf("))"));
+            System.out.println(subScope);
+            String[] subStringScope = subScope.split("&");
+            System.out.println(subStringScope.toString());
         }
         else{
 
         }
-
-
         return n;
     }
 }
