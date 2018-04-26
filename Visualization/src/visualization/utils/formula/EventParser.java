@@ -19,6 +19,10 @@ public class EventParser extends BaseParser {
      * Pattern for the declaration of an events subject
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
+    /**
+     * Last actor declared.
+     */
+    Actor lastActor;
 
     EventParser() {
     }
@@ -69,14 +73,14 @@ public class EventParser extends BaseParser {
                     declaration[1].indexOf("_") + 1,
                     declaration[1].length() - (1 + 2));
             actorNumber++;
-
             //then it is either an event,
             if (declaration[0].matches("e\\d*")) {
                 parseResult.getEvents().put(varId, new Event(varId, varName));
             }
             //or a standard variable.
             else {
-                parseResult.getActors().put(varId, new Actor(varId, varName));
+                lastActor = new Actor(varId, varName);
+                parseResult.getActors().put(varId, lastActor);
             }
         }
     }
@@ -87,7 +91,7 @@ public class EventParser extends BaseParser {
             String varId = parts[0].substring(parts[0].length() - 1);
             String subjId = parts[1].substring(parts[1].length() - 1);
 
-            Actor subject = parseResult.getActors().get(subjId);
+            Actor subject = lastActor;
 
             Event event = parseResult.getEvents().get(varId);
             event.setSubject(subject);
@@ -113,7 +117,7 @@ public class EventParser extends BaseParser {
                     //its a conjunction
                 else if (s.startsWith("c")) node = parseResult.getConjunctions().get(s);
                     //its an actor
-                else node = parseResult.getActors().get(s);
+                else node = lastActor;
                 if (node != null)
                     joinedNodes.add(node);
             }
