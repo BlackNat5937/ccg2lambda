@@ -70,12 +70,14 @@
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Settings">
                <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation" text="ccg2lambda location" />
-            <Menu fx:id="menuParser" mnemonicParsing="false" text="Parser Choice">
-              <items>
-                  <RadioMenuItem fx:id="radioParserEvent" mnemonicParsing="false" onAction="#setParserEvent" text="Parser event" />
-                  <RadioMenuItem fx:id="radioParserClassic" mnemonicParsing="false" onAction="#setParserClassic" text="Parser classic" />
-              </items>
-            </Menu>
+           </Menu>
+           <Menu fx:id="menuParser" mnemonicParsing="false" text="Parser ">
+               <items>
+                   <RadioMenuItem fx:id="radioParserEvent" mnemonicParsing="false" onAction="#setParserEvent"
+                                  text="Parser EVENT"/>
+                   <RadioMenuItem fx:id="radioParserClassic" mnemonicParsing="false" onAction="#setParserClassic"
+                                  text="Parser CLASSIC"/>
+               </items>
            </Menu>
            <Menu mnemonicParsing="false" text="Help">
                <MenuItem fx:id="showInformationItem" mnemonicParsing="false" onAction="#displayInformation" text="About" />
