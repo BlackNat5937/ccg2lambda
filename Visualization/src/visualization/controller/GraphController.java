@@ -19,6 +19,7 @@ import visualization.graph.Node;
 import visualization.graph.NodeType;
 import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
+import visualization.utils.formula.FormulaParser;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
@@ -46,7 +47,8 @@ public class GraphController implements Parametrable<String> {
             throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
         Graph g = new Graph();
 
-        this.formula = Formula.parse(data[0], data[1]);
+        FormulaParser parser = Formula.getParser();
+        this.formula = parser.parse(data[0], data[1]);
 
         for (Actor actor : this.formula.getActors().values()) {
             Node a = new Node(actor.getName(), NodeType.ACTOR);

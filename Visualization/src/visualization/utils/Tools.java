@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import visualization.Main;
-import visualization.utils.formula.Formula;
+import visualization.utils.formula.ClassicParser;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -107,7 +107,7 @@ public class Tools {
                     strings[0] = e.getAttribute(xmlSemElementAttributeName);
                 }
 
-                strings[0] = Formula.simplifyLambda(strings[0]);
+                strings[0] = ClassicParser.simplifyLambda(strings[0]);
                 stringsList.add(strings);
             }
         } catch (ParserConfigurationException | IOException | SAXException e) {
