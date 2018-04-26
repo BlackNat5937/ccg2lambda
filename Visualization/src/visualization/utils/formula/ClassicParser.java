@@ -37,7 +37,6 @@ public class ClassicParser extends BaseParser {
         sc.useDelimiter("&");
         do {
             token = sc.next();
-            System.out.println(" token :" + token);
             // if the token is a &, do not do anything
             if (!"&".equals(token)) {
                 // if the token is an actor declaration, add it to the actors map
@@ -104,9 +103,31 @@ public class ClassicParser extends BaseParser {
         }while (sc.hasNext());
 
         //check if there is any negation in the sentence
-        if(sentence.contains("-")){
-            System.out.println("Negation : " + sentence + " at " + sentence.indexOf('-'));
+        if (parseResult.getLambda().contains("-")) {
+            int indexStart = parseResult.getLambda().indexOf('-');
+            int indexEnd = indexStart;
+            int cptBracket = 0;
+            boolean firstTime = true;
+
+            while ((firstTime || cptBracket > 0) && indexEnd < parseResult.getLambda().length()) {
+                if (parseResult.getLambda().charAt(indexEnd) == '(') {
+                    if (firstTime) {
+                        firstTime = false;
+                    }
+                    cptBracket++;
+                }
+                if (parseResult.getLambda().charAt(indexEnd) == ')') {
+                    cptBracket--;
+                }
+                indexEnd++;
+            }
+
+            System.out.println(" Start : " + indexStart + " | End : " + indexEnd);
+            System.out.println(parseResult.getLambda().substring(indexStart, indexEnd));
+
+
         }
+
 
         return parseResult;
     }
