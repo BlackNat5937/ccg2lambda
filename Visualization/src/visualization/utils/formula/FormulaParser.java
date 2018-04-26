@@ -2,6 +2,8 @@ package visualization.utils.formula;
 
 /**
  * This interface describes basic functionnality for a {@link Formula} parser.
+ *
+ * @author Gaétan Basile
  */
 public interface FormulaParser {
     /**

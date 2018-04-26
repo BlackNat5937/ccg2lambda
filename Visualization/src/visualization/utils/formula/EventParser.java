@@ -2,7 +2,15 @@ package visualization.utils.formula;
 
 import java.util.Scanner;
 
+/**
+ * Parser for event-template lambdas.
+ *
+ * @author Gaétan Basile
+ */
 public class EventParser extends BaseParser {
+    EventParser() {
+    }
+
     private static void registerVariable(String token) {
         if (!token.isEmpty()) {
             token = token.trim();
@@ -15,6 +23,8 @@ public class EventParser extends BaseParser {
                 }
                 //or a standard variable.
                 else {
+                    String varId = declaration[0];
+                    String varName = declaration[1].substring(declaration[1].indexOf("_"), declaration[1].length() - 1);
                 }
             }
         }

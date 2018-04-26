@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
+/**
+ * ¨Parser for classic-template lambdas.
+ *
+ * @author Gaétan Basile
+ */
 public class ClassicParser extends BaseParser {
     ClassicParser() {
     }

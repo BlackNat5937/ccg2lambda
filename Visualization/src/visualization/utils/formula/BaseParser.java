@@ -3,6 +3,11 @@ package visualization.utils.formula;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+/**
+ * Base class for {@link Formula} parsers.
+ *
+ * @author Gaétan Basile
+ */
 public abstract class BaseParser implements FormulaParser {
     /**
      * The pattern for recognizing a variable name.
