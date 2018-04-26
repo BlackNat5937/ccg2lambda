@@ -188,7 +188,7 @@ public class Tools {
     /**
      * Enum for the parser types.
      */
-    public enum ParserTypes {
+    public enum TemplateType {
         CLASSIC,
         EVENT
     }

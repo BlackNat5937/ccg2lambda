@@ -176,7 +176,7 @@ public class OutputController implements Stageable {
         treeTab.setDisable(false);
         final WebEngine webEngine = treeContHtml.getEngine();
         treeContHtml.setZoom(2.0);
-        switch (Main.selectedParserType) {
+        switch (Main.selectedTemplateType) {
 
             case CLASSIC:
                 webEngine.load(Paths.get("../sentences.html").toUri().toString());

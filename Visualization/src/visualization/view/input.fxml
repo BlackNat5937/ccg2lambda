@@ -71,12 +71,12 @@
            <Menu mnemonicParsing="false" text="Settings">
                <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation" text="ccg2lambda location" />
            </Menu>
-           <Menu fx:id="menuParser" mnemonicParsing="false" text="Parser ">
+           <Menu fx:id="menuTemplate" mnemonicParsing="false" text="Template">
                <items>
-                   <RadioMenuItem fx:id="radioParserEvent" mnemonicParsing="false" onAction="#setParserEvent"
-                                  text="Parser EVENT"/>
-                   <RadioMenuItem fx:id="radioParserClassic" mnemonicParsing="false" onAction="#setParserClassic"
-                                  text="Parser CLASSIC"/>
+                   <RadioMenuItem fx:id="radioTemplateEvent" mnemonicParsing="false" onAction="#setTemplateEvent"
+                                  text="EVENT"/>
+                   <RadioMenuItem fx:id="radioTemplateClassic" mnemonicParsing="false" onAction="#setTemplateClassic"
+                                  text="CLASSIC EMNLP"/>
                </items>
            </Menu>
            <Menu mnemonicParsing="false" text="Help">

@@ -63,7 +63,7 @@ public class Formula {
 
     public static FormulaParser getParser() {
         FormulaParser parser = null;
-        switch (Main.selectedParserType) {
+        switch (Main.selectedTemplateType) {
             case CLASSIC:
                 parser = new ClassicParser();
                 break;

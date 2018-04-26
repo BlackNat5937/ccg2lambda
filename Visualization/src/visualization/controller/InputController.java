@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,17 +46,17 @@ public class InputController implements Stageable {
      * MenuItem for showing information about the software.
      */
     @FXML
-    public Menu menuParser;
+    public Menu menuTemplate;
     /**
      * Menu for choosing the parser
      */
     @FXML
-    public RadioMenuItem radioParserEvent;
+    public RadioMenuItem radioTemplateEvent;
     /**
      * Radio menu parser for the parser event
      */
     @FXML
-    public RadioMenuItem radioParserClassic;
+    public RadioMenuItem radioTemplateClassic;
     /**
      * Radio menu parser for the parser classic
      */
@@ -125,8 +124,8 @@ public class InputController implements Stageable {
      * initialize the parser selection
      */
     private void initMenuParser() {
-        radioParserClassic.setSelected(true);
-        radioParserEvent.setSelected(false);
+        radioTemplateClassic.setSelected(true);
+        radioTemplateEvent.setSelected(false);
     }
 
 
@@ -199,7 +198,7 @@ public class InputController implements Stageable {
         progress.set(0.25);
         if (!isWindows) {
             launchScript();
-            switch (Main.selectedParserType) {
+            switch (Main.selectedTemplateType) {
 
                 case CLASSIC:
                     Main.xmlSemanticsFile = new File("../sentences.sem.xml");
@@ -251,11 +250,11 @@ public class InputController implements Stageable {
         //script
         System.out.println(System.getProperty("os.name"));
 
-        System.out.println("  parser type : " + Main.selectedParserType);
+        System.out.println("  parser type : " + Main.selectedTemplateType);
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
-        if (Main.selectedParserType == Tools.ParserTypes.CLASSIC) {
+        if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
             try {
                 System.out.println("tokenize");
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
@@ -275,7 +274,7 @@ public class InputController implements Stageable {
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-        } else if (Main.selectedParserType == Tools.ParserTypes.EVENT) {
+        } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
             try {
 
                 File parsedDirectory = new File("../parsed");
@@ -435,32 +434,32 @@ public class InputController implements Stageable {
     /**
      * For setting the parser
      */
-    public void setParser() {
-        if (radioParserEvent.isSelected()) {
+    public void setTemplate() {
+        if (radioTemplateEvent.isSelected()) {
             System.out.println("parser event");
-            Main.selectedParserType = Tools.ParserTypes.EVENT;
-        } else if (radioParserClassic.isSelected()) {
+            Main.selectedTemplateType = Tools.TemplateType.EVENT;
+        } else if (radioTemplateClassic.isSelected()) {
             System.out.println("parser classic");
-            Main.selectedParserType = Tools.ParserTypes.CLASSIC;
+            Main.selectedTemplateType = Tools.TemplateType.CLASSIC;
         }
     }
 
     /**
      * set the event parser
      */
-    public void setParserEvent() {
-        radioParserEvent.setSelected(true);
-        radioParserClassic.setSelected(false);
-        setParser();
+    public void setTemplateEvent() {
+        radioTemplateEvent.setSelected(true);
+        radioTemplateClassic.setSelected(false);
+        setTemplate();
     }
 
     /**
      * set the classic parser
      */
-    public void setParserClassic() {
-        radioParserClassic.setSelected(true);
-        radioParserEvent.setSelected(false);
-        setParser();
+    public void setTemplateClassic() {
+        radioTemplateClassic.setSelected(true);
+        radioTemplateEvent.setSelected(false);
+        setTemplate();
     }
 
 }
