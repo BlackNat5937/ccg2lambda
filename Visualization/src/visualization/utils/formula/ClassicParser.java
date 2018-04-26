@@ -37,12 +37,9 @@ public class ClassicParser extends BaseParser {
         sc.useDelimiter("&");
         do {
             token = sc.next();
+            System.out.println(" token :" + token);
             // if the token is a &, do not do anything
             if (!"&".equals(token)) {
-                // if the token match a negation
-                if(token.matches(negationPattern)){
-                    System.out.println("There is a negation : " + token);
-                }
                 // if the token is an actor declaration, add it to the actors map
                 if (token.matches(varDeclaration)) {
                     Matcher m = varIdPattern.matcher(token);
