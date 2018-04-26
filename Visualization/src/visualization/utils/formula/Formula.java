@@ -1,5 +1,6 @@
 package visualization.utils.formula;
 
+import visualization.Main;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.BaseNode;
 import visualization.utils.formula.node.Conjunction;
@@ -24,6 +25,8 @@ public class Formula {
      * The pattern for recognizing a variable id.
      */
     private static final Pattern varIdPattern = Pattern.compile("(\\w+\\.)|(\\(\\w+,\\w+\\))|(\\(\\w+\\))");
+    // if the token is an actor declaration, add it to the actors map
+    private static String varDeclaration = ".*exists \\w+\\..*";
 
     /**
      * The base formula this formula was created from.
@@ -45,6 +48,8 @@ public class Formula {
      * The conjunctions of this formula. They link other items or provide additionnal info (time, place...)
      */
     private Map<String, Conjunction> conjunctions = new HashMap<>();
+    private static int eventNumber;
+    private static int conjunctionNumber;
 
     /**
      * Private constructor for a formula, they must be created using the static parse method.
@@ -74,7 +79,7 @@ public class Formula {
         String correctedLambda = lambda.replace("&amp;", "&");
         StringBuilder simpLambda = new StringBuilder();
         Scanner sc = new Scanner(correctedLambda);
-        sc.useDelimiter("\\s*& TrueP\\s*|\\s*TrueP &\\s*");
+        sc.useDelimiter("\\s*& TrueP\\s*|\\s*TrueP &\\s*|\\s*& True\\s*|\\s*True &\\s*");
         String part;
         do {
             part = sc.next();
@@ -89,21 +94,54 @@ public class Formula {
     public static Formula parse(String lambda, String sentence) {
         Formula newFormula = new Formula(lambda, sentence);
 
+        eventNumber = 0;
+        conjunctionNumber = 0;
+
+        switch (Main.selectedParserType) {
+            case CLASSIC:
+                parseClassic(newFormula);
+                break;
+            case EVENT:
+                parseEvent(newFormula);
+                break;
+        }
+        return newFormula;
+    }
+
+    /**
+     * Parses the lambda using the event parser.
+     *
+     * @param newFormula the formula to parse
+     */
+    private static void parseEvent(Formula newFormula) {
         String token;
         String varId;
         String varName;
 
-        int eventNumber = 0;
-        int conjunctionNumber = 0;
+        Scanner sc = new Scanner(newFormula.lambda);
+        sc.useDelimiter("&");
+        do {
+            token = sc.next();
+        } while (sc.hasNext());
+    }
 
-        Scanner sc = new Scanner(lambda);
+    /**
+     * Parses the lambda using the classic parser.
+     *
+     * @param newFormula the formula to parse
+     */
+    private static void parseClassic(Formula newFormula) {
+        String token;
+        String varId;
+        String varName;
+
+        Scanner sc = new Scanner(newFormula.lambda);
         sc.useDelimiter("&");
         do {
             token = sc.next();
             // if the token is a &, do not do anything
             if (!"&".equals(token)) {
-                // if the token is an actor declaration, add it to the actors map
-                if (token.matches(".*exists \\w+\\..*")) {
+                if (token.matches(varDeclaration)) {
                     Matcher m = varIdPattern.matcher(token);
                     Matcher n = varNamePattern.matcher(token);
                     if (m.find() && n.find()) {
@@ -164,7 +202,6 @@ public class Formula {
                 }
             }
         } while (sc.hasNext());
-        return newFormula;
     }
 
     /**
