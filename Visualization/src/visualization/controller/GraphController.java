@@ -16,6 +16,7 @@ import visualization.graph.Graph;
 import visualization.graph.Link;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
+import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
@@ -83,7 +84,6 @@ public class GraphController implements Parametrable<String> {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         FRLayout<Node, Link> layout = new FRLayout<>(jungGraph);
         layout.setSize(new Dimension(600,600));
-
         BasicVisualizationServer<Node, Link> vv = new BasicVisualizationServer<Node, Link>(layout);
 
         //links text
@@ -178,9 +178,6 @@ public class GraphController implements Parametrable<String> {
             }
         });
 
-
-
-
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
 
@@ -191,7 +188,6 @@ public class GraphController implements Parametrable<String> {
                     Point2D pos = layout.transform(n);
                     if((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
                             && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() +10)){
-                        System.out.println(n.toString());
                         selected = n;
                     }
                 }
@@ -206,6 +202,13 @@ public class GraphController implements Parametrable<String> {
                     layout.setLocation(selected, new Point2D.Double(event.getX(),event.getY()));
                     vv.repaint();
                 }
+            }
+        });
+
+        sn.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                selected = null;
             }
         });
 

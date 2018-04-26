@@ -151,7 +151,6 @@ public class OutputController implements Stageable {
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
             treeCont.getChildren().add(treePane);
-
         }
         ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
         ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
@@ -210,9 +209,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the graph representation of the lambda
      */
     private TitledPane initGraph(String... lambda) {
-        TitledPane loadedPane;
-
-        loadedPane = getLoadedPane(lambda, "../view/graph.fxml");
+        TitledPane loadedPane = getLoadedPane(lambda, "../view/graph.fxml");;
         return loadedPane;
     }
 
@@ -223,9 +220,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the DRS representation of the lambda
      */
     private TitledPane initBox(String... lambda) {
-        TitledPane loadedPane;
-
-        loadedPane = getLoadedPane(lambda, "../view/box.fxml");
+        TitledPane loadedPane = getLoadedPane(lambda, "../view/box.fxml");
         return loadedPane;
     }
 
@@ -235,9 +230,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the Tree representation of the lambda
      */
     private TitledPane initTree(String... lambda){
-        TitledPane loadedPane;
-
-        loadedPane = getLoadedPane(lambda,"../view/tree.fxml");
+        TitledPane loadedPane = getLoadedPane(lambda,"../view/tree.fxml");
         return loadedPane;
     }
 
@@ -251,8 +244,8 @@ public class OutputController implements Stageable {
         this.view = primaryStage;
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
                 Platform.runLater(this::setDividerPosition);
-            System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
-        System.out.println("test initStage");};
+            /*System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
+        System.out.println("test initStage");*/};
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
     }
