@@ -181,4 +181,12 @@ public class Tools {
             return ALL;
         }
     }
+
+    /**
+     * Enum for the parser types.
+     */
+    public enum ParserTypes {
+        CLASSIC,
+        EVENT
+    }
 }
