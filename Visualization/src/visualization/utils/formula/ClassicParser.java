@@ -101,7 +101,13 @@ public class ClassicParser extends BaseParser {
                     }
                 }
             }
-        } while (sc.hasNext());
+        }while (sc.hasNext());
+
+        //check if there is any negation in the sentence
+        if(sentence.contains("-")){
+            System.out.println("Negation : " + sentence + " at " + sentence.indexOf('-'));
+        }
+
         return parseResult;
     }
 }
