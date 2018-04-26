@@ -11,6 +11,14 @@ import java.util.List;
  */
 public class Event extends BaseNode {
     /**
+     * The subject of this event.
+     */
+    private Actor subject;
+    /**
+     * The object of this event.
+     */
+    private Actor object;
+    /**
      * The actors taking part in this event in the formula.
      */
     private List<Actor> actors = new ArrayList<>();
@@ -37,6 +45,42 @@ public class Event extends BaseNode {
      */
     public List<Actor> getActors() {
         return actors;
+    }
+
+    /**
+     * Get the subject of this event.
+     *
+     * @return a {@link Actor} which is the subject of this event
+     */
+    public Actor getSubject() {
+        return subject;
+    }
+
+    /**
+     * Set the subject of this event.
+     *
+     * @param subject the subject to set
+     */
+    public void setSubject(Actor subject) {
+        this.subject = subject;
+    }
+
+    /**
+     * Get the object of this event.
+     *
+     * @return a {@link Actor} which is the object of this event
+     */
+    public Actor getObject() {
+        return object;
+    }
+
+    /**
+     * Set the object of this event.
+     *
+     * @param object the object to set
+     */
+    public void setObject(Actor object) {
+        this.object = object;
     }
 
     /**

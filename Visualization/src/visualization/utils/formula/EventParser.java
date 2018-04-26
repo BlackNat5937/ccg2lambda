@@ -1,5 +1,12 @@
 package visualization.utils.formula;
 
+import visualization.utils.formula.node.Actor;
+import visualization.utils.formula.node.Conjunction;
+import visualization.utils.formula.node.Event;
+import visualization.utils.formula.node.FormulaNode;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -8,31 +15,38 @@ import java.util.Scanner;
  * @author Gaétan Basile
  */
 public class EventParser extends BaseParser {
+    /**
+     * Pattern for the declaration of an events subject
+     */
+    private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
+
     EventParser() {
     }
 
-    private static void registerVariable(String token) {
-        if (!token.isEmpty()) {
-            token = token.trim();
-            String[] parts = token.split(" ");
-            //if the token is indeed a variable declaration,
-            if (parts[0].equals("exists") && parts.length == 2) {
-                String[] declaration = parts[1].split("\\.");
-                //then it is either an event,
-                if (declaration[0].matches("e\\d*")) {
-                }
-                //or a standard variable.
-                else {
-                    String varId = declaration[0];
-                    String varName = declaration[1].substring(declaration[1].indexOf("_"), declaration[1].length() - 1);
-                }
+    private void registerVariable(String token) {
+        String[] parts = token.split(" ");
+        //if the token is indeed a variable declaration,
+        if (parts[0].equals("exists") && parts.length >= 2) {
+            String[] declaration = parts[1].split("\\.");
+
+            String varId = declaration[0];
+            String varName = declaration[1].substring(
+                    declaration[1].indexOf("_") + 1,
+                    declaration[1].length() - (1 + 2));
+            //then it is either an event,
+            if (declaration[0].matches("e\\d*")) {
+                parseResult.getEvents().put(varId, new Event(varId, varName));
+            }
+            //or a standard variable.
+            else {
+                parseResult.getActors().put(varId, new Actor(varId, varName));
             }
         }
     }
 
     @Override
     public Formula parse(String lambda, String sentence) {
-        parseResult = new Formula(ClassicParser.simplifyLambda(lambda), sentence);
+        parseResult = new Formula(BaseParser.simplifyLambda(lambda), sentence);
 
         eventNumber = 0;
         conjunctionNumber = 0;
@@ -45,11 +59,63 @@ public class EventParser extends BaseParser {
         sc.useDelimiter("&");
         do {
             token = sc.next();
-            // if the token is a declaration of a variable,
-            if (token.matches(varDeclaration)) {
-                registerVariable(token);
+            token = token.trim();
+            if (!token.isEmpty()) {
+                // if the token is a declaration of a variable,
+                if (token.matches(varDeclaration)) {
+                    registerVariable(token);
+                }
+                // or if it is a declaration of the subject of an event variable,
+                else if (token.matches(eventSubjectDeclaration)) {
+                    registerEventSubject(token);
+                }
+                // or if it anything else (a conjunction),
+                else {
+                    registerConjunction(token);
+                }
             }
         } while (sc.hasNext());
-        return null;
+        return parseResult;
+    }
+
+    private void registerConjunction(String token) {
+        String[] parts = token.split("\\(");
+        if (parts[0].startsWith("_") && parts.length >= 2) {
+            String varId = "c" + conjunctionNumber;
+            String varName = parts[0].substring(1);
+            conjunctionNumber++;
+
+            String[] joined = parts[1].split("\\)");
+            joined = joined[0].split(",");
+
+            List<FormulaNode> joinedNodes = new ArrayList<>();
+            for (String s : joined) {
+                FormulaNode node;
+                //its an event
+                if (s.startsWith("e")) node = parseResult.getEvents().get(s);
+                    //its a conjunction
+                else if (s.startsWith("c")) node = parseResult.getConjunctions().get(s);
+                    //its an actor
+                else node = parseResult.getActors().get(s);
+                if (node != null)
+                    joinedNodes.add(node);
+            }
+            parseResult.getConjunctions().put(varId,
+                    new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0])));
+        }
+    }
+
+    private void registerEventSubject(String token) {
+        String[] parts = token.split("\\)");
+        if (parts[0].contains("Subj") && parts.length >= 2) {
+            String varId = parts[0].substring(parts[0].length() - 1);
+            String subjId = parts[1].substring(parts[1].length() - 1);
+
+            Actor subject = parseResult.getActors().get(subjId);
+
+            Event event = parseResult.getEvents().get(varId);
+            event.setSubject(subject);
+            event.getActors().add(subject);
+        }
     }
 }
