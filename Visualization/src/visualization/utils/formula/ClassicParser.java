@@ -139,7 +139,7 @@ public class ClassicParser extends BaseParser {
         // two cases : exists or directly the event being negated
 
         if(scope.matches(varDeclaration)){
-            System.out.println(scope.substring(scope.indexOf('_'),scope.indexOf(')')));
+            System.out.println(scope.substring(scope.charAt('('),scope.indexOf("))")).split("&").toString());
         }
         else{
 
