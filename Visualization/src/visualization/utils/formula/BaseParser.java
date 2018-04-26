@@ -25,6 +25,7 @@ public abstract class BaseParser implements FormulaParser {
      * The formula this ClassicParser returns.
      */
     Formula parseResult;
+    int actorNumber = 0;
     /**
      * The number of the current event node.
      */

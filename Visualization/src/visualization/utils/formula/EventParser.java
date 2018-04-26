@@ -23,31 +23,11 @@ public class EventParser extends BaseParser {
     EventParser() {
     }
 
-    private void registerVariable(String token) {
-        String[] parts = token.split(" ");
-        //if the token is indeed a variable declaration,
-        if (parts[0].equals("exists") && parts.length >= 2) {
-            String[] declaration = parts[1].split("\\.");
-
-            String varId = declaration[0];
-            String varName = declaration[1].substring(
-                    declaration[1].indexOf("_") + 1,
-                    declaration[1].length() - (1 + 2));
-            //then it is either an event,
-            if (declaration[0].matches("e\\d*")) {
-                parseResult.getEvents().put(varId, new Event(varId, varName));
-            }
-            //or a standard variable.
-            else {
-                parseResult.getActors().put(varId, new Actor(varId, varName));
-            }
-        }
-    }
-
     @Override
     public Formula parse(String lambda, String sentence) {
         parseResult = new Formula(BaseParser.simplifyLambda(lambda), sentence);
 
+        actorNumber = 0;
         eventNumber = 0;
         conjunctionNumber = 0;
 
@@ -78,6 +58,43 @@ public class EventParser extends BaseParser {
         return parseResult;
     }
 
+    private void registerVariable(String token) {
+        String[] parts = token.split(" ");
+        //if the token is indeed a variable declaration,
+        if (parts[0].equals("exists") && parts.length >= 2) {
+            String[] declaration = parts[1].split("\\.");
+
+            String varId = declaration[0] + actorNumber;
+            String varName = declaration[1].substring(
+                    declaration[1].indexOf("_") + 1,
+                    declaration[1].length() - (1 + 2));
+            actorNumber++;
+
+            //then it is either an event,
+            if (declaration[0].matches("e\\d*")) {
+                parseResult.getEvents().put(varId, new Event(varId, varName));
+            }
+            //or a standard variable.
+            else {
+                parseResult.getActors().put(varId, new Actor(varId, varName));
+            }
+        }
+    }
+
+    private void registerEventSubject(String token) {
+        String[] parts = token.split("\\)");
+        if (parts[0].contains("Subj") && parts.length >= 2) {
+            String varId = parts[0].substring(parts[0].length() - 1);
+            String subjId = parts[1].substring(parts[1].length() - 1);
+
+            Actor subject = parseResult.getActors().get(subjId);
+
+            Event event = parseResult.getEvents().get(varId);
+            event.setSubject(subject);
+            event.getActors().add(subject);
+        }
+    }
+
     private void registerConjunction(String token) {
         String[] parts = token.split("\\(");
         if (parts[0].startsWith("_") && parts.length >= 2) {
@@ -102,20 +119,6 @@ public class EventParser extends BaseParser {
             }
             parseResult.getConjunctions().put(varId,
                     new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0])));
-        }
-    }
-
-    private void registerEventSubject(String token) {
-        String[] parts = token.split("\\)");
-        if (parts[0].contains("Subj") && parts.length >= 2) {
-            String varId = parts[0].substring(parts[0].length() - 1);
-            String subjId = parts[1].substring(parts[1].length() - 1);
-
-            Actor subject = parseResult.getActors().get(subjId);
-
-            Event event = parseResult.getEvents().get(varId);
-            event.setSubject(subject);
-            event.getActors().add(subject);
         }
     }
 }
