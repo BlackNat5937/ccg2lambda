@@ -199,7 +199,17 @@ public class InputController implements Stageable {
         progress.set(0.25);
         if (!isWindows) {
             launchScript();
-            Main.xmlSemanticsFile = new File("../sentences.sem.xml");
+            switch (Main.selectedParserType) {
+
+                case CLASSIC:
+                    Main.xmlSemanticsFile = new File("../sentences.sem.xml");
+
+                    break;
+                case EVENT:
+                    Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+
+                    break;
+            }
             openResultsWindow();
         } else {
             progress.set(0.0);
@@ -241,6 +251,8 @@ public class InputController implements Stageable {
         //script
         System.out.println(System.getProperty("os.name"));
 
+        System.out.println("  parser type : " + Main.selectedParserType);
+
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
         if (Main.selectedParserType == Tools.ParserTypes.CLASSIC) {
@@ -267,7 +279,23 @@ public class InputController implements Stageable {
             try {
 
                 File parsedDirectory = new File("../parsed");
-                File resultDirectory = new File("../result");
+                File resultDirectory = new File("../results");
+
+                try {
+                    for (File file : parsedDirectory.listFiles()) {
+                        Files.deleteIfExists(file.toPath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    for (File file : resultDirectory.listFiles()) {
+                        Files.deleteIfExists(file.toPath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 Files.deleteIfExists(parsedDirectory.toPath());
                 Files.deleteIfExists(resultDirectory.toPath());
@@ -410,7 +438,7 @@ public class InputController implements Stageable {
     public void setParser() {
         if (radioParserEvent.isSelected()) {
             System.out.println("parser event");
-            //   Main.selectedParserType = Tools.ParserTypes.EVENT;
+            Main.selectedParserType = Tools.ParserTypes.EVENT;
         } else if (radioParserClassic.isSelected()) {
             System.out.println("parser classic");
             Main.selectedParserType = Tools.ParserTypes.CLASSIC;

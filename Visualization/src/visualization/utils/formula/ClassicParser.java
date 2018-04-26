@@ -105,6 +105,7 @@ public class ClassicParser extends BaseParser {
             int indexEnd = indexStart;
             int cptBracket = 0;
             boolean firstTime = true;
+            System.out.println("parseResult get lambda : " + parseResult.getLambda());
 
             while ((firstTime || cptBracket > 0) && indexEnd < parseResult.getLambda().length()) {
                 if (parseResult.getLambda().charAt(indexEnd) == '(') {
