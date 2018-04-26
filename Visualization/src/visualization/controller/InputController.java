@@ -16,6 +16,7 @@ import visualization.Main;
 import visualization.utils.Tools;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Objects;
 
 /**
@@ -120,8 +121,11 @@ public class InputController implements Stageable {
         }
     }
 
+    /**
+     * initialize the parser selection
+     */
     private void initMenuParser() {
-        radioParserClassic.setSelected(false);
+        radioParserClassic.setSelected(true);
         radioParserEvent.setSelected(false);
     }
 
@@ -239,26 +243,48 @@ public class InputController implements Stageable {
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
+        if (Main.selectedParserType == Tools.ParserTypes.CLASSIC) {
+            try {
+                System.out.println("tokenize");
+                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
+                progress.set(0.50);
+                process.waitFor();
 
-        try {
-            System.out.println("tokenize");
-            process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
-            progress.set(0.50);
-            process.waitFor();
+                System.out.println("ccgParser");
+                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
+                progress.set(0.75);
+                process.waitFor();
 
-            System.out.println("ccgParser");
-            process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
-            progress.set(0.75);
-            process.waitFor();
+                System.out.println("python script");
+                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
+                progress.set(1.00);
+                process.waitFor();
 
-            System.out.println("python script");
-            process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
-            progress.set(1.00);
-            process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else if (Main.selectedParserType == Tools.ParserTypes.EVENT) {
+            try {
 
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+                File parsedDirectory = new File("../parsed");
+                File resultDirectory = new File("../result");
+
+
+                    Files.deleteIfExists(parsedDirectory.toPath());
+                    Files.deleteIfExists(resultDirectory.toPath());
+
+
+                System.out.println("python parser event script");
+                process = new ProcessBuilder("./src/visualization/scripts/scriptParserEvent.sh", ccg2lambdaPath).start();
+                progress.set(1.00);
+                process.waitFor();
+
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
+
     }
 
     /**
@@ -383,23 +409,19 @@ public class InputController implements Stageable {
      * For setting the parser
      */
     public void setParser() {
-        System.out.println("test radio");
-
-
         if (radioParserEvent.isSelected()) {
-            System.out.println("radio event");
+            System.out.println("parser event");
+            //   Main.selectedParserType = Tools.ParserTypes.EVENT;
+        } else if (radioParserClassic.isSelected()) {
+            System.out.println("parser classic");
+            Main.selectedParserType = Tools.ParserTypes.CLASSIC;
         }
-        else if (radioParserClassic.isSelected()) {
-            System.out.println("radio classic");
-        }
-
-
     }
 
     /**
      * set the event parser
      */
-    public void setParserEvent(){
+    public void setParserEvent() {
         radioParserEvent.setSelected(true);
         radioParserClassic.setSelected(false);
         setParser();
@@ -408,7 +430,7 @@ public class InputController implements Stageable {
     /**
      * set the classic parser
      */
-    public void setParserClassic(){
+    public void setParserClassic() {
         radioParserClassic.setSelected(true);
         radioParserEvent.setSelected(false);
         setParser();
