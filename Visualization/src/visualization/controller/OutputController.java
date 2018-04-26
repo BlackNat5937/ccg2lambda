@@ -176,7 +176,17 @@ public class OutputController implements Stageable {
         treeTab.setDisable(false);
         final WebEngine webEngine = treeContHtml.getEngine();
         treeContHtml.setZoom(2.0);
-        webEngine.load(Paths.get("../sentences.html").toUri().toString());
+        switch (Main.selectedParserType) {
+
+            case CLASSIC:
+                webEngine.load(Paths.get("../sentences.html").toUri().toString());
+
+                break;
+            case EVENT:
+                webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+
+                break;
+        }
 
     }
 
@@ -209,7 +219,8 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the graph representation of the lambda
      */
     private TitledPane initGraph(String... lambda) {
-        TitledPane loadedPane = getLoadedPane(lambda, "../view/graph.fxml");;
+        TitledPane loadedPane = getLoadedPane(lambda, "../view/graph.fxml");
+        ;
         return loadedPane;
     }
 
@@ -226,11 +237,12 @@ public class OutputController implements Stageable {
 
     /**
      * Initializes a Tree representation of a lambda
+     *
      * @param lambda the lambda to get a representation of
      * @return a TitledPane with the Tree representation of the lambda
      */
-    private TitledPane initTree(String... lambda){
-        TitledPane loadedPane = getLoadedPane(lambda,"../view/tree.fxml");
+    private TitledPane initTree(String... lambda) {
+        TitledPane loadedPane = getLoadedPane(lambda, "../view/tree.fxml");
         return loadedPane;
     }
 
@@ -242,10 +254,11 @@ public class OutputController implements Stageable {
     @Override
     public void initStage(Stage primaryStage) {
         this.view = primaryStage;
-        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
-                Platform.runLater(this::setDividerPosition);
+        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
+            Platform.runLater(this::setDividerPosition);
             /*System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
-        System.out.println("test initStage");*/};
+        System.out.println("test initStage");*/
+        };
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
     }
