@@ -139,10 +139,12 @@ public class ClassicParser extends BaseParser {
         // two cases : exists or directly the event being negated
 
         if(scope.matches(varDeclaration)){
-            String subScope =  scope.substring(scope.indexOf(".("), scope.indexOf("))"));
+            String subScope =  scope.substring(scope.indexOf("_"), scope.indexOf("))")) + ")";
             System.out.println(subScope);
             String[] subStringScope = subScope.split("&");
-            System.out.println(subStringScope.toString());
+            for(String s : subStringScope){
+                System.out.println(s);
+            }
         }
         else{
 
