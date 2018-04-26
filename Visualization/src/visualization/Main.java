@@ -34,6 +34,10 @@ public class Main extends Application {
      */
     public static Tools.ApplicationModes applicationMode = Tools.ApplicationModes.UI;
     /**
+     * Selected parser type; By default CLASSIC.
+     */
+    public static Tools.ParserTypes selectedParserType = Tools.ParserTypes.CLASSIC;
+    /**
      * The file containing the semantics representations output by ccg2lambda.
      */
     public static File xmlSemanticsFile;
