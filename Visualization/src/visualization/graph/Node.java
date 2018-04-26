@@ -10,7 +10,6 @@ public class Node{
     private String label;
     private NodeType nodeType;
     private ArrayList<Link> links = new ArrayList<>();
-    private int x, y;
     private boolean visited;
 
     public Node(String label, NodeType nodeType){
@@ -51,22 +50,6 @@ public class Node{
 
     public void setNodeType(NodeType nodeType) {
         this.nodeType = nodeType;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
     }
 
     public boolean isVisited() {

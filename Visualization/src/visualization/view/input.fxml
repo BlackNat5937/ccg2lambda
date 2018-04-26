@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
-            fx:controller="visualization.controller.InputController">
+
+<BorderPane xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.InputController">
    <center>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0">
           <top>
@@ -16,20 +26,17 @@
                   <BorderPane.margin>
                       <Insets left="10.0" right="10.0" top="10.0" />
                   </BorderPane.margin>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Write a sentence" textAlignment="CENTER"
-                        textOrigin="TOP" wrappingWidth="115.626953125" HBox.hgrow="NEVER">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Write a sentence" textAlignment="CENTER" textOrigin="TOP" wrappingWidth="115.626953125" HBox.hgrow="NEVER">
                       <HBox.margin>
-                          <Insets right="10.0"/>
+                          <Insets right="10.0" />
                       </HBox.margin>
                   </Text>
-                  <TextField fx:id="sentenceField" onAction="#enterPressed" prefHeight="26.0" prefWidth="635.0"
-                             HBox.hgrow="ALWAYS">
+                  <TextField fx:id="sentenceField" onAction="#enterPressed" prefHeight="26.0" prefWidth="635.0" HBox.hgrow="ALWAYS">
                       <HBox.margin>
-                          <Insets right="10.0"/>
+                          <Insets right="10.0" />
                       </HBox.margin>
                   </TextField>
-                  <Button fx:id="addSentenceButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addSentence"
-                          text="Add" HBox.hgrow="NEVER"/>
+                  <Button fx:id="addSentenceButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addSentence" text="Add" HBox.hgrow="NEVER" />
               </HBox>
           </top>
           <center>
@@ -42,18 +49,17 @@
           <bottom>
               <VBox minHeight="-Infinity" prefHeight="45.0" prefWidth="100.0" BorderPane.alignment="TOP_CENTER">
                   <BorderPane.margin>
-                      <Insets bottom="10.0"/>
+                      <Insets bottom="10.0" />
                   </BorderPane.margin>
                   <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="NEVER">
                       <VBox.margin>
-                          <Insets bottom="10.0"/>
+                          <Insets bottom="10.0" />
                       </VBox.margin>
-                      <Button fx:id="startProcessingButton" mnemonicParsing="false" onAction="#visualize"
-                              text="Visualize"/>
+                      <Button fx:id="startProcessingButton" mnemonicParsing="false" onAction="#visualize" text="Visualize" />
                   </StackPane>
                   <ProgressBar fx:id="visualizationProgressBar" maxWidth="1.7976931348623157E308" progress="0.0">
                       <VBox.margin>
-                          <Insets/>
+                          <Insets />
                       </VBox.margin>
                   </ProgressBar>
               </VBox>
@@ -63,13 +69,17 @@
    <top>
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Settings">
-               <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation"
-                         text="ccg2lambda location"/>
+               <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation" text="ccg2lambda location" />
+            <Menu fx:id="menuParser" mnemonicParsing="false" text="Parser Choice">
+              <items>
+                  <RadioMenuItem fx:id="radioParserEvent" mnemonicParsing="false" onAction="#setParserEvent" text="Parser event" />
+                  <RadioMenuItem fx:id="radioParserClassic" mnemonicParsing="false" onAction="#setParserClassic" text="Parser classic" />
+              </items>
+            </Menu>
            </Menu>
            <Menu mnemonicParsing="false" text="Help">
-               <MenuItem fx:id="showInformationItem" mnemonicParsing="false" onAction="#displayInformation"
-                         text="About"/>
-               <MenuItem fx:id="showReadMeItem" mnemonicParsing="false" onAction="#displayReadme" text="ReadMe"/>
+               <MenuItem fx:id="showInformationItem" mnemonicParsing="false" onAction="#displayInformation" text="About" />
+               <MenuItem fx:id="showReadMeItem" mnemonicParsing="false" onAction="#displayReadme" text="ReadMe" />
            </Menu>
        </MenuBar>
    </top>

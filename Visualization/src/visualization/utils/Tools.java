@@ -27,6 +27,9 @@ public class Tools {
     public static final Number[] windowSize = {
             800, 600
     };
+    public static Number[] titledSize = {
+            0,0
+    };
     /**
      * Config file path.
      */

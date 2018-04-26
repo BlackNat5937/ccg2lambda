@@ -34,7 +34,7 @@ public class TreeController implements Parametrable<String> {
 
         child.getChildren().add(new Tree("Child 1-1"));
 
-        System.out.println(tree.toString());
+        //System.out.println(tree.toString());
 
         TreeItem<String> ti = new TreeItem<>(tree.getLabel());
         displayTree(tree, ti);

@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import visualization.Main;
 import visualization.utils.Tools;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Objects;
 
 /**
@@ -43,6 +45,21 @@ public class InputController implements Stageable {
     public MenuItem setccg2lambdaLocationItem;
     /**
      * MenuItem for showing information about the software.
+     */
+    @FXML
+    public Menu menuParser;
+    /**
+     * Menu for choosing the parser
+     */
+    @FXML
+    public RadioMenuItem radioParserEvent;
+    /**
+     * Radio menu parser for the parser event
+     */
+    @FXML
+    public RadioMenuItem radioParserClassic;
+    /**
+     * Radio menu parser for the parser classic
      */
     @FXML
     public MenuItem showInformationItem;
@@ -84,6 +101,10 @@ public class InputController implements Stageable {
      */
     private Stage view;
 
+    /**
+     * For first time program is launch, install the virtual environment for python
+     */
+    private boolean firstTime;
 
     /**
      * Initializes the view.
@@ -93,6 +114,7 @@ public class InputController implements Stageable {
         try {
             checkConfigAndInitializeEnvironment();
             initListView();
+            initMenuParser();
             visualizationProgressBar.progressProperty().bindBidirectional(progress);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -100,9 +122,13 @@ public class InputController implements Stageable {
     }
 
     /**
-     * For first time program is launch, install the virtual environment for python
+     * initialize the parser selection
      */
-    private boolean firstTime;
+    private void initMenuParser() {
+        radioParserClassic.setSelected(true);
+        radioParserEvent.setSelected(false);
+    }
+
 
     /**
      * Initializes the context menus for each listView item.
@@ -132,6 +158,7 @@ public class InputController implements Stageable {
             return cell;
         });
     }
+
 
     /**
      * Adds the sentence in the textField to the list.
@@ -216,28 +243,56 @@ public class InputController implements Stageable {
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
+        if (Main.selectedParserType == Tools.ParserTypes.CLASSIC) {
+            try {
+                System.out.println("tokenize");
+                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
+                progress.set(0.50);
+                process.waitFor();
 
-        try {
-            System.out.println("tokenize");
-            process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
-            progress.set(0.50);
-            process.waitFor();
+                System.out.println("ccgParser");
+                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
+                progress.set(0.75);
+                process.waitFor();
 
-            System.out.println("ccgParser");
-            process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
-            progress.set(0.75);
-            process.waitFor();
+                System.out.println("python script");
+                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
+                progress.set(1.00);
+                process.waitFor();
 
-            System.out.println("python script");
-            process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
-            progress.set(1.00);
-            process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else if (Main.selectedParserType == Tools.ParserTypes.EVENT) {
+            try {
 
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+                File parsedDirectory = new File("../parsed");
+                File resultDirectory = new File("../result");
+
+
+                    Files.deleteIfExists(parsedDirectory.toPath());
+                    Files.deleteIfExists(resultDirectory.toPath());
+
+
+                System.out.println("python parser event script");
+                process = new ProcessBuilder("./src/visualization/scripts/scriptParserEvent.sh", ccg2lambdaPath).start();
+                progress.set(1.00);
+                process.waitFor();
+
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
+
     }
 
+    /**
+     * Check if the user already got the python virtual environment, if not, the software install it
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
         // firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) && (!Tools.configFile.exists() && Tools.configFile.isFile());
@@ -251,9 +306,9 @@ public class InputController implements Stageable {
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
-           boolean ok = true;
+            boolean ok = true;
             try {
-                 ok = Tools.configFile.createNewFile();
+                ok = Tools.configFile.createNewFile();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -326,6 +381,11 @@ public class InputController implements Stageable {
         Main.openLink(url);
     }
 
+    /**
+     * for choosing ghe ccg2lambda location file
+     *
+     * @return
+     */
     public File setccg2lambdaLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select ccg2lambda installation directory");
@@ -344,4 +404,36 @@ public class InputController implements Stageable {
     public void initStage(Stage primaryStage) {
         this.view = primaryStage;
     }
+
+    /**
+     * For setting the parser
+     */
+    public void setParser() {
+        if (radioParserEvent.isSelected()) {
+            System.out.println("parser event");
+            //   Main.selectedParserType = Tools.ParserTypes.EVENT;
+        } else if (radioParserClassic.isSelected()) {
+            System.out.println("parser classic");
+            Main.selectedParserType = Tools.ParserTypes.CLASSIC;
+        }
+    }
+
+    /**
+     * set the event parser
+     */
+    public void setParserEvent() {
+        radioParserEvent.setSelected(true);
+        radioParserClassic.setSelected(false);
+        setParser();
+    }
+
+    /**
+     * set the classic parser
+     */
+    public void setParserClassic() {
+        radioParserClassic.setSelected(true);
+        radioParserEvent.setSelected(false);
+        setParser();
+    }
+
 }
