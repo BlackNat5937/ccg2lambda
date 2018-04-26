@@ -5,6 +5,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import visualization.utils.formula.Formula;
+import visualization.utils.formula.FormulaParser;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
@@ -56,7 +57,8 @@ public class BoxController implements Parametrable<String> {
     public void initData(String... data) {
         if (data.length < 2)
             throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
-        this.formula = Formula.parse(data[0], data[1]);
+        FormulaParser parser = Formula.getParser();
+        this.formula = parser.parse(data[0], data[1]);
 
         createContent();
         createHeader();

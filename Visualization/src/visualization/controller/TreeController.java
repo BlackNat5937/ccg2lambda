@@ -6,6 +6,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import visualization.tree.Tree;
 import visualization.utils.formula.Formula;
+import visualization.utils.formula.FormulaParser;
 
 public class TreeController implements Parametrable<String> {
 
@@ -21,8 +22,8 @@ public class TreeController implements Parametrable<String> {
     public void initData(String... data) {
         if (data.length < 2)
             throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
-
-        this.formula = Formula.parse(data[0], data[1]);
+        FormulaParser parser = Formula.getParser();
+        this.formula = parser.parse(data[0], data[1]);
 
         Tree tree = new Tree("Test");
 
@@ -44,8 +45,8 @@ public class TreeController implements Parametrable<String> {
         box.setText(data[0]);
     }
 
-    private void displayTree(Tree tree, TreeItem<String> ti){
-        for (Tree child : tree.getChildren()){
+    private void displayTree(Tree tree, TreeItem<String> ti) {
+        for (Tree child : tree.getChildren()) {
             TreeItem<String> tiChild = new TreeItem<>(child.getLabel());
             ti.getChildren().add(tiChild);
             displayTree(child, tiChild);
