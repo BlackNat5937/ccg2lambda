@@ -3,19 +3,14 @@ package visualization.controller;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.embed.swing.SwingNode;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.WritableImage;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
 import visualization.graph.Graph;
 import visualization.graph.Link;
@@ -27,14 +22,9 @@ import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.FormulaNode;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
+
 
 
 public class GraphController implements Parametrable<String> {
@@ -46,6 +36,8 @@ public class GraphController implements Parametrable<String> {
     private Pane testPane;
 
     private Formula formula;
+
+    private Node selected;
 
     public void initData(String... data) {
         if (data.length < 2)
@@ -90,9 +82,10 @@ public class GraphController implements Parametrable<String> {
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         FRLayout<Node, Link> layout = new FRLayout<>(jungGraph);
-        layout.setSize(new Dimension(500, 500));
+        layout.setSize(new Dimension(600,600));
 
         BasicVisualizationServer<Node, Link> vv = new BasicVisualizationServer<Node, Link>(layout);
+
         //links text
         vv.getRenderContext().setEdgeLabelTransformer(new Transformer<Link, String>() {
             @Override
@@ -185,9 +178,67 @@ public class GraphController implements Parametrable<String> {
             }
         });
 
+
+
+
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
+
+        sn.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                for(Node n : layout.getGraph().getVertices()){
+                    Point2D pos = layout.transform(n);
+                    if((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
+                            && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() +10)){
+                        System.out.println(n.toString());
+                        selected = n;
+                    }
+                }
+            }
+        });
+
+        sn.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height)
+                {
+                    layout.setLocation(selected, new Point2D.Double(event.getX(),event.getY()));
+                    vv.repaint();
+                }
+            }
+        });
+
+        /*sn.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                selected = null;
+            }
+        });*/
+
+
         testPane.getChildren().add(sn);
+
+
+        //negation zone
+        /*javafx.scene.shape.Polygon negationZone = new javafx.scene.shape.Polygon();
+        javafx.scene.paint.Paint p = javafx.scene.paint.Color.rgb(255,50,0);
+
+        for(Node n : layout.getGraph().getVertices()){
+            Point2D pos = layout.transform(n);
+
+            negationZone.getPoints().add(pos.getX());
+            negationZone.getPoints().add(pos.getY());
+            negationZone.setOpacity(0.3);
+            negationZone.setStroke(javafx.scene.paint.Color.RED);
+            negationZone.setStrokeWidth(10.0);
+            negationZone.setFill(p);
+
+        }
+
+        testPane.getChildren().add(negationZone); */
+
+
     }
 
 
