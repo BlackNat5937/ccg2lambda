@@ -6,6 +6,7 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -34,7 +35,7 @@ public class GraphController implements Parametrable<String> {
     private TitledPane box;
 
     @FXML
-    private Pane testPane;
+    private ScrollPane sp;
 
     private Formula formula;
 
@@ -83,7 +84,7 @@ public class GraphController implements Parametrable<String> {
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         FRLayout<Node, Link> layout = new FRLayout<>(jungGraph);
-        layout.setSize(new Dimension(600,600));
+        layout.setSize(new Dimension(600,500));
         BasicVisualizationServer<Node, Link> vv = new BasicVisualizationServer<Node, Link>(layout);
 
         //links text
@@ -220,9 +221,9 @@ public class GraphController implements Parametrable<String> {
         });*/
 
 
-        testPane.getChildren().add(sn);
+        //testPane.getChildren().add(sn);
 
-
+        sp.setContent(sn);
         //negation zone
         /*javafx.scene.shape.Polygon negationZone = new javafx.scene.shape.Polygon();
         javafx.scene.paint.Paint p = javafx.scene.paint.Color.rgb(255,50,0);
