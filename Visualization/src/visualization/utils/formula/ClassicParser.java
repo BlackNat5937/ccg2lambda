@@ -1,9 +1,6 @@
 package visualization.utils.formula;
 
-import visualization.utils.formula.node.Actor;
-import visualization.utils.formula.node.BaseNode;
-import visualization.utils.formula.node.Conjunction;
-import visualization.utils.formula.node.Event;
+import visualization.utils.formula.node.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,13 +119,33 @@ public class ClassicParser extends BaseParser {
                 indexEnd++;
             }
 
-            System.out.println(" Start : " + indexStart + " | End : " + indexEnd);
-            System.out.println(parseResult.getLambda().substring(indexStart, indexEnd));
+            String scope = parseResult.getLambda().substring(indexStart, indexEnd);
+            System.out.println(scope);
+            Negation n = getNegationFromScope(scope);
 
+        }
+
+        return parseResult;
+    }
+
+    /**
+     * Parse the scope of the negation
+     * @param scope
+     * @return the node Negation containing all nodes that are negated
+     */
+    public Negation getNegationFromScope(String scope){
+        Negation n = new Negation();
+
+        // two cases : exists or directly the event being negated
+
+        if(scope.matches(varDeclaration)){
+            System.out.println(scope.substring(scope.indexOf('_'),scope.indexOf(')')));
+        }
+        else{
 
         }
 
 
-        return parseResult;
+        return n;
     }
 }
