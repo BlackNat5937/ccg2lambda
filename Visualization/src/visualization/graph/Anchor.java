@@ -56,7 +56,7 @@ public class Anchor extends Circle {
         final Delta dragDelta = new Delta();
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent mouseEvent) {
-                // record a delta distance for the drag and drop operation.
+                // record a delta distance for the drag and drop operation
                 dragDelta.x = getCenterX() - mouseEvent.getX();
                 dragDelta.y = getCenterY() - mouseEvent.getY();
                 getScene().setCursor(Cursor.MOVE);
@@ -103,6 +103,6 @@ public class Anchor extends Circle {
         this.selected = selected;
     }
 
-    // records relative x and y co-ordinates.
+    // records relative x and y co-ordinates
     private class Delta { double x, y; }
 }
