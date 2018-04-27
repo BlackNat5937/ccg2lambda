@@ -199,14 +199,11 @@ public class InputController implements Stageable {
         if (!isWindows) {
             launchScript();
             switch (Main.selectedTemplateType) {
-
                 case CLASSIC:
                     Main.xmlSemanticsFile = new File("../sentences.sem.xml");
-
                     break;
                 case EVENT:
                     Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
-
                     break;
             }
             openResultsWindow();
@@ -432,10 +429,10 @@ public class InputController implements Stageable {
      */
     public void setTemplate() {
         if (radioTemplateEvent.isSelected()) {
-            System.out.println("parser event");
+            System.out.println("template event");
             Main.selectedTemplateType = Tools.TemplateType.EVENT;
         } else if (radioTemplateClassic.isSelected()) {
-            System.out.println("parser classic");
+            System.out.println("template classic");
             Main.selectedTemplateType = Tools.TemplateType.CLASSIC;
         }
     }
