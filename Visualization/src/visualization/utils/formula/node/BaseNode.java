@@ -1,5 +1,8 @@
 package visualization.utils.formula.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Implements the interface and adds some functionality.
  *
@@ -14,6 +17,10 @@ public class BaseNode implements FormulaNode {
      * The name of the node, in general whatever word it used to be in the base sentence.
      */
     String name;
+    /**
+     * The nodes which are "equal" to this one in a semantic sense
+     */
+    List<BaseNode> equalities = new ArrayList<>();
 
     /**
      * Get the id of this node.
@@ -31,6 +38,15 @@ public class BaseNode implements FormulaNode {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Get the equalities of this node.s
+     *
+     * @return the equalities as a List.
+     */
+    public List<BaseNode> getEqualities() {
+        return equalities;
     }
 
     /**
