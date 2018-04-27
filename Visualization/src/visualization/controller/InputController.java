@@ -48,17 +48,17 @@ public class InputController implements Stageable {
     @FXML
     public Menu menuTemplate;
     /**
-     * Menu for choosing the parser
+     * Menu for choosing the template
      */
     @FXML
     public RadioMenuItem radioTemplateEvent;
     /**
-     * Radio menu parser for the parser event
+     * Radio menu template for the template event
      */
     @FXML
     public RadioMenuItem radioTemplateClassic;
     /**
-     * Radio menu parser for the parser classic
+     * Radio menu template for the template classic
      */
     @FXML
     public MenuItem showInformationItem;
@@ -113,7 +113,7 @@ public class InputController implements Stageable {
         try {
             checkConfigAndInitializeEnvironment();
             initListView();
-            initMenuParser();
+            initMenuTemplate();
             visualizationProgressBar.progressProperty().bindBidirectional(progress);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -121,9 +121,9 @@ public class InputController implements Stageable {
     }
 
     /**
-     * initialize the parser selection
+     * initialize the template selection
      */
-    private void initMenuParser() {
+    private void initMenuTemplate() {
         radioTemplateClassic.setSelected(true);
         radioTemplateEvent.setSelected(false);
     }
@@ -247,7 +247,7 @@ public class InputController implements Stageable {
         //script
         System.out.println(System.getProperty("os.name"));
 
-        System.out.println("  parser type : " + Main.selectedTemplateType);
+        System.out.println("  template type : " + Main.selectedTemplateType);
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
@@ -257,29 +257,30 @@ public class InputController implements Stageable {
 
         if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
             try {
-
-                /**
-                 * Check if their is file in the directory, if yes, delete them
-                 */
-                try {
-                    for (File file : parsedDirectory.listFiles()) {
-                        Files.deleteIfExists(file.toPath());
+                if (parsedDirectory.exists() && resultDirectory.exists()) {
+                    /**
+                     * Check if their is file in the directory, if yes, delete them
+                     */
+                    try {
+                        for (File file : parsedDirectory.listFiles()) {
+                            Files.deleteIfExists(file.toPath());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    for (File file : resultDirectory.listFiles()) {
-                        Files.deleteIfExists(file.toPath());
+                    try {
+                        for (File file : resultDirectory.listFiles()) {
+                            Files.deleteIfExists(file.toPath());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    /**
+                     * If the file already exist, delete them
+                     */
+                    Files.deleteIfExists(parsedDirectory.toPath());
+                    Files.deleteIfExists(resultDirectory.toPath());
                 }
-                /**
-                 * If the file already exist, delete them
-                 */
-                Files.deleteIfExists(parsedDirectory.toPath());
-                Files.deleteIfExists(resultDirectory.toPath());
 
                 System.out.println("tokenize");
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
@@ -301,28 +302,30 @@ public class InputController implements Stageable {
             }
         } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
             try {
-                /**
-                 * Check if their is file in the directory, if yes, delete them
-                 */
-                try {
-                    for (File file : parsedDirectory.listFiles()) {
-                        Files.deleteIfExists(file.toPath());
+                if (parsedDirectory.exists() && resultDirectory.exists()) {
+                    /**
+                     * Check if their is file in the directory, if yes, delete them
+                     */
+                    try {
+                        for (File file : parsedDirectory.listFiles()) {
+                            Files.deleteIfExists(file.toPath());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    for (File file : resultDirectory.listFiles()) {
-                        Files.deleteIfExists(file.toPath());
+                    try {
+                        for (File file : resultDirectory.listFiles()) {
+                            Files.deleteIfExists(file.toPath());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    /**
+                     * If the file already exist, delete them
+                     */
+                    Files.deleteIfExists(parsedDirectory.toPath());
+                    Files.deleteIfExists(resultDirectory.toPath());
                 }
-                /**
-                 * If the file already exist, delete them
-                 */
-                Files.deleteIfExists(parsedDirectory.toPath());
-                Files.deleteIfExists(resultDirectory.toPath());
 
 
                 System.out.println("python parser event script");
@@ -447,7 +450,7 @@ public class InputController implements Stageable {
     }
 
     /**
-     * For setting the parser
+     * For setting the template
      */
     public void setTemplate() {
         if (radioTemplateEvent.isSelected()) {
@@ -460,7 +463,7 @@ public class InputController implements Stageable {
     }
 
     /**
-     * set the event parser
+     * set the event template
      */
     public void setTemplateEvent() {
         radioTemplateEvent.setSelected(true);
@@ -469,7 +472,7 @@ public class InputController implements Stageable {
     }
 
     /**
-     * set the classic parser
+     * set the classic template
      */
     public void setTemplateClassic() {
         radioTemplateClassic.setSelected(true);
