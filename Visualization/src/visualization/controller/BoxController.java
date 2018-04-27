@@ -5,7 +5,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import visualization.utils.formula.Formula;
-import visualization.utils.formula.FormulaParser;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
@@ -20,7 +19,7 @@ import java.util.List;
  * @see visualization.view
  * @see <a href="https://en.wikipedia.org/w/index.php?title=Discourse_representation_structure">DRS details</a>
  */
-public class BoxController implements Parametrable<String> {
+public class BoxController implements Parametrable<Formula> {
     /**
      * Container box.
      */
@@ -54,11 +53,8 @@ public class BoxController implements Parametrable<String> {
      *
      * @param data the data needed for the initialisation. first is the lambda, second is the base sentence
      */
-    public void initData(String... data) {
-        if (data.length < 2)
-            throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
-        FormulaParser parser = Formula.getParser();
-        this.formula = parser.parse(data[0], data[1]);
+    public void initData(Formula data) {
+        this.formula = data;
 
         createContent();
         createHeader();

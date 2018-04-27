@@ -21,7 +21,7 @@ public class ClassicParser extends BaseParser {
      */
     @Override
     public Formula parse(String lambda, String sentence) {
-        parseResult = new Formula(BaseParser.simplifyLambda(lambda), sentence);
+        parseResult = new Formula(FormulaParser.simplifyLambda(lambda), sentence);
 
         eventNumber = 0;
         conjunctionNumber = 0;
@@ -98,7 +98,7 @@ public class ClassicParser extends BaseParser {
                     }
                 }
             }
-        }while (sc.hasNext());
+        } while (sc.hasNext());
 
         //check if there is any negation in the sentence
         if (parseResult.getLambda().contains("-")) {
@@ -133,7 +133,8 @@ public class ClassicParser extends BaseParser {
 
     /**
      * Parse the scope of the negation
-     * @param scope
+     *
+     * @param scope oooo
      * @return the node Negation containing all nodes that are negated
      */
     public Negation getNegationFromScope(String scope, String subj){
@@ -141,9 +142,9 @@ public class ClassicParser extends BaseParser {
 
         // two cases : exists or directly the event being negated
 
-        if(scope.matches(varDeclaration)){
+        if (scope.matches(varDeclaration)) {
             //Case exists
-            String subScope =  scope.substring(scope.indexOf("_"), scope.indexOf("))")) + ")";
+            String subScope = scope.substring(scope.indexOf("_"), scope.indexOf("))")) + ")";
             String[] subStringScope = subScope.split("&");
             for(String s : subStringScope){
                 s = s.trim();

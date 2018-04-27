@@ -10,7 +10,6 @@ import visualization.controller.Stageable;
 import visualization.utils.Tools;
 
 import java.io.File;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -36,7 +35,7 @@ public class Main extends Application {
     /**
      * Selected parser type; By default CLASSIC.
      */
-    public static Tools.ParserTypes selectedParserType = Tools.ParserTypes.CLASSIC;
+    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
     /**
      * The file containing the semantics representations output by ccg2lambda.
      */
@@ -66,12 +65,11 @@ public class Main extends Application {
         if (!sc.hasNext()) {
             applicationMode = Tools.ApplicationModes.UI;
         } else {
-            File semanticsXmlFile = new File(sc.next());
-            boolean validFile = semanticsXmlFile.canRead();
-            validFile = validFile && semanticsXmlFile.isFile();
+            Main.xmlSemanticsFile = new File(sc.next());
+            boolean validFile = Main.xmlSemanticsFile.canRead();
+            validFile = validFile && Main.xmlSemanticsFile.isFile();
 
             if (validFile) {
-                List<String[]> formulas = Tools.getSemanticsFormulas(semanticsXmlFile);
                 if (!sc.hasNext()) {
                     applicationMode = Tools.ApplicationModes.VIEWER;
                 } else {

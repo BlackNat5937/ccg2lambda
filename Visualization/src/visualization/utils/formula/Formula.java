@@ -63,7 +63,7 @@ public class Formula {
 
     public static FormulaParser getParser() {
         FormulaParser parser = null;
-        switch (Main.selectedParserType) {
+        switch (Main.selectedTemplateType) {
             case CLASSIC:
                 parser = new ClassicParser();
                 break;
@@ -136,5 +136,24 @@ public class Formula {
 
     public ArrayList<Negation> getNegations() {
         return negations;
+    }
+
+    /**
+     * Sets the lambda for this formula.
+     *
+     * @param lambda the lambda to set
+     */
+    void setLambda(String lambda) {
+        this.lambda = lambda;
+    }
+
+    /**
+     * Convert this formula to a string.
+     *
+     * @return the lambda this formula represents
+     */
+    @Override
+    public String toString() {
+        return this.lambda;
     }
 }

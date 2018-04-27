@@ -8,18 +8,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
 import visualization.graph.Graph;
 import visualization.graph.Link;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
-import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
-import visualization.utils.formula.FormulaParser;
 import visualization.utils.formula.node.*;
 import visualization.utils.formula.node.Event;
 
@@ -27,9 +22,11 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 
-public class GraphController implements Parametrable<String> {
+public class GraphController implements Parametrable<Formula> {
 
     @FXML
     private TitledPane box;
@@ -85,13 +82,10 @@ public class GraphController implements Parametrable<String> {
         }
     };
 
-    public void initData(String... data) {
-        if (data.length < 2)
-            throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
+    public void initData(Formula data) {
         Graph g = new Graph();
 
-        FormulaParser parser = Formula.getParser();
-        this.formula = parser.parse(data[0], data[1]);
+        this.formula = data;
 
         for (Actor actor : this.formula.getActors().values()) {
             Node a = new Node(actor.getName(), NodeType.ACTOR);
@@ -135,7 +129,7 @@ public class GraphController implements Parametrable<String> {
 
         }
 
-        box.setText(data[0]);
+        box.setText(formula.getLambda());
 
         addGraph(g);
 
@@ -144,7 +138,7 @@ public class GraphController implements Parametrable<String> {
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         layout = new FRLayout<>(jungGraph);
-        layout.setSize(new Dimension(600,500));
+        layout.setSize(new Dimension(600, 500));
         vv = new BasicVisualizationServer<>(layout);
 
         //links text
@@ -243,8 +237,8 @@ public class GraphController implements Parametrable<String> {
         sn.setContent(vv);
 
         sn.setOnMousePressed(pressedMouse);
-        sn.setOnMouseDragged(draggedMouse);
-        sn.setOnMouseReleased(releasedMouse);
+            sn.setOnMouseDragged(draggedMouse) ;
+                sn.setOnMouseReleased(releasedMouse);
 
         container.getChildren().add(sn);
 
@@ -272,7 +266,6 @@ public class GraphController implements Parametrable<String> {
 
         testPane.getChildren().add(negationZone); */
     }
-
 
 
 }
