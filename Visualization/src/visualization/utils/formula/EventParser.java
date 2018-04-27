@@ -20,7 +20,6 @@ public class EventParser extends BaseParser {
      * Pattern for the declaration of an events subject
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
-    private static final String existsIdDeclaration = "\\w+";
 
     EventParser() {
     }

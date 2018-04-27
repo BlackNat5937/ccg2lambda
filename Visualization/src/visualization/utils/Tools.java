@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import visualization.Main;
+import visualization.utils.formula.Formula;
 import visualization.utils.formula.FormulaParser;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -65,8 +66,9 @@ public class Tools {
      * @param xmlSemanticsFile the file in which to get the formulas
      * @return a list containing all the formulas in the file
      */
-    public static List<String[]> getSemanticsFormulas(File xmlSemanticsFile) {
-        List<String[]> stringsList = new ArrayList<>();
+    public static List<Formula> getSemanticsFormulas(File xmlSemanticsFile) {
+        List<Formula> formulas = new ArrayList<>();
+        FormulaParser formulaParser = Formula.getParser();
         try {
             DocumentBuilderFactory dBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dBuilderFactory.newDocumentBuilder();
@@ -79,19 +81,20 @@ public class Tools {
                 Node sentenceSemantics = sentences.item(i);
                 String formulaId = sentenceSemantics.getAttributes().getNamedItem(xmlSemanticsRootAttributeName).getTextContent();
                 NodeList parts = sentenceSemantics.getChildNodes();
-                String strings[] = {"", ""};
+                String lambda = "";
+                String sentence = "";
 
                 if (Main.applicationMode == ApplicationModes.UI) {
                     File sentenceFile = new File("../sentences.txt");
                     if (sentenceFile.isFile() && sentenceFile.canRead()) {
                         BufferedReader br = new BufferedReader(new FileReader(sentenceFile));
                         int line = 0;
-                        String sentence = br.readLine();
-                        while (line < i && sentence != null) {
-                            sentence = br.readLine();
+                        String readLine = br.readLine();
+                        while (line < i && readLine != null) {
+                            readLine = br.readLine();
                             line++;
                         }
-                        strings[1] = sentence != null ? sentence : "";
+                        sentence = readLine != null ? readLine : "";
                     }
                 }
 
@@ -104,17 +107,18 @@ public class Tools {
                 } while (j < parts.getLength() && tmp.getNodeType() != Node.ELEMENT_NODE);
                 e = (Element) tmp;
                 if (e != null) {
-                    strings[0] = e.getAttribute(xmlSemElementAttributeName);
+                    lambda = e.getAttribute(xmlSemElementAttributeName);
                 }
 
-                strings[0] = FormulaParser.simplifyLambda(strings[0]);
-                stringsList.add(strings);
+                lambda = FormulaParser.simplifyLambda(lambda);
+                Formula formula = formulaParser.parse(lambda, sentence);
+                formulas.add(formula);
             }
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
         Main.xmlSemanticsFile = xmlSemanticsFile;
-        return stringsList;
+        return formulas;
     }
 
     /**

@@ -8,29 +8,24 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
 import visualization.graph.Graph;
 import visualization.graph.Link;
 import visualization.graph.Node;
 import visualization.graph.NodeType;
-import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
-import visualization.utils.formula.FormulaParser;
 import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.FormulaNode;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 
-
-public class GraphController implements Parametrable<String> {
+public class GraphController implements Parametrable<Formula> {
 
     @FXML
     private TitledPane box;
@@ -42,13 +37,10 @@ public class GraphController implements Parametrable<String> {
 
     private Node selected;
 
-    public void initData(String... data) {
-        if (data.length < 2)
-            throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
+    public void initData(Formula data) {
         Graph g = new Graph();
 
-        FormulaParser parser = Formula.getParser();
-        this.formula = parser.parse(data[0], data[1]);
+        this.formula = data;
 
         for (Actor actor : this.formula.getActors().values()) {
             Node a = new Node(actor.getName(), NodeType.ACTOR);
@@ -77,7 +69,7 @@ public class GraphController implements Parametrable<String> {
                 g.getNodeByLabel(f.getId()).addLink(c, "conj");
             }
         }
-        box.setText(data[0]);
+        box.setText(formula.getLambda());
 
         addGraph(g);
 
@@ -86,7 +78,7 @@ public class GraphController implements Parametrable<String> {
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         FRLayout<Node, Link> layout = new FRLayout<>(jungGraph);
-        layout.setSize(new Dimension(600,500));
+        layout.setSize(new Dimension(600, 500));
         BasicVisualizationServer<Node, Link> vv = new BasicVisualizationServer<Node, Link>(layout);
 
         //links text
@@ -187,10 +179,10 @@ public class GraphController implements Parametrable<String> {
         sn.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                for(Node n : layout.getGraph().getVertices()){
+                for (Node n : layout.getGraph().getVertices()) {
                     Point2D pos = layout.transform(n);
-                    if((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
-                            && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() +10)){
+                    if ((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
+                            && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() + 10)) {
                         selected = n;
                     }
                 }
@@ -200,9 +192,8 @@ public class GraphController implements Parametrable<String> {
         sn.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if(event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height)
-                {
-                    layout.setLocation(selected, new Point2D.Double(event.getX(),event.getY()));
+                if (event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height) {
+                    layout.setLocation(selected, new Point2D.Double(event.getX(), event.getY()));
                     vv.repaint();
                 }
             }
@@ -246,7 +237,6 @@ public class GraphController implements Parametrable<String> {
 
 
     }
-
 
 
 }

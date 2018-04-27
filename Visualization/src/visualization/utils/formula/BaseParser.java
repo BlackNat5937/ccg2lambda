@@ -19,7 +19,7 @@ public abstract class BaseParser implements FormulaParser {
     /**
      * The pattern for a variable declaration.
      */
-    static String varDeclaration = ".*exists \\w+\\..*";
+    static final String varDeclaration = ".*exists \\w+\\..*";
     /**
      * The formula this ClassicParser returns.
      */

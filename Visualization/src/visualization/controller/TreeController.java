@@ -6,9 +6,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import visualization.tree.Tree;
 import visualization.utils.formula.Formula;
-import visualization.utils.formula.FormulaParser;
 
-public class TreeController implements Parametrable<String> {
+public class TreeController implements Parametrable<Formula> {
 
     private Formula formula;
 
@@ -19,11 +18,8 @@ public class TreeController implements Parametrable<String> {
     private TreeView<String> treeViewCont;
 
     @Override
-    public void initData(String... data) {
-        if (data.length < 2)
-            throw new IllegalArgumentException("2 arguments are needed : the lambda and the base sentence.");
-        FormulaParser parser = Formula.getParser();
-        this.formula = parser.parse(data[0], data[1]);
+    public void initData(Formula data) {
+        this.formula = data;
 
         Tree tree = new Tree("Test");
 
@@ -42,7 +38,7 @@ public class TreeController implements Parametrable<String> {
         treeViewCont.setRoot(ti);
 
 
-        box.setText(data[0]);
+        box.setText(formula.getLambda());
     }
 
     private void displayTree(Tree tree, TreeItem<String> ti) {

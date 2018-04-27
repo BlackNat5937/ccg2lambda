@@ -134,7 +134,22 @@ public class Formula {
         return conjunctions;
     }
 
+    /**
+     * Sets the lambda for this formula.
+     *
+     * @param lambda the lambda to set
+     */
     void setLambda(String lambda) {
         this.lambda = lambda;
+    }
+
+    /**
+     * Convert this formula to a string.
+     *
+     * @return the lambda this formula represents
+     */
+    @Override
+    public String toString() {
+        return this.lambda;
     }
 }
