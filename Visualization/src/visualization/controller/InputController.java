@@ -323,19 +323,15 @@ public class InputController implements Stageable {
         File py3Directory = new File("py3");
         // firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) && (!Tools.configFile.exists() && Tools.configFile.isFile());
 
-
         firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists());
-
-        System.out.println("firsttime : " + firstTime);
-        System.out.println("py3Directory : " + !py3Directory.isDirectory());
 
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
+            new File("config").mkdir();
             boolean ok = true;
             try {
                 ok = Tools.configFile.createNewFile();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
