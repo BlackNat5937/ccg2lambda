@@ -56,7 +56,8 @@ public class ClassicParser extends BaseParser {
 
                     if (m.find() && n.find()) {
                         varName = m.group().substring(1);
-                        varId = "e" + eventNumber;
+                        //varId = "e" + eventNumber;
+                        varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
                         actorId = n.group();
                         actorId = actorId.substring(1, actorId.length() - 1);
                         // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
@@ -76,7 +77,7 @@ public class ClassicParser extends BaseParser {
 
                     if (m.find() && n.find()) {
                         varName = m.group().substring(1);
-                        varId = "c" + conjunctionNumber;
+                        varId = getConjunctionKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
                         conjunctionNumber++;
 
                         joinedId = n.group();
@@ -105,7 +106,7 @@ public class ClassicParser extends BaseParser {
             int indexEnd = indexStart;
             int cptBracket = 0;
             boolean firstTime = true;
-            System.out.println("parseResult get lambda : " + parseResult.getLambda());
+
 
             while ((firstTime || cptBracket > 0) && indexEnd < parseResult.getLambda().length()) {
                 if (parseResult.getLambda().charAt(indexEnd) == '(') {
@@ -121,7 +122,9 @@ public class ClassicParser extends BaseParser {
             }
 
             String scope = parseResult.getLambda().substring(indexStart, indexEnd);
-            Negation n = getNegationFromScope(scope);
+            String subj = parseResult.getLambda().trim().substring(parseResult.getLambda().trim().indexOf(" "), parseResult.getLambda().trim().indexOf(".")).trim();
+            Negation n = getNegationFromScope(scope, subj);
+            parseResult.getNegations().add(n);
 
         }
 
@@ -133,23 +136,104 @@ public class ClassicParser extends BaseParser {
      * @param scope
      * @return the node Negation containing all nodes that are negated
      */
-    public Negation getNegationFromScope(String scope){
+    public Negation getNegationFromScope(String scope, String subj){
         Negation n = new Negation();
-        System.out.println(scope);
 
         // two cases : exists or directly the event being negated
 
         if(scope.matches(varDeclaration)){
+            //Case exists
             String subScope =  scope.substring(scope.indexOf("_"), scope.indexOf("))")) + ")";
-            System.out.println(subScope);
             String[] subStringScope = subScope.split("&");
             for(String s : subStringScope){
-                System.out.println(s);
+                s = s.trim();
+                boolean isEvent = false;
+
+                //exceptionnal cases : Prog(_walk(x), exists z2.(_park(z2), etc...
+                if(s.matches(varDeclaration)){
+                    s = s.substring(s.indexOf('_'));
+                }
+                else if(s.matches(".*Prog\\(.*")){
+                    isEvent = true;
+                    s = s.substring(s.indexOf('_'));
+                }
+
+                int iStart = s.indexOf('(') + 1;
+                int iEnd = s.indexOf(')');
+                String ssubstring = s.substring(iStart, iEnd);
+                if(isEvent){
+                    String eventName = s.substring(s.indexOf('_') + 1, s.indexOf('('));
+                    int indexEvent = parseResult.getLambda().indexOf(s);
+                    String eventKey = getEventKey(indexEvent,eventName);
+                    n.getNegated().add(parseResult.getEvents().get(eventKey));
+                }else{
+                    if(s.contains(",")){
+                        //conjunction
+                        String conjName =  s.substring(s.indexOf('_')+1,s.indexOf('('));
+                        String conjParams = ssubstring;
+                        int indexConj = parseResult.getLambda().indexOf("_" + conjName + "(" + conjParams + ")");
+                        String conjKey = getConjunctionKey(indexConj, conjName);
+                        n.getNegated().add(parseResult.getConjunctions().get(conjKey));
+                    }
+                    else{
+                        if(!ssubstring.equals(subj)){
+                            //add to negation
+                            //check actors
+                            if(parseResult.getActors().containsKey(ssubstring)){
+                                n.getNegated().add(parseResult.getActors().get(ssubstring));
+                            }
+                        }
+                        else{
+                            String key = getConjunctionKey(parseResult.getLambda().indexOf(s), s.substring(s.indexOf('_') + 1, s.indexOf('(')));
+                            n.getNegated().add(parseResult.getConjunctions().get(key));
+                        }
+                    }
+                }
             }
         }
         else{
-
+            //HERE
+            System.out.println("Other case : " + scope);
+            String conjName = scope.substring(scope.indexOf('_') + 1, scope.indexOf('('));
+            int indexConj = parseResult.getLambda().indexOf(scope);
+            String conjKey = getConjunctionKey(indexConj,conjName);
+            n.getNegated().add(parseResult.getConjunctions().get(conjKey));
         }
         return n;
+    }
+
+    public String getConjunctionKey(int indexConjunction, String conjunction){
+        //example :
+        String searchedString = parseResult.getLambda().substring(0,indexConjunction);
+        int lastIndex = 0;
+        int count  = 1;
+
+        while(lastIndex != -1){
+            lastIndex = searchedString.indexOf(conjunction, lastIndex);
+
+            if(lastIndex != -1){
+                count ++;
+                lastIndex += conjunction.length();
+            }
+        }
+
+        return "c" + conjunction + count;
+    }
+
+    public String getEventKey(int indexEvent, String event){
+        String searchedString = parseResult.getLambda().substring(0,indexEvent);
+        int lastIndex = 0;
+        int count  = 1;
+
+        while(lastIndex != -1){
+            lastIndex = searchedString.indexOf(event, lastIndex);
+
+            if(lastIndex != -1){
+                count ++;
+                lastIndex += event.length();
+            }
+        }
+
+        return "e" + event + count;
     }
 }

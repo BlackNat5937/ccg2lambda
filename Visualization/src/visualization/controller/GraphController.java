@@ -20,14 +20,13 @@ import visualization.graph.NodeType;
 import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 import visualization.utils.formula.FormulaParser;
-import visualization.utils.formula.node.Actor;
-import visualization.utils.formula.node.Conjunction;
+import visualization.utils.formula.node.*;
 import visualization.utils.formula.node.Event;
-import visualization.utils.formula.node.FormulaNode;
 
 import java.awt.*;
 import java.awt.geom.*;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GraphController implements Parametrable<String> {
@@ -38,9 +37,53 @@ public class GraphController implements Parametrable<String> {
     @FXML
     private ScrollPane sp;
 
+    @FXML
+    private Pane container;
+
     private Formula formula;
 
     private Node selected;
+
+    private FRLayout<Node, Link> layout;
+
+    private BasicVisualizationServer<Node, Link> vv;
+
+    private Map<Node, javafx.scene.shape.Circle> negatedZones = new HashMap<>();
+
+    private EventHandler<MouseEvent> pressedMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            for(Node n : layout.getGraph().getVertices()){
+                Point2D pos = layout.transform(n);
+                if((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
+                        && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() +10)){
+                    selected = n;
+                }
+            }
+        }
+    };
+
+    private EventHandler<MouseEvent> draggedMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            if(event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height)
+            {
+                layout.setLocation(selected, new Point2D.Double(event.getX(),event.getY()));
+                vv.repaint();
+                if(negatedZones.containsKey(selected)){
+                    negatedZones.get(selected).setCenterX(layout.transform(selected).getX());
+                    negatedZones.get(selected).setCenterY(layout.transform(selected).getY());
+                }
+            }
+        }
+    };
+
+    private EventHandler<MouseEvent> releasedMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            selected = null;
+        }
+    };
 
     public void initData(String... data) {
         if (data.length < 2)
@@ -77,6 +120,21 @@ public class GraphController implements Parametrable<String> {
                 g.getNodeByLabel(f.getId()).addLink(c, "conj");
             }
         }
+        for(Negation negation : this.formula.getNegations()){
+            visualization.graph.Negation neg = new visualization.graph.Negation();
+
+            for(BaseNode bn : negation.getNegated()){
+                neg.getNegated().add(g.getNodeByLabel(bn.getName()));
+                if(bn.getClass() == Actor.class || bn.getClass() == Event.class){
+                    neg.getNegated().add(g.getNodeByLabel(bn.getId()));
+                }
+            }
+            if(neg != null){
+                g.getNegations().add(neg);
+            }
+
+        }
+
         box.setText(data[0]);
 
         addGraph(g);
@@ -85,9 +143,9 @@ public class GraphController implements Parametrable<String> {
 
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
-        FRLayout<Node, Link> layout = new FRLayout<>(jungGraph);
+        layout = new FRLayout<>(jungGraph);
         layout.setSize(new Dimension(600,500));
-        BasicVisualizationServer<Node, Link> vv = new BasicVisualizationServer<Node, Link>(layout);
+        vv = new BasicVisualizationServer<>(layout);
 
         //links text
         vv.getRenderContext().setEdgeLabelTransformer(new Transformer<Link, String>() {
@@ -184,67 +242,35 @@ public class GraphController implements Parametrable<String> {
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
 
-        sn.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                for(Node n : layout.getGraph().getVertices()){
-                    Point2D pos = layout.transform(n);
-                    if((event.getX() > pos.getX() - 10) && (event.getX() < pos.getX() + 10)
-                            && (event.getY() > pos.getY() - 10) && (event.getY() < pos.getY() +10)){
-                        selected = n;
-                    }
-                }
+        sn.setOnMousePressed(pressedMouse);
+        sn.setOnMouseDragged(draggedMouse);
+        sn.setOnMouseReleased(releasedMouse);
+
+        container.getChildren().add(sn);
+
+        for(visualization.graph.Negation negation : g.getNegations()){
+            for(Node negated : negation.getNegated()){
+                Point2D pos = layout.transform(negated);
+                javafx.scene.paint.Paint p = javafx.scene.paint.Color.rgb(255,50,0);
+                Circle negatedZone = new Circle(pos.getX(),pos.getY(),25.0,p);
+                negatedZone.setOpacity(0.3);
+                negatedZone.setOnMousePressed(pressedMouse);
+                negatedZone.setOnMouseDragged(draggedMouse);
+                negatedZone.setOnMouseReleased(releasedMouse);
+                negatedZones.put(negated, negatedZone);
+                container.getChildren().add(negatedZone);
             }
-        });
+        }
 
-        sn.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height)
-                {
-                    layout.setLocation(selected, new Point2D.Double(event.getX(),event.getY()));
-                    vv.repaint();
-                }
-            }
-        });
+        sp.setContent(container);
 
-        sn.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                selected = null;
-            }
-        });
-
-        /*sn.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                selected = null;
-            }
-        });*/
-
-
-        //testPane.getChildren().add(sn);
-
-        sp.setContent(sn);
         //negation zone
         /*javafx.scene.shape.Polygon negationZone = new javafx.scene.shape.Polygon();
         javafx.scene.paint.Paint p = javafx.scene.paint.Color.rgb(255,50,0);
 
-        for(Node n : layout.getGraph().getVertices()){
-            Point2D pos = layout.transform(n);
 
-            negationZone.getPoints().add(pos.getX());
-            negationZone.getPoints().add(pos.getY());
-            negationZone.setOpacity(0.3);
-            negationZone.setStroke(javafx.scene.paint.Color.RED);
-            negationZone.setStrokeWidth(10.0);
-            negationZone.setFill(p);
-
-        }
 
         testPane.getChildren().add(negationZone); */
-
-
     }
 
 

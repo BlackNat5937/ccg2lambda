@@ -133,4 +133,8 @@ public class Formula {
     public Map<String, Conjunction> getConjunctions() {
         return conjunctions;
     }
+
+    public ArrayList<Negation> getNegations() {
+        return negations;
+    }
 }

@@ -19,6 +19,8 @@ public class Graph {
         return nodes;
     }
 
+    private ArrayList<Negation> negations = new ArrayList<>();
+
     public String toString() {
         String tmp = "";
         for (Node n : nodes) {
@@ -59,4 +61,7 @@ public class Graph {
         this.nodes = nodes;
     }
 
+    public ArrayList<Negation> getNegations() {
+        return negations;
+    }
 }

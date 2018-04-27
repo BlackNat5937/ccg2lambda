@@ -2,9 +2,13 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.Pane?>
 
 <TitledPane fx:id="box" animated="false" text="untitled" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.GraphController">
    <content>
-      <ScrollPane fx:id="sp" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+      <ScrollPane fx:id="sp" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+         <content>
+            <Pane fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+         </content></ScrollPane>
    </content>
 </TitledPane>
