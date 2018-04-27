@@ -8,6 +8,7 @@ import visualization.utils.formula.node.FormulaNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 
 /**
  * Parser for event-template lambdas.
@@ -19,17 +20,20 @@ public class EventParser extends BaseParser {
      * Pattern for the declaration of an events subject
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
+    private static final String existsIdDeclaration = "\\w+";
 
     EventParser() {
     }
 
     @Override
     public Formula parse(String lambda, String sentence) {
-        parseResult = new Formula(FormulaParser.simplifyLambda(lambda), sentence);
+        parseResult = new Formula(FormulaParser.simplifyLambda(lambda.trim()), sentence);
 
         actorNumber = 0;
         eventNumber = 0;
         conjunctionNumber = 0;
+
+        renameDuplicateIdentifiers();
 
         String token;
         String varId;
@@ -118,5 +122,33 @@ public class EventParser extends BaseParser {
             parseResult.getConjunctions().put(varId,
                     new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0])));
         }
+    }
+
+    public void renameDuplicateIdentifiers() {
+        Scanner sc = new Scanner(parseResult.getLambda());
+        sc.useDelimiter("exists");
+        String part;
+        String identifier;
+        List<String> usedIdentifiers = new ArrayList<>();
+        do {
+            part = sc.next();
+            identifier = part.trim().split("\\.")[0];
+            if (!usedIdentifiers.contains(identifier)) {
+                usedIdentifiers.add(identifier);
+            } else {
+                int start = parseResult.getLambda().indexOf(part);
+                String subLambda = parseResult.getLambda().substring(start);
+                Matcher m = varIdPattern.matcher(subLambda);
+
+                Character id = identifier.charAt(0);
+                Character newId = (char) (id + 1);
+                while (m.find()) {
+                    String found = m.group();
+                    subLambda = subLambda.replace(found, found.replace(id, newId));
+                }
+                parseResult.setLambda(parseResult.getLambda().replace(part, subLambda));
+                usedIdentifiers.add(newId.toString());
+            }
+        } while (sc.hasNext());
     }
 }

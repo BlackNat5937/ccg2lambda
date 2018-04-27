@@ -33,6 +33,6 @@ public interface FormulaParser {
             part = sc.next();
             simpLambda.append(' ').append(part);
         } while (sc.hasNext());
-        return simpLambda.toString();
+        return simpLambda.toString().trim();
     }
 }

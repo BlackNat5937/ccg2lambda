@@ -133,4 +133,8 @@ public class Formula {
     public Map<String, Conjunction> getConjunctions() {
         return conjunctions;
     }
+
+    void setLambda(String lambda) {
+        this.lambda = lambda;
+    }
 }
