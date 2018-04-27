@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 !# /bin/bash
 
 CCG2LAMBDA_LOCATION=$1
