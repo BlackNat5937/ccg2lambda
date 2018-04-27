@@ -10,6 +10,9 @@ import visualization.utils.formula.node.Actor;
 import visualization.utils.formula.node.Conjunction;
 import visualization.utils.formula.node.Event;
 
+/**
+ * @author Nathan Joubert
+ */
 public class TreeController implements Parametrable<Formula> {
 
     private Formula formula;

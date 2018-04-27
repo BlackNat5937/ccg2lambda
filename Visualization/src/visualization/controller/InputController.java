@@ -251,8 +251,36 @@ public class InputController implements Stageable {
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process;
+
+        File parsedDirectory = new File("../parsed");
+        File resultDirectory = new File("../results");
+
         if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
             try {
+
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
+                try {
+                    for (File file : parsedDirectory.listFiles()) {
+                        Files.deleteIfExists(file.toPath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    for (File file : resultDirectory.listFiles()) {
+                        Files.deleteIfExists(file.toPath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * If the file already exist, delete them
+                 */
+                Files.deleteIfExists(parsedDirectory.toPath());
+                Files.deleteIfExists(resultDirectory.toPath());
+
                 System.out.println("tokenize");
                 process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
                 progress.set(0.50);
@@ -273,10 +301,9 @@ public class InputController implements Stageable {
             }
         } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
             try {
-
-                File parsedDirectory = new File("../parsed");
-                File resultDirectory = new File("../results");
-
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
                 try {
                     for (File file : parsedDirectory.listFiles()) {
                         Files.deleteIfExists(file.toPath());
@@ -284,7 +311,6 @@ public class InputController implements Stageable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 try {
                     for (File file : resultDirectory.listFiles()) {
                         Files.deleteIfExists(file.toPath());
@@ -292,7 +318,9 @@ public class InputController implements Stageable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                /**
+                 * If the file already exist, delete them
+                 */
                 Files.deleteIfExists(parsedDirectory.toPath());
                 Files.deleteIfExists(resultDirectory.toPath());
 
@@ -306,8 +334,6 @@ public class InputController implements Stageable {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     /**
@@ -318,10 +344,7 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        // firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) && (!Tools.configFile.exists() && Tools.configFile.isFile());
-
         firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists());
-
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
@@ -396,7 +419,6 @@ public class InputController implements Stageable {
      */
     public void displayReadme() {
         String url = "https://github.com/mynlp/ccg2lambda#ccg2lambda-composing-semantic-representations-guided-by-ccg-derivations";
-        //new ProcessBuilder("x-www-browser", url).start();
         Main.openLink(url);
     }
 
