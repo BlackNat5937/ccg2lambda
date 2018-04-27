@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
 import visualization.graph.Graph;
 import visualization.graph.Link;
