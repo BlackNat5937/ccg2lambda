@@ -418,7 +418,7 @@ public class InputController implements Stageable {
      * Redirect to the displayReadme
      */
     public void displayReadme() {
-        String url = "https://github.com/mynlp/ccg2lambda#ccg2lambda-composing-semantic-representations-guided-by-ccg-derivations";
+        String url = "https://github.com/BlackNat5937/ccg2lambda/tree/master/Visualization#ccg2lambda-visualize--composing-semantic-representations-guided-by-ccg-derivations";
         Main.openLink(url);
     }
 

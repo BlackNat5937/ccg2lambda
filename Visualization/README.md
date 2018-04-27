@@ -25,10 +25,12 @@ When you have your sentences, click on the button Visualize. You can see your re
 If you use this software or the semantic templates for your work, please consider citing it.
 The system - software for compositional semantics:
 
-ccg2lambda :
+### ccg2lambda visualize : 
+
+	Gaetan Basile, Thomas Guesdon, Nathan Joubert. A software to visualize the results of ccg2lambda
+
+### ccg2lambda :
 
     Pascual Martínez-Gómez, Koji Mineshima, Yusuke Miyao, Daisuke Bekki. ccg2lambda: A Compositional Semantics System.
 
-ccg2lambda visualize : 
 
-	Gaetan Basile, Thomas Guesdon, Nathan Joubert. A software to visualize the results of ccg2lambda
