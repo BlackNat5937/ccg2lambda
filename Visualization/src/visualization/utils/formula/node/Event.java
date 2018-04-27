@@ -91,11 +91,13 @@ public class Event extends BaseNode {
     @Override
     public String toString() {
         StringBuilder actorL = new StringBuilder();
-        for (Actor actor : actors) {
-            actorL.append(actor.getId()).append(',');
+        if (actors.size() > 0) {
+            for (Actor actor : actors) {
+                actorL.append(actor.getId()).append(',');
+            }
+            // remove the last semicolon
+            actorL.setLength(actorL.length() - 1);
         }
-        // remove the last semicolon
-        actorL.setLength(actorL.length() - 1);
 
         return "Prog(" + name + '(' + actorL + "))";
     }

@@ -35,7 +35,7 @@ public class Main extends Application {
     /**
      * Selected parser type; By default CLASSIC.
      */
-    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
+    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.EVENT;
     /**
      * The file containing the semantics representations output by ccg2lambda.
      */
