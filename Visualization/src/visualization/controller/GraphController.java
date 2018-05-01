@@ -53,11 +53,8 @@ public class GraphController implements Parametrable<Formula> {
 
     private BasicVisualizationServer<Node, Link> vv;
 
-    private Map<Node, javafx.scene.shape.Circle> negatedZones = new HashMap<>();
-
     private ArrayList<javafx.geometry.Point2D> points = new ArrayList<>();
 
-    private javafx.scene.shape.Polygon negationPolygon = new javafx.scene.shape.Polygon();
 
     private EventHandler<MouseEvent> pressedMouse = new EventHandler<MouseEvent>() {
         @Override
@@ -78,10 +75,6 @@ public class GraphController implements Parametrable<Formula> {
             if (event.getX() > 0 && event.getX() < layout.getSize().width && event.getY() > 0 && event.getY() < layout.getSize().height) {
                 layout.setLocation(selected, new Point2D.Double(event.getX(), event.getY()));
                 vv.repaint();
-                if (negatedZones.containsKey(selected)) {
-                    negatedZones.get(selected).setCenterX(layout.transform(selected).getX());
-                    negatedZones.get(selected).setCenterY(layout.transform(selected).getY());
-                }
             }
         }
     };
@@ -89,9 +82,6 @@ public class GraphController implements Parametrable<Formula> {
     private EventHandler<MouseEvent> releasedMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            if (selected != null) {
-
-            }
             selected = null;
         }
     };
@@ -137,9 +127,9 @@ public class GraphController implements Parametrable<Formula> {
                     neg.getNegated().add(g.getNodeByLabel(bn.getId()));
                 }
             }
-            if (neg != null) {
-                g.getNegations().add(neg);
-            }
+
+            g.getNegations().add(neg);
+
 
         }
 
@@ -260,29 +250,25 @@ public class GraphController implements Parametrable<Formula> {
 
             for (Node negated : negation.getNegated()) {
                 Point2D pos = layout.transform(negated);
-                javafx.scene.paint.Paint p = javafx.scene.paint.Color.rgb(255, 50, 0);
-                Circle negatedZone = new Circle(pos.getX(), pos.getY(), 25.0, p);
-                negatedZone.setOpacity(0.3);
-                negatedZones.put(negated, negatedZone);
-
-                points.add(new javafx.geometry.Point2D(pos.getX(),pos.getY()));
-
-                //container.getChildren().add(negatedZone);
+                points.add(new javafx.geometry.Point2D(pos.getX(), pos.getY()));
             }
+            javafx.scene.shape.Polygon negationPolygon = createStartingPolygon(points);
+            negationPolygon.setStroke(javafx.scene.paint.Color.RED);
+            negationPolygon.setStrokeWidth(5.0);
+            container.getChildren().add(negationPolygon);
+            container.getChildren().addAll(createControlAnchorsFor(negationPolygon.getPoints()));
         }
 
-        negationPolygon = createStartingPolygon(points);
-        container.getChildren().add(negationPolygon);
-        container.getChildren().addAll(createControlAnchorsFor(negationPolygon.getPoints()));
+
 
         sp.setContent(container);
 
     }
 
-    private javafx.scene.shape.Polygon createStartingPolygon(ArrayList<javafx.geometry.Point2D> points){
+    private javafx.scene.shape.Polygon createStartingPolygon(ArrayList<javafx.geometry.Point2D> points) {
         javafx.scene.shape.Polygon p = new javafx.scene.shape.Polygon();
 
-        for(javafx.geometry.Point2D p2d : points){
+        for (javafx.geometry.Point2D p2d : points) {
             p.getPoints().add(p2d.getX());
             p.getPoints().add(p2d.getY());
         }
@@ -293,16 +279,15 @@ public class GraphController implements Parametrable<Formula> {
         return p;
     }
 
-    private ObservableList<Anchor> createControlAnchorsFor(final ObservableList<Double> points){
+    private ObservableList<Anchor> createControlAnchorsFor(final ObservableList<Double> points) {
         ObservableList<Anchor> anchors = FXCollections.observableArrayList();
 
-        for(int i = 0; i < points.size(); i += 2){
+        for (int i = 0; i < points.size(); i += 2) {
             final int idx = i;
 
 
-
             DoubleProperty xProperty = new SimpleDoubleProperty(points.get(i));
-            DoubleProperty yProperty = new SimpleDoubleProperty(points.get(i+1));
+            DoubleProperty yProperty = new SimpleDoubleProperty(points.get(i + 1));
 
             Anchor anchor = new Anchor(getSelectedNode(xProperty.intValue(), yProperty.intValue()));
 
@@ -311,7 +296,7 @@ public class GraphController implements Parametrable<Formula> {
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                     points.set(idx, (double) newValue);
-                    layout.setLocation(anchor.getSelected(),xProperty.doubleValue(),yProperty.doubleValue());
+                    layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
                     vv.repaint();
                 }
             });
@@ -321,22 +306,21 @@ public class GraphController implements Parametrable<Formula> {
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                     points.set(idx + 1, (double) newValue);
 
-                    layout.setLocation(anchor.getSelected(),xProperty.doubleValue(),yProperty.doubleValue());
+                    layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
                     vv.repaint();
                 }
             });
 
             anchor.init(javafx.scene.paint.Color.GOLD, xProperty, yProperty);
-            //Anchor anchor = new Anchor(javafx.scene.paint.Color.GOLD,xProperty,yProperty);
             anchors.add(anchor);
         }
         return anchors;
     }
 
-    public Node getSelectedNode(int x, int y){
+    public Node getSelectedNode(int x, int y) {
         Node res = null;
 
-        for(Node n : layout.getGraph().getVertices()){
+        for (Node n : layout.getGraph().getVertices()) {
             Point2D pos = layout.transform(n);
             if ((x > pos.getX() - 25) && (x < pos.getX() + 25)
                     && (y > pos.getY() - 25) && (y < pos.getY() + 25)) {

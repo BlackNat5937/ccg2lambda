@@ -107,7 +107,6 @@ public class ClassicParser extends BaseParser {
             int cptBracket = 0;
             boolean firstTime = true;
 
-
             while ((firstTime || cptBracket > 0) && indexEnd < parseResult.getLambda().length()) {
                 if (parseResult.getLambda().charAt(indexEnd) == '(') {
                     if (firstTime) {
@@ -126,6 +125,14 @@ public class ClassicParser extends BaseParser {
             Negation n = getNegationFromScope(scope, subj);
             parseResult.getNegations().add(n);
 
+        }
+        else if(parseResult.getLambda().contains("not")){
+            System.out.println(parseResult.getLambda());
+            Negation n = new Negation();
+            String substring = parseResult.getLambda().substring(parseResult.getLambda().indexOf("_not"));
+            String ssubstring = substring.substring(substring.indexOf("(_") + 2,substring.indexOf("))") );
+            n.getNegated().add(parseResult.getActors().get(parseResult.getActorByName(ssubstring)));
+            parseResult.getNegations().add(n);
         }
 
         return parseResult;

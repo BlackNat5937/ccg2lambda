@@ -42,7 +42,10 @@ public class Conjunction extends BaseNode {
         for (FormulaNode formulaNode : joined) {
             nodeL.append(formulaNode.getId()).append(',');
         }
-        nodeL.setLength(nodeL.length() - 1);
+        if(nodeL.length() - 1 > 0){
+            nodeL.setLength(nodeL.length() - 1);
+
+        }
 
         return name + '(' + nodeL + ')';
     }
