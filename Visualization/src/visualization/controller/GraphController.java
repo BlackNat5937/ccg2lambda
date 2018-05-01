@@ -253,12 +253,12 @@ public class GraphController implements Parametrable<Formula> {
                 points.add(new javafx.geometry.Point2D(pos.getX(), pos.getY()));
             }
             javafx.scene.shape.Polygon negationPolygon = createStartingPolygon(points);
+            points.clear();
             negationPolygon.setStroke(javafx.scene.paint.Color.RED);
             negationPolygon.setStrokeWidth(5.0);
             container.getChildren().add(negationPolygon);
             container.getChildren().addAll(createControlAnchorsFor(negationPolygon.getPoints()));
         }
-
 
 
         sp.setContent(container);
@@ -284,7 +284,6 @@ public class GraphController implements Parametrable<Formula> {
 
         for (int i = 0; i < points.size(); i += 2) {
             final int idx = i;
-
 
             DoubleProperty xProperty = new SimpleDoubleProperty(points.get(i));
             DoubleProperty yProperty = new SimpleDoubleProperty(points.get(i + 1));
@@ -312,9 +311,26 @@ public class GraphController implements Parametrable<Formula> {
             });
 
             anchor.init(javafx.scene.paint.Color.GOLD, xProperty, yProperty);
-            anchors.add(anchor);
+            if(!SimilarAnchor(anchor)){
+                anchors.add(anchor);
+            }
         }
         return anchors;
+    }
+
+    public boolean SimilarAnchor(Anchor anchor){
+        boolean res = false;
+        for(javafx.scene.Node a : container.getChildren()){
+            if(a.getClass() == Anchor.class){
+                Anchor castedAnchor = (Anchor) a;
+                System.out.println("    --> " + castedAnchor.getSelected().getLabel() + " ?= " + anchor.getSelected().getLabel());
+                if(castedAnchor.getSelected().getLabel().equals(anchor.getSelected().getLabel())){
+                    res = true;
+                }
+            }
+        }
+
+        return res;
     }
 
     public Node getSelectedNode(int x, int y) {

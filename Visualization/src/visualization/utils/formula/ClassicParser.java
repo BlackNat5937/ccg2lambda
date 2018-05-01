@@ -126,7 +126,7 @@ public class ClassicParser extends BaseParser {
             parseResult.getNegations().add(n);
 
         }
-        else if(parseResult.getLambda().contains("not")){
+        if(parseResult.getLambda().contains("not")){
             System.out.println(parseResult.getLambda());
             Negation n = new Negation();
             String substring = parseResult.getLambda().substring(parseResult.getLambda().indexOf("_not"));
