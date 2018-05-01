@@ -3,11 +3,8 @@ package visualization.utils.formula;
 import visualization.utils.formula.node.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Parser for event-template lambdas.
@@ -32,7 +29,8 @@ public class EventParser extends BaseParser {
         eventNumber = 0;
         conjunctionNumber = 0;
 
-        renameDuplicateIdentifiers();
+        usedIdentifiers = new ArrayList<>();
+        renameDuplicateIdentifiers(parseResult.getLambda());
         //recursiveRenameDuplicateIdentifiers(parseResult.getLambda());
 
         String token;
@@ -116,7 +114,10 @@ public class EventParser extends BaseParser {
     private void registerEventSubject(String token) {
         String[] parts = token.split("\\)");
         if (parts[0].contains("Subj") && parts.length >= 2) {
-            String varId = parts[0].substring(parts[0].length() - 1);
+            String varId;
+            varId = parts[0].substring(1);
+            varId = varId.substring(varId.indexOf("(") + 1);
+
             String subjId = parts[1].substring(parts[1].length() - 1);
 
             Actor subject = parseResult.getActors().get(subjId);
@@ -154,83 +155,44 @@ public class EventParser extends BaseParser {
         }
     }
 
-    /**
-     * Renames the duplicate identifiers in a lambda.
-     * This makes the lambda easier to read since there is no need to watch for scope information.
-     */
-    private void renameDuplicateIdentifiers() {
-        Scanner sc = new Scanner(parseResult.getLambda());
-        sc.useDelimiter("exists");
-        String part;
-        String identifier;
-        usedIdentifiers = new ArrayList<>();
-        do {
-            part = sc.next();
-            identifier = part.trim().split("\\.")[0];
-            if (!usedIdentifiers.contains(identifier)) {
-                usedIdentifiers.add(identifier);
-                usedIdentifiers.sort(Comparator.naturalOrder());
-            } else {
-                int start = parseResult.getLambda().indexOf(part);
-                String subLambda = parseResult.getLambda().substring(start);
-                Matcher m = varIdPattern.matcher(subLambda);
+    private void renameDuplicateIdentifiers(String lambda) {
+        lambda = lambda.trim();
+        String exists = "exists";
+        int firstExistsIndex = lambda.indexOf(exists);
+        int firstOpeningBracket = lambda.indexOf('(');
 
-                String newId = usedIdentifiers.get(usedIdentifiers.size() - 1);
-                while (usedIdentifiers.contains(newId)) {
-                    char lastChar = newId.charAt(newId.length() - 1);
-                    lastChar++;
-                    newId = newId.substring(0, newId.length() - 1) + lastChar;
-                }
-                while (m.find()) {
-                    String found = m.group();
-                    subLambda = subLambda.replace(found, found.replace(identifier, newId));
-                }
-                parseResult.setLambda(parseResult.getLambda().replace(part, subLambda));
-                usedIdentifiers.add(newId);
-                usedIdentifiers.sort(Comparator.naturalOrder());
-            }
-        } while (sc.hasNext());
+        String originalSubLambda = lambda.substring(firstOpeningBracket + 1);
+        String subLambda = getDeclarationScope(firstExistsIndex, originalSubLambda);
+        String declaration = lambda.split("\\.")[0].trim();
+        String identifier = declaration.split(" ")[1].trim();
+        if (!usedIdentifiers.contains(identifier)) {
+            usedIdentifiers.add(identifier);
+        } else {
+            String newIdentifier = getUnusedIdentifier();
+        }
+        int nextExistIndex = subLambda.indexOf(exists);
+        if (nextExistIndex != -1)
+            renameDuplicateIdentifiers(subLambda);
     }
 
-    public void recursiveRenameDuplicateIdentifiers(String lambda) {
-        usedIdentifiers = new ArrayList<>();
-        Pattern pattern = Pattern.compile("exists");
-        Matcher m = pattern.matcher(lambda);
-        if (m.find()) {
-            int existsIndex = m.start();
-            int existsNextIndex = -1;
-            if (m.find()) {
-                existsNextIndex = m.start();
-            }
-            if (existsIndex != -1) {
-                int firstBracketIndex = lambda.indexOf('(');
-                int lastBracketIndex = lambda.lastIndexOf(')');
-                String varId = lambda.substring("exists ".length(), firstBracketIndex - 1);
-                String scope = lambda.substring(existsIndex, lastBracketIndex);
+    private String getUnusedIdentifier() {
+        String res = "";
+        return null;
+    }
 
-                if (!usedIdentifiers.contains(varId)) {
-                    usedIdentifiers.add(varId);
-                    usedIdentifiers.sort(Comparator.naturalOrder());
-                } else {
-                    Matcher n = varIdPattern.matcher(scope);
-
-                    Character id = varId.charAt(0);
-                    Character newId = (char) (id + 1);
-                    boolean inScope = true;
-                    while (n.find()) {
-                        if (n.start() > existsNextIndex) {
-                            String nextScope;
-                            if (m.find()) {
-                                existsNextIndex = m.start();
-                            } else {
-                                existsNextIndex = Integer.MAX_VALUE;
-                            }
-                        }
-                        String found = n.group();
-                        scope = scope.replace(found, found.replace(id, newId));
-                    }
-                }
-            }
+    private String getDeclarationScope(int startIndex, String lambda) {
+        int brackets = 1;
+        char[] charArray = lambda.toCharArray();
+        for (int i = 0, charArrayLength = charArray.length; i < charArrayLength; i++) {
+            char c = charArray[i];
+            if (c == '(')
+                brackets++;
+            else if (c == ')')
+                brackets--;
+            else continue;
+            if (brackets == 0)
+                return lambda.substring(0, i);
         }
+        return null;
     }
 }
