@@ -200,7 +200,7 @@ public class InputController implements Stageable {
             launchScript();
             switch (Main.selectedTemplateType) {
                 case CLASSIC:
-                    Main.xmlSemanticsFile = new File("../sentences.sem.xml");
+                    Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
                     break;
                 case EVENT:
                     Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
@@ -282,18 +282,8 @@ public class InputController implements Stageable {
                     Files.deleteIfExists(resultDirectory.toPath());
                 }
 
-                System.out.println("tokenize");
-                process = new ProcessBuilder("./src/visualization/scripts/tokenize.sh", ccg2lambdaPath).start();
-                progress.set(0.50);
-                process.waitFor();
-
-                System.out.println("ccgParser");
-                process = new ProcessBuilder("./src/visualization/scripts/ccgParse.sh", ccg2lambdaPath).start();
-                progress.set(0.75);
-                process.waitFor();
-
-                System.out.println("python script");
-                process = new ProcessBuilder("./src/visualization/scripts/pythonScripts.sh", ccg2lambdaPath).start();
+                System.out.println("python parser classic script");
+                process = new ProcessBuilder("./src/visualization/scripts/scriptParserClassic_EMNLP2015.sh", ccg2lambdaPath).start();
                 progress.set(1.00);
                 process.waitFor();
 

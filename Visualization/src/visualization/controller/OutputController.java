@@ -176,7 +176,7 @@ public class OutputController implements Stageable {
         treeContHtml.setZoom(2.0);
         switch (Main.selectedTemplateType) {
             case CLASSIC:
-                webEngine.load(Paths.get("../sentences.html").toUri().toString());
+                webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
                 break;
             case EVENT:
                 webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
