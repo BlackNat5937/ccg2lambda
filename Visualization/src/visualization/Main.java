@@ -25,6 +25,18 @@ public class Main extends Application {
      */
     public static File ccg2lambdaLocation;
     /**
+     * The location of the CCG Parser C&C
+     */
+    public static File ccgCandCLocation;
+    /**
+     * The location of the CCG Parser easyCCg
+     */
+    public static File easyCCGLocation;
+    /**
+     * The location of the CCG Parser depccg
+     */
+    public static File depccgLocation;
+    /**
      * Desired visualization outputs. All by default.
      */
     private static Tools.RepresentationModes visualizationMode = Tools.RepresentationModes.ALL;

@@ -36,6 +36,10 @@ public class Tools {
      */
     public static final File configFile = new File("./config/conf.ini");
     /**
+     * Config C&C path file
+     */
+    public static final File configCandC = new File("../en/candc_location.txt");
+    /**
      * Output modes available. None means all.
      */
     public static final String[] outputModesOption = {

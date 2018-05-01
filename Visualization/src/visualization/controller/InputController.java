@@ -337,11 +337,30 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists());
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()));
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
-            new File("config").mkdir();
+            System.out.println("------------------------First Time ----------------------------");
+
+
+            /**
+             * If the file already exist, delete them
+             */
+            File ConfigDirectory = new File("config");
+            try {
+                for (File file : ConfigDirectory.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Files.deleteIfExists(Tools.configFile.toPath());
+            Files.deleteIfExists(Tools.configCandC.toPath());
+
+
+            System.out.println("ccg2lambda location");
+            new File(ConfigDirectory.toPath().toString()).mkdir();
             boolean ok = true;
             try {
                 ok = Tools.configFile.createNewFile();
@@ -351,20 +370,47 @@ public class InputController implements Stageable {
             if (!ok)
                 throw new IOException();
 
-            Alert firstTimeAlert = new Alert(Alert.AlertType.WARNING);
-            firstTimeAlert.setTitle("First time configuration needed");
-            firstTimeAlert.setHeaderText("First time configuration");
-            firstTimeAlert.setContentText(
+            Alert firstTimeAlertccg2lambda = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertccg2lambda.setTitle("First time configuration needed");
+            firstTimeAlertccg2lambda.setHeaderText("First time configuration ccglambda");
+            firstTimeAlertccg2lambda.setContentText(
                     "Configuration file is missing and/or corrupted." + '\n' +
                             "Please redo the configuration."
             );
-            firstTimeAlert.showAndWait();
-            File f = setccg2lambdaLocation();
+            firstTimeAlertccg2lambda.showAndWait();
+            File f1 = setccg2lambdaLocation();
 
             FileWriter fw = new FileWriter(Tools.configFile);
 
-            fw.write(f.getAbsolutePath());
+            fw.write(f1.getAbsolutePath());
             fw.close();
+
+
+            System.out.println("C&C location");
+            boolean okCandC = true;
+            try {
+                okCandC = Tools.configCandC.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!okCandC)
+                throw new IOException();
+
+            Alert firstTimeAlertCandC = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertCandC.setTitle("First time configuration needed");
+            firstTimeAlertCandC.setHeaderText("First time configuration C&C");
+            firstTimeAlertCandC.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            firstTimeAlertCandC.showAndWait();
+            File f2 = setCCGCandCParserLocation();
+
+            FileWriter fwCandC = new FileWriter(Tools.configCandC);
+
+            fwCandC.write(f2.getAbsolutePath());
+            fwCandC.close();
+
 
             System.out.println("python virtual");
             process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
@@ -376,6 +422,8 @@ public class InputController implements Stageable {
                             "ccg2lambda location registered & python 3 virtual environment installed in :" + '\n' +
                             py3Directory.getAbsolutePath());
             firstTime = false;
+
+            System.out.println("------------------------First Time END ----------------------------");
         } else {
             BufferedReader br = new BufferedReader(new FileReader(Tools.configFile));
             String ccg2lambdaPath = br.readLine();
@@ -432,6 +480,20 @@ public class InputController implements Stageable {
         }
         System.out.println(Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
+    }
+
+    public File setCCGCandCParserLocation() {
+        DirectoryChooser locationChooser = new DirectoryChooser();
+        locationChooser.setTitle("select CCG Parser Cand directory");
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showDialog(view);
+        if (selected.isDirectory()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                Main.ccgCandCLocation = selected;
+        }
+        System.out.println(Main.ccgCandCLocation);
+        return Main.ccgCandCLocation;
     }
 
     @Override
