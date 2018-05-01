@@ -70,6 +70,8 @@
        <MenuBar BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Settings">
                <MenuItem fx:id="setccg2lambdaLocationItem" mnemonicParsing="false" onAction="#setccg2lambdaLocation" text="ccg2lambda location" />
+               <MenuItem fx:id="setCandCLocationItem" mnemonicParsing="false" onAction="#setCandCLocation"
+                         text="C&amp;C location"/>
            </Menu>
            <Menu fx:id="menuTemplate" mnemonicParsing="false" text="Template">
                <items>

@@ -404,7 +404,7 @@ public class InputController implements Stageable {
                             "Please redo the configuration."
             );
             firstTimeAlertCandC.showAndWait();
-            File f2 = setCCGCandCParserLocation();
+            File f2 = setCandCLocation();
 
             FileWriter fwCandC = new FileWriter(Tools.configCandC);
 
@@ -482,7 +482,7 @@ public class InputController implements Stageable {
         return Main.ccg2lambdaLocation;
     }
 
-    public File setCCGCandCParserLocation() {
+    public File setCandCLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select CCG Parser Cand directory");
         File selected = null;
