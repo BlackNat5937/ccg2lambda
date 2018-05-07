@@ -157,7 +157,11 @@ public class GraphController implements Parametrable<Formula> {
         vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>() {
             @Override
             public String transform(Node node) {
-                return node.getLabel();
+                String res = node.getLabel();
+                if(node.getNodeType() == NodeType.EVENT && node.getLabel().matches(".*\\d+.*") ){
+                    res = node.getLabel().substring(0,1);
+                }
+                return res;
             }
         });
 
