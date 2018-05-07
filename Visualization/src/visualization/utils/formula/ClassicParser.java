@@ -202,7 +202,9 @@ public class ClassicParser extends BaseParser {
         else{
             //HERE
             System.out.println("Other case : " + scope);
-            String conjName = scope.substring(scope.indexOf('_') + 1, scope.indexOf('('));
+            String conjName = scope.substring(scope.indexOf('_') + 1);
+            conjName = conjName.substring(0, scope.indexOf('(') + 1);
+            System.out.println(conjName);
             int indexConj = parseResult.getLambda().indexOf(scope);
             String conjKey = getConjunctionKey(indexConj,conjName);
             n.getNegated().add(parseResult.getConjunctions().get(conjKey));
