@@ -44,6 +44,10 @@ public class Tools {
      */
     public static final File configEasyCCG = new File("../en/easyccg_location.txt");
     /**
+     * Config parser path file
+     */
+    public static final File configParserLocation = new File("../en/parser_location.txt");
+    /**
      * Output modes available. None means all.
      */
     public static final String[] outputModesOption = {

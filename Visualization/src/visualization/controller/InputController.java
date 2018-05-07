@@ -104,6 +104,15 @@ public class InputController implements Stageable {
      * For first time program is launch, install the virtual environment for python
      */
     private boolean firstTime;
+    /**
+     * boolean for when C&C location is change by the user
+     */
+    private boolean CandCDefined = false;
+    /**
+     * boolean for when easyCCG location is change by the user
+     */
+    private boolean easyCCGDefined = false;
+
 
     /**
      * Initializes the view.
@@ -337,7 +346,7 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()) || (!Tools.configEasyCCG.exists()));
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()) || (!Tools.configEasyCCG.exists()) || (!Tools.configParserLocation.exists()));
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
@@ -358,6 +367,7 @@ public class InputController implements Stageable {
             Files.deleteIfExists(Tools.configFile.toPath());
             Files.deleteIfExists(Tools.configCandC.toPath());
             Files.deleteIfExists(Tools.configEasyCCG.toPath());
+            Files.deleteIfExists(Tools.configParserLocation.toPath());
 
 
             System.out.println("ccg2lambda location");
@@ -411,7 +421,7 @@ public class InputController implements Stageable {
 
             fwCandC.write(f2.getAbsolutePath());
             fwCandC.close();
-
+            CandCDefined = true;
 
             System.out.println("easyCCG location");
             boolean okEasyCCG = true;
@@ -437,6 +447,9 @@ public class InputController implements Stageable {
 
             fwEasyCCG.write(f3.getAbsolutePath());
             fwEasyCCG.close();
+            easyCCGDefined = true;
+
+            defineParserLocation();
 
 
             System.out.println("python virtual");
@@ -458,6 +471,53 @@ public class InputController implements Stageable {
         }
     }
 
+    /**
+     * define the parser location in parser_location.txt
+     */
+    private void defineParserLocation() {
+        System.out.println("parser location location");
+        boolean okParserLocation = true;
+        try {
+            okParserLocation = Tools.configParserLocation.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!okParserLocation)
+            try {
+                throw new IOException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        FileWriter fwParserLocation = null;
+        try {
+            fwParserLocation = new FileWriter(Tools.configParserLocation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            fwParserLocation.write("candc:" + Main.ccgCandCLocation.toPath() + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fwParserLocation.write("easyccg:" + Main.easyCCGLocation.toPath() + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fwParserLocation.write("depccg::" + "not defined yet" + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            fwParserLocation.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Fires when the return key is pressed.
@@ -507,6 +567,9 @@ public class InputController implements Stageable {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccg2lambdaLocation = selected;
         }
+        if (CandCDefined && easyCCGDefined) {
+            defineParserLocation();
+        }
         System.out.println(Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
     }
@@ -526,6 +589,9 @@ public class InputController implements Stageable {
         if (selected.isDirectory()) {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccgCandCLocation = selected;
+        }
+        if (CandCDefined && easyCCGDefined) {
+            defineParserLocation();
         }
         System.out.println(Main.ccgCandCLocation);
         return Main.ccgCandCLocation;
