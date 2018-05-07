@@ -2,9 +2,9 @@ package visualization.utils.formula;
 
 import visualization.utils.formula.node.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parser for event-template lambdas.
@@ -16,7 +16,10 @@ public class EventParser extends BaseParser {
      * Pattern for the declaration of an events subject
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
-    private List<String> usedIdentifiers;
+    /**
+     * List of already used variable identifiers
+     */
+    private Map<String, Integer> usedIdentifiers;
 
     EventParser() {
     }
@@ -29,7 +32,7 @@ public class EventParser extends BaseParser {
         eventNumber = 0;
         conjunctionNumber = 0;
 
-        usedIdentifiers = new ArrayList<>();
+        usedIdentifiers = new HashMap<>();
         renameDuplicateIdentifiers(parseResult.getLambda());
         //recursiveRenameDuplicateIdentifiers(parseResult.getLambda());
 
@@ -155,33 +158,89 @@ public class EventParser extends BaseParser {
         }
     }
 
-    private void renameDuplicateIdentifiers(String lambda) {
+    private String renameDuplicateIdentifiers(String lambda) {
         lambda = lambda.trim();
+
         String exists = "exists";
-        int firstExistsIndex = lambda.indexOf(exists);
-        int firstOpeningBracket = lambda.indexOf('(');
-
-        String originalSubLambda = lambda.substring(firstOpeningBracket + 1);
-        String subLambda = getDeclarationScope(firstExistsIndex, originalSubLambda);
-        String declaration = lambda.split("\\.")[0].trim();
-        String identifier = declaration.split(" ")[1].trim();
-        if (!usedIdentifiers.contains(identifier)) {
-            usedIdentifiers.add(identifier);
-        } else {
-            String newIdentifier = getUnusedIdentifier();
+        String original = lambda;
+        int nextExistsIndex;
+        nextExistsIndex = original.indexOf(exists);
+        if (nextExistsIndex != -1) {
+            original = original.substring(nextExistsIndex);
+            String declaration = original.split("\\.")[0].trim();
+            String identifier = declaration.split(" ")[1].trim();
+            String scope = getDeclarationScope(0, original);
+            usedIdentifiers.put(identifier, usedIdentifiers.getOrDefault(identifier, 0) + 1);
+            renameDuplicateIdentifiers(scope);
+            if (usedIdentifiers.getOrDefault(identifier, 0) > 1) {
+                String pattern = varIdPattern.pattern().replace("\\w", identifier);
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(original);
+                String replacement = original;
+                String newIdentifier = getUnusedIdentifier(identifier);
+                while (m.find()) {
+                    String found = m.group();
+                    String replaced = found.replace(identifier, newIdentifier);
+                    replacement = replacement.replace(found, replaced);
+                }
+                lambda = lambda.replace(original, replacement);
+            }
         }
-        int nextExistIndex = subLambda.indexOf(exists);
-        if (nextExistIndex != -1)
-            renameDuplicateIdentifiers(subLambda);
+        return lambda;
     }
 
-    private String getUnusedIdentifier() {
+    private String getUnusedIdentifier(String identifier) {
         String res = "";
-        return null;
+        int id = 0;
+        // if the variable is an event
+        if (identifier.startsWith("e")) {
+            res = "e" + id;
+        } else {
+            res += identifier.charAt(0);
+            res += id;
+        }
+        do {
+            id++;
+            // if the variable is an event
+            if (identifier.startsWith("e")) {
+                res = "e" + id;
+            } else {
+                char first = res.charAt(0);
+                res = "";
+                res += first;
+                res += id;
+            }
+        } while (usedIdentifiers.get(res) != null);
+        usedIdentifiers.put(res, 1);
+        return res;
     }
 
+    private List<String> getScopes(String lambda) {
+        List<String> scopes = new ArrayList<>();
+        String subLambda = lambda;
+        int nextExistsIndex = -1;
+        do {
+            nextExistsIndex = subLambda.indexOf("exists");
+            if (nextExistsIndex != -1) {
+                subLambda = subLambda.substring(nextExistsIndex);
+            }
+        } while (nextExistsIndex != -1);
+        return scopes;
+    }
+
+    /**
+     * Returns the scope (the text in brackets) of a variable declaration.
+     *
+     * @param startIndex the index of the "exists" keyword for this declaration
+     * @param lambda     the lambda to get the scope from
+     * @return the inner text of the declaration, which may contain other declarations; null if lambda is incorrect
+     */
     private String getDeclarationScope(int startIndex, String lambda) {
-        int brackets = 1;
+        if (startIndex == -1) return null;
+        int brackets = 0;
+        lambda = lambda.substring(startIndex);
+        int afterFirstBracketIndex = lambda.indexOf('(') + 1;
+        if (afterFirstBracketIndex == -1) return null;
         char[] charArray = lambda.toCharArray();
         for (int i = 0, charArrayLength = charArray.length; i < charArrayLength; i++) {
             char c = charArray[i];
@@ -191,7 +250,7 @@ public class EventParser extends BaseParser {
                 brackets--;
             else continue;
             if (brackets == 0)
-                return lambda.substring(0, i);
+                return lambda.substring(afterFirstBracketIndex, i).trim();
         }
         return null;
     }
