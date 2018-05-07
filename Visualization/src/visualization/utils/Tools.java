@@ -40,6 +40,10 @@ public class Tools {
      */
     public static final File configCandC = new File("../en/candc_location.txt");
     /**
+     * Config easyCCG path file
+     */
+    public static final File configEasyCCG = new File("../en/easyccg_location.txt");
+    /**
      * Output modes available. None means all.
      */
     public static final String[] outputModesOption = {

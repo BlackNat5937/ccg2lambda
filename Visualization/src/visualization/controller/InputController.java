@@ -337,7 +337,7 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()));
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()) || (!Tools.configEasyCCG.exists()));
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
@@ -357,6 +357,7 @@ public class InputController implements Stageable {
             }
             Files.deleteIfExists(Tools.configFile.toPath());
             Files.deleteIfExists(Tools.configCandC.toPath());
+            Files.deleteIfExists(Tools.configEasyCCG.toPath());
 
 
             System.out.println("ccg2lambda location");
@@ -412,6 +413,32 @@ public class InputController implements Stageable {
             fwCandC.close();
 
 
+            System.out.println("easyCCG location");
+            boolean okEasyCCG = true;
+            try {
+                okEasyCCG = Tools.configEasyCCG.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!okEasyCCG)
+                throw new IOException();
+
+            Alert firstTimeAlertEasyCCG = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertEasyCCG.setTitle("First time configuration needed");
+            firstTimeAlertEasyCCG.setHeaderText("First time configuration easyCCG ");
+            firstTimeAlertEasyCCG.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            firstTimeAlertEasyCCG.showAndWait();
+            File f3 = setEasyCCGLocation();
+
+            FileWriter fwEasyCCG = new FileWriter(Tools.configEasyCCG);
+
+            fwEasyCCG.write(f3.getAbsolutePath());
+            fwEasyCCG.close();
+
+
             System.out.println("python virtual");
             process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
             process.waitFor();
@@ -430,6 +457,7 @@ public class InputController implements Stageable {
             Main.ccg2lambdaLocation = ccg2lambdaPath != null ? new File(ccg2lambdaPath) : null;
         }
     }
+
 
     /**
      * Fires when the return key is pressed.
@@ -464,10 +492,11 @@ public class InputController implements Stageable {
     }
 
     /**
-     * for choosing ghe ccg2lambda location file
+     * for choosing the ccg2lambda location file
      *
      * @return
      */
+    @FXML
     public File setccg2lambdaLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select ccg2lambda installation directory");
@@ -482,6 +511,12 @@ public class InputController implements Stageable {
         return Main.ccg2lambdaLocation;
     }
 
+    /**
+     * for choosing the C&C location file
+     *
+     * @return
+     */
+    @FXML
     public File setCandCLocation() {
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select CCG Parser Cand directory");
@@ -496,6 +531,26 @@ public class InputController implements Stageable {
         return Main.ccgCandCLocation;
     }
 
+    /**
+     * choosing the easyCCG location file
+     *
+     * @return
+     */
+    @FXML
+    private File setEasyCCGLocation() {
+        DirectoryChooser locationChooser = new DirectoryChooser();
+        locationChooser.setTitle("select easyCCG Parser directory");
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showDialog(view);
+        if (selected.isDirectory()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                Main.easyCCGLocation = selected;
+        }
+        System.out.println(Main.easyCCGLocation);
+        return Main.easyCCGLocation;
+    }
+
     @Override
     public void initStage(Stage primaryStage) {
         this.view = primaryStage;
@@ -506,10 +561,10 @@ public class InputController implements Stageable {
      */
     public void setTemplate() {
         if (radioTemplateEvent.isSelected()) {
-            System.out.println("template event");
+            System.out.println("||||||||||||||||| template event");
             Main.selectedTemplateType = Tools.TemplateType.EVENT;
         } else if (radioTemplateClassic.isSelected()) {
-            System.out.println("template classic");
+            System.out.println("||||||||||||||||| template classic");
             Main.selectedTemplateType = Tools.TemplateType.CLASSIC;
         }
     }
