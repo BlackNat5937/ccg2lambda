@@ -149,7 +149,7 @@ public class ClassicParser extends BaseParser {
 
         // two cases : exists or directly the event being negated
 
-        if (scope.matches(varDeclaration)) {
+        if(scope.matches(varDeclaration)) {
             //Case exists
             String subScope = scope.substring(scope.indexOf("_"), scope.indexOf("))")) + ")";
             String[] subStringScope = subScope.split("&");
@@ -199,10 +199,30 @@ public class ClassicParser extends BaseParser {
                 }
             }
         }
+        else if(scope.contains("&")){
+            String[] subScope = scope.split("&");
+            for(String s : subScope){
+                s = s.trim();
+                String name = s.substring(s.indexOf('_') + 1);
+                name = name.substring(0, name.indexOf('('));
+                int index = parseResult.getLambda().indexOf(s);
+                if(s.matches(".*Prog\\(.*")){
+                    //event
+                    String key = getEventKey(index, name);
+                    n.getNegated().add(parseResult.getEvents().get(key));
+                }
+                else{
+                    //conj
+                    String key = getConjunctionKey(index, name);
+                    n.getNegated().add(parseResult.getConjunctions().get(key));
+                }
+
+            }
+        }
         else{
             //HERE
-            System.out.println("Other case : " + scope);
-            String conjName = scope.substring(scope.indexOf('_') + 1, scope.indexOf('('));
+            String conjName = scope.substring(scope.indexOf('_') + 1);
+            conjName = conjName.substring(0, conjName.indexOf('('));
             int indexConj = parseResult.getLambda().indexOf(scope);
             String conjKey = getConjunctionKey(indexConj,conjName);
             n.getNegated().add(parseResult.getConjunctions().get(conjKey));
