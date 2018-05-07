@@ -202,10 +202,19 @@ public class Tools {
     }
 
     /**
-     * Enum for the parser types.
+     * Enum for the templates types.
      */
     public enum TemplateType {
         CLASSIC,
         EVENT
     }
+
+    /**
+     * Enum for the parser types.
+     */
+    public enum ParserType {
+        CANDC,
+        ALL
+    }
+
 }
