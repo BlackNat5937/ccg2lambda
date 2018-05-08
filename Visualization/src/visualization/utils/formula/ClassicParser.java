@@ -32,10 +32,28 @@ public class ClassicParser extends BaseParser {
 
         String tmp = parseResult.getLambda();
         String disjunctionScope = "";
+        boolean disjunctionTreated = false;
         if(tmp.contains("|")){
             //the disjunction scope is saved for later, and isn't processed by the scanner
             disjunctionScope = getDisjunctionScope(tmp.indexOf("|"), tmp);
+
+            //if the subject is in the disjonction it is necessary to process it first
+            if(tmp.contains("exists x." + disjunctionScope)){
+                String[] subj = disjunctionScope.split("\\|");
+                String subj1 = subj[0].substring(subj[0].indexOf('_') + 1).substring(0,subj[0].substring(subj[0].indexOf('_') + 1).indexOf('('));
+                String subj2 = subj[1].substring(subj[1].indexOf('_') + 1).substring(0,subj[1].substring(subj[1].indexOf('_') + 1).indexOf('('));
+                System.out.println("SUbjects : " + subj1 + " - " + subj2 + " id  : x");
+
+                parseResult.getActors().put("x", new Actor("x", subj1+"|"+subj2));
+                disjunctionTreated = true;
+                tmp = tmp.replace("exists x.", "");
+             }
+
             tmp = tmp.replace(disjunctionScope, "");
+
+            System.out.println("TMP : " + tmp);
+
+
         }
 
         Scanner sc = new Scanner(tmp);
@@ -109,7 +127,7 @@ public class ClassicParser extends BaseParser {
         } while (sc.hasNext());
 
         //check if there is any disjunction in the sentence
-        if(disjunctionScope.contains("|")){
+        if(disjunctionScope.contains("|") && !disjunctionTreated){
             //System.out.println("Complete sentence : " + parseResult.getLambda());
             //System.out.println("Disjunction scope : " + disjunctionScope);
             String[] args = disjunctionScope.split("\\|");
@@ -146,7 +164,6 @@ public class ClassicParser extends BaseParser {
                                 actorId = parseResult.getActorByName(actorId.substring(1));
                             }
                             eventNumber++;
-
                             parseResult.getEvents().put(varId, new Event(varId, varName, parseResult.getActors().get(actorId)));
                         }
                     }

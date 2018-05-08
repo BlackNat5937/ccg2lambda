@@ -92,10 +92,30 @@ public class GraphController implements Parametrable<Formula> {
         this.formula = data;
 
         for (Actor actor : this.formula.getActors().values()) {
-            Node a = new Node(actor.getName(), NodeType.ACTOR);
             Node x = new Node(actor.getId(), NodeType.ACTOR);
-            x.addLink(a, "is-a");
-            g.getNodes().add(a);
+            if (actor.getName().contains("|")) {
+                //disjunction
+                Node or = new Node("OR", NodeType.DISJUNCTION);
+                x.addLink(or, "is-a");
+
+                String actors[] = actor.getName().split("\\|");
+                System.out.println(actor.getName());
+
+                Node actor1 = new Node(actors[0], NodeType.ACTOR);
+                Node actor2 = new Node(actors[1], NodeType.ACTOR);
+
+                or.addLink(actor1,"is-a");
+                or.addLink(actor2,"is-a");
+
+                g.getNodes().add(or);
+                g.getNodes().add(actor1);
+                g.getNodes().add(actor2);
+            }else{
+                Node a = new Node(actor.getName(), NodeType.ACTOR);
+                x.addLink(a, "is-a");
+                g.getNodes().add(a);
+            }
+
             g.getNodes().add(x);
 
         }
@@ -108,7 +128,9 @@ public class GraphController implements Parametrable<Formula> {
             g.getNodes().add(e);
 
             for (Actor a : event.getActors()) {
-                g.getNodeByLabel(a.getId()).addLink(x, "event");
+
+                    g.getNodeByLabel(a.getId()).addLink(x, "event");
+
             }
         }
         for (Conjunction conjunction : this.formula.getConjunctions().values()) {
