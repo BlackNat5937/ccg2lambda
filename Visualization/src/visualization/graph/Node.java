@@ -10,6 +10,7 @@ public class Node{
     private String label;
     private NodeType nodeType;
     private ArrayList<Link> links = new ArrayList<>();
+    private String id;
     private boolean visited;
 
     public Node(String label, NodeType nodeType){
@@ -58,5 +59,13 @@ public class Node{
 
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -97,6 +97,7 @@ public class GraphController implements Parametrable<Formula> {
             x.addLink(a, "is-a");
             g.getNodes().add(a);
             g.getNodes().add(x);
+
         }
         for (Event event : this.formula.getEvents().values()) {
             Node e = new Node(event.getName(), NodeType.EVENT);
@@ -112,6 +113,7 @@ public class GraphController implements Parametrable<Formula> {
         }
         for (Conjunction conjunction : this.formula.getConjunctions().values()) {
             Node c = new Node(conjunction.getName(), NodeType.CONJUNCTION);
+            c.setId(conjunction.getId());
             g.getNodes().add(c);
 
             for (FormulaNode f : conjunction.getJoined()) {
@@ -129,9 +131,51 @@ public class GraphController implements Parametrable<Formula> {
             }
 
             g.getNegations().add(neg);
-
-
         }
+
+        for(Disjunction disjunction : this.formula.getDisjunctions()){
+            System.out.println(disjunction);
+
+            Node or = new Node("OR", NodeType.DISJUNCTION);
+
+            //origin :
+            g.getNodeByLabel(disjunction.getOrigin().getId()).addLink(or, "disjunction");
+
+            ArrayList<Link> toDelete = new ArrayList<>();
+
+            if(disjunction.getArg1().getClass() == Event.class){
+                or.addLink(g.getNodeByLabel(disjunction.getArg1().getId()), g.getNodeByLabel(disjunction.getArg1().getId()).getNodeType().toString());
+                or.addLink(g.getNodeByLabel(disjunction.getArg2().getId()), g.getNodeByLabel(disjunction.getArg2().getId()).getNodeType().toString());
+
+                //delete of useless links
+                for(Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()){
+                    if(l.getDestination().equals(g.getNodeByLabel(disjunction.getArg1().getId())) ||
+                            l.getDestination().equals(g.getNodeByLabel(disjunction.getArg2().getId()))){
+                        toDelete.add(l);
+                    }
+                }
+                for(Link l : toDelete){
+                    g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
+                }
+            }else if(disjunction.getArg1().getClass() == Conjunction.class){
+                System.out.println("Conj ID : " + disjunction.getArg1().getId() + " | " + disjunction.getArg2().getId());
+                or.addLink(g.getConjById(disjunction.getArg1().getId()), g.getConjById(disjunction.getArg1().getId()).getNodeType().toString());
+                or.addLink(g.getConjById(disjunction.getArg2().getId()), g.getConjById(disjunction.getArg2().getId()).getNodeType().toString());
+                //delete of useless links (here from origin to the conj)
+                for(Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()){
+                    if(l.getDestination().equals(g.getConjById(disjunction.getArg1().getId())) || l.getDestination().equals(g.getConjById(disjunction.getArg2().getId()))){
+                        toDelete.add(l);
+                    }
+                }
+                for(Link l : toDelete){
+                    g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
+                }
+
+            }
+            g.getNodes().add(or);
+        }
+
+
 
         box.setText(formula.getLambda());
 
@@ -154,6 +198,9 @@ public class GraphController implements Parametrable<Formula> {
         });
 
         //node text
+        /**
+         * Replace events label like "ewalk1"
+         */
         vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>() {
             @Override
             public String transform(Node node) {
@@ -179,6 +226,9 @@ public class GraphController implements Parametrable<Formula> {
                     case CONJUNCTION:
                         s = new Ellipse2D.Double(-10, -10, 20, 20);
                         break;
+                    case DISJUNCTION:
+                        s = new Ellipse2D.Double(-10,-10,25,25);
+                        break;
                 }
                 return s;
             }
@@ -198,6 +248,9 @@ public class GraphController implements Parametrable<Formula> {
                     case CONJUNCTION:
                         p = Color.GREEN;
                         break;
+                    case DISJUNCTION:
+                        p = Color.YELLOW;
+                        break;
                 }
                 return p;
             }
@@ -216,6 +269,9 @@ public class GraphController implements Parametrable<Formula> {
                         break;
                     case CONJUNCTION:
                         p = Color.GREEN;
+                        break;
+                    case DISJUNCTION:
+                        p = Color.YELLOW;
                         break;
                 }
                 return p;

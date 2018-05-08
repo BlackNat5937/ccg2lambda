@@ -57,6 +57,16 @@ public class Graph {
         return res;
     }
 
+    public Node getConjById(String id){
+        Node res = null;
+        for (Node n : nodes) {
+            if (n.getNodeType() == NodeType.CONJUNCTION && n.getId().equals(id)) {
+                res = n;
+            }
+        }
+        return res;
+    }
+
     public void setNodes(ArrayList<Node> nodes) {
         this.nodes = nodes;
     }
