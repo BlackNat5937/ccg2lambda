@@ -58,4 +58,11 @@ public class BaseNode implements FormulaNode {
     public String toString() {
         return name + '(' + id + ')';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FormulaNode))
+            return false;
+        else return ((FormulaNode) obj).getId().equals(this.id) || ((FormulaNode) obj).getName().equals(this.name);
+    }
 }

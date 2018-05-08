@@ -28,6 +28,9 @@ public class EventParser extends BaseParser {
     public Formula parse(String lambda, String sentence) {
         parseResult = new Formula(FormulaParser.simplifyLambda(lambda.trim()), sentence);
 
+        Map<String, BaseNode> nodes = new HashMap<>();
+        parse(parseResult.getLambda(), nodes);
+
         actorNumber = 0;
         eventNumber = 0;
         conjunctionNumber = 0;
@@ -65,6 +68,66 @@ public class EventParser extends BaseParser {
             }
         } while (sc.hasNext());
         return parseResult;
+    }
+
+    public Formula parse(String lambda, Map<String, BaseNode> nodes) {
+        List<String> scopes = getScopes(lambda);
+        scopes.forEach(scope -> {
+            int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
+            Scanner sc = new Scanner(scope);
+            sc.useDelimiter("&");
+            String token;
+            boolean firstExists = true;
+
+            do {
+                String varName;
+                String varId;
+                token = sc.next().trim();
+                if (token.contains("exists")) {
+                    if (token.matches(varDeclaration)) {
+                        varId = token.split("\\.")[0].split(" ")[1].trim();
+                        varName = token.split("\\.")[1].split("\\)")[0].substring(1).split("\\(")[0].trim();
+                        if (firstExists) {
+                            firstExists = false;
+                            BaseNode newNode;
+                            if (varId.startsWith("e")) {
+                                newNode = new Event(varId, varName);
+                                parseResult.getEventEvents().add((Event) newNode);
+                            } else {
+                                newNode = new Actor(varId, varName);
+                                parseResult.getEventActors().add((Actor) newNode);
+                            }
+                            nodes.put(varId, newNode);
+                            System.out.println(varId + " : " + varName);
+                        } else if (nodes.get(varId) == null) {
+                            parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes);
+                        }
+                    }
+                } else if (token.matches(eventSubjectDeclaration)) {
+                    registerEventSubject(nodes, nodes, token);
+                } else {
+
+                }
+            } while (sc.hasNext());
+        });
+        return parseResult;
+    }
+
+    private void registerEventSubject(Map<String, BaseNode> actors, Map<String, BaseNode> events, String token) {
+        String varId;
+        String[] parts = token.split("\\)");
+        if (parts[0].contains("Subj") && parts.length >= 2) {
+            varId = parts[0].substring(1);
+            varId = varId.substring(varId.indexOf("(") + 1);
+
+            String subjId = parts[1].substring(parts[1].length() - 1);
+
+            Actor subject = (Actor) actors.get(subjId);
+            Event event = (Event) events.get(varId);
+
+            event.setSubject(subject);
+            event.getActors().add(subject);
+        }
     }
 
     private void registerSynonym(String token) {
@@ -171,7 +234,8 @@ public class EventParser extends BaseParser {
             String identifier = declaration.split(" ")[1].trim();
             String scope = getDeclarationScope(0, original);
             usedIdentifiers.put(identifier, usedIdentifiers.getOrDefault(identifier, 0) + 1);
-            renameDuplicateIdentifiers(scope);
+            String newScope = renameDuplicateIdentifiers(scope);
+            original = original.replace(scope, newScope);
             if (usedIdentifiers.getOrDefault(identifier, 0) > 1) {
                 String pattern = varIdPattern.pattern().replace("\\w", identifier);
                 Pattern p = Pattern.compile(pattern);
@@ -218,11 +282,15 @@ public class EventParser extends BaseParser {
     private List<String> getScopes(String lambda) {
         List<String> scopes = new ArrayList<>();
         String subLambda = lambda;
-        int nextExistsIndex = -1;
+        int nextExistsIndex;
         do {
             nextExistsIndex = subLambda.indexOf("exists");
             if (nextExistsIndex != -1) {
                 subLambda = subLambda.substring(nextExistsIndex);
+                int endOfScopeIndex = getClosingBracketIndex(subLambda);
+                String scope = subLambda.substring(subLambda.indexOf("exists"), endOfScopeIndex + 1);
+                scopes.add(scope);
+                subLambda = subLambda.substring(endOfScopeIndex + 1);
             }
         } while (nextExistsIndex != -1);
         return scopes;
@@ -253,5 +321,54 @@ public class EventParser extends BaseParser {
                 return lambda.substring(afterFirstBracketIndex, i).trim();
         }
         return null;
+    }
+
+    /**
+     * Get the index of the closing bracket corresponding to the first opening bracket in the str.
+     *
+     * @param str the string to test
+     * @return the index of the closing bracket, or -1 if the string does not contain 2k brackets
+     */
+    private int getClosingBracketIndex(String str) {
+        char[] chars = str.toCharArray();
+        int bracketsStartIndex = 0, length = chars.length;
+        while (bracketsStartIndex < length) {
+            char c = chars[bracketsStartIndex];
+            if (c == '(')
+                break;
+            bracketsStartIndex++;
+        }
+        if (bracketsStartIndex > length)
+            return -1;
+
+        Deque<Character> brackets = new ArrayDeque<>();
+        for (int index = bracketsStartIndex; index < length; index++) {
+            char c = chars[index];
+            if (c == '(')
+                brackets.push(c);
+            else if (c == ')')
+                brackets.pop();
+            else continue;
+            if (brackets.isEmpty())
+                return index;
+        }
+        return -1;
+    }
+
+    private int getEndOfScopeIndex(int firstBracketIndex, String lambda) {
+        int brackets = 0;
+        lambda = lambda.substring(firstBracketIndex);
+        char[] charArray = lambda.toCharArray();
+        for (int i = 0, charArrayLength = charArray.length; i < charArrayLength; i++) {
+            char c = charArray[i];
+            if (c == '(')
+                brackets++;
+            else if (c == ')')
+                brackets--;
+            else continue;
+            if (brackets == 0)
+                return i + firstBracketIndex;
+        }
+        return -1;
     }
 }

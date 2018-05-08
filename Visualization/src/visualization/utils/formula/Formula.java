@@ -8,6 +8,7 @@ import visualization.utils.formula.node.Negation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,14 +30,17 @@ public class Formula {
      * The actors of this formula. They are the ones to initiate or to endure events.
      */
     private Map<String, Actor> actors = new HashMap<>();
+    private List<Actor> eventActors = new ArrayList<>();
     /**
      * The events of this formula. They represent actions and have effect on the actors.
      */
     private Map<String, Event> events = new HashMap<>();
+    private List<Event> eventEvents = new ArrayList<>();
     /**
      * The conjunctions of this formula. They link other items or provide additionnal info (time, place...)
      */
     private Map<String, Conjunction> conjunctions = new HashMap<>();
+    private List<Conjunction> eventConjunctions = new ArrayList<>();
 
     /**
      * THe negation of this formula.
@@ -136,6 +140,18 @@ public class Formula {
 
     public ArrayList<Negation> getNegations() {
         return negations;
+    }
+
+    public List<Actor> getEventActors() {
+        return eventActors;
+    }
+
+    public List<Event> getEventEvents() {
+        return eventEvents;
+    }
+
+    public List<Conjunction> getEventConjunctions() {
+        return eventConjunctions;
     }
 
     /**
