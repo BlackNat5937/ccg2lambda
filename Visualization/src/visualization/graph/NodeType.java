@@ -6,5 +6,6 @@ package visualization.graph;
 public enum NodeType {
     EVENT,
     ACTOR,
-    CONJUNCTION;
+    CONJUNCTION,
+    DISJUNCTION;
 }

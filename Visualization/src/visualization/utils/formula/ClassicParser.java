@@ -30,7 +30,15 @@ public class ClassicParser extends BaseParser {
         String varId;
         String varName;
 
-        Scanner sc = new Scanner(parseResult.getLambda());
+        String tmp = parseResult.getLambda();
+        String disjunctionScope = "";
+        if(tmp.contains("|")){
+            //the disjunction scope is saved for later, and isn't processed by the scanner
+            disjunctionScope = getDisjunctionScope(tmp.indexOf("|"), tmp);
+            tmp = tmp.replace(disjunctionScope, "");
+        }
+
+        Scanner sc = new Scanner(tmp);
         sc.useDelimiter("&");
         do {
             token = sc.next();
@@ -57,7 +65,7 @@ public class ClassicParser extends BaseParser {
                     if (m.find() && n.find()) {
                         varName = m.group().substring(1);
                         //varId = "e" + eventNumber;
-                        varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+                        varId = getEventKey(tmp.indexOf('_' + varName + '(' + n.group().substring(1)),varName);
                         actorId = n.group();
                         actorId = actorId.substring(1, actorId.length() - 1);
                         // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
@@ -77,7 +85,7 @@ public class ClassicParser extends BaseParser {
 
                     if (m.find() && n.find()) {
                         varName = m.group().substring(1);
-                        varId = getConjunctionKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+                        varId = getConjunctionKey(tmp.indexOf('_' + varName + '(' + n.group().substring(1)),varName);
                         conjunctionNumber++;
 
                         joinedId = n.group();
@@ -99,6 +107,124 @@ public class ClassicParser extends BaseParser {
                 }
             }
         } while (sc.hasNext());
+
+        //check if there is any disjunction in the sentence
+        if(disjunctionScope.contains("|")){
+            //System.out.println("Complete sentence : " + parseResult.getLambda());
+            //System.out.println("Disjunction scope : " + disjunctionScope);
+            String[] args = disjunctionScope.split("\\|");
+            String[] args1 = args[0].split("&");
+            String[] args2 = args[1].split("&");
+
+            for(String subScope : disjunctionScope.split("\\|")){
+                for(String s : subScope.split("&")){
+                    //System.out.println("Arg : " + s);
+                    if(s.matches(varDeclaration)){
+                        Matcher m = varIdPattern.matcher(s);
+                        Matcher n = varNamePattern.matcher(s);
+                        if (m.find() && n.find()) {
+                            varId = m.group();
+                            varId = varId.substring(0, varId.length() - 1);
+                            varName = n.group().substring(1);
+
+                            parseResult.getActors().put(varId, new Actor(varId, varName));
+                        }
+                    }
+                    else if(s.matches(".*Prog\\(.*")){
+                        Matcher m = varNamePattern.matcher(s);
+                        Matcher n = varIdPattern.matcher(s);
+                        String actorId;
+
+                        if (m.find() && n.find()) {
+                            varName = m.group().substring(1);
+                            //varId = "e" + eventNumber;
+                            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+                            actorId = n.group();
+                            actorId = actorId.substring(1, actorId.length() - 1);
+                            // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
+                            if (actorId.startsWith("_")) {
+                                actorId = parseResult.getActorByName(actorId.substring(1));
+                            }
+                            eventNumber++;
+
+                            parseResult.getEvents().put(varId, new Event(varId, varName, parseResult.getActors().get(actorId)));
+                        }
+                    }
+                    else{
+                        String joinedId;
+                        Matcher m = varNamePattern.matcher(s);
+                        Matcher n = varIdPattern.matcher(s);
+
+                        if (m.find() && n.find()) {
+                            varName = m.group().substring(1);
+                            varId = getConjunctionKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+                            conjunctionNumber++;
+
+                            joinedId = n.group();
+                            joinedId = joinedId.substring(1, joinedId.length() - 1);
+                            String[] ids = joinedId.split(",");
+                            List<Actor> joined = new ArrayList<>();
+                            for (String id : ids) {
+                                if (!(id.startsWith("e") || id.startsWith("c"))) {
+                                    // if the id stats with "_" then it is a proper noun and we have to search for it in the map
+                                    if (id.startsWith("_")) {
+                                        id = parseResult.getActorByName(id.substring(1));
+                                    }
+                                    // else we just add it to the list of actors joined
+                                    joined.add(parseResult.getActors().get(id));
+                                }
+                            }
+                            parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
+                        }
+                    }
+                }
+            }
+
+
+
+            //case PROG || Prog
+            if(containsProgArg(args1) && containsProgArg(args2) && !containsConjArg(args1) && !containsConjArg(args2)){
+                Disjunction disjunction = new Disjunction();
+                String prog1 = getProgArg(args1);
+                String prog2 = getProgArg(args2);
+                System.out.println("Args : " + prog1 + " / " + prog2);
+                String name1 = prog1.substring(prog1.indexOf('_') + 1).substring(0,prog1.substring(prog1.indexOf('_') + 1).indexOf('('));
+                String name2 = prog2.substring(prog2.indexOf('_') + 1).substring(0,prog2.substring(prog2.indexOf('_') + 1).indexOf('('));
+
+                System.out.println("    Name : " + name1 + " & " + name2);
+
+                disjunction.setArg1(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name1), name1)));
+                disjunction.setArg2(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name2), name2)));
+
+                String nameOrigin = prog1.substring(prog1.indexOf('_') + 1).substring(prog1.substring(prog1.indexOf('_') + 1).indexOf('(') + 1, prog1.substring(prog1.indexOf('_') + 1).indexOf(')'));
+
+                disjunction.setOrigin(parseResult.getActors().get(nameOrigin));
+
+                parseResult.getDisjunctions().add(disjunction);
+            }
+
+            //case Conj || Conj
+            else if(containsConjArg(args1) && containsConjArg(args2)) {
+                Disjunction disjunction = new Disjunction();
+                String conj1 = getConjArgs(args1);
+                String conj2 = getConjArgs(args2);
+                System.out.println("Conj : " + conj1 + " / " + conj2);
+
+                String name1 = conj1.substring(conj1.indexOf('_') + 1, conj1.indexOf('('));
+                String name2 = conj2.substring(conj2.indexOf('_') + 1, conj2.indexOf('('));
+
+                disjunction.setArg1(parseResult.getConjunctions().get(getConjunctionKey(parseResult.getLambda().indexOf(conj1), name1)));
+                disjunction.setArg2(parseResult.getConjunctions().get(getConjunctionKey(parseResult.getLambda().indexOf(conj2), name2)));
+
+                String nameOrigin = conj1.substring(conj1.indexOf('(') + 1, conj1.indexOf(','));
+
+                disjunction.setOrigin(parseResult.getActors().get(nameOrigin));
+
+                parseResult.getDisjunctions().add(disjunction);
+            }
+
+
+        }
 
         //check if there is any negation in the sentence
         if (parseResult.getLambda().contains("-")) {
@@ -127,13 +253,13 @@ public class ClassicParser extends BaseParser {
 
         }
         if(parseResult.getLambda().contains("not")){
-            System.out.println(parseResult.getLambda());
             Negation n = new Negation();
             String substring = parseResult.getLambda().substring(parseResult.getLambda().indexOf("_not"));
             String ssubstring = substring.substring(substring.indexOf("(_") + 2,substring.indexOf("))") );
             n.getNegated().add(parseResult.getActors().get(parseResult.getActorByName(ssubstring)));
             parseResult.getNegations().add(n);
         }
+
 
         return parseResult;
     }
@@ -263,5 +389,80 @@ public class ClassicParser extends BaseParser {
         }
 
         return "e" + event + count;
+    }
+
+    public String getDisjunctionScope(int index, String sentence){
+        boolean firstTime = true;
+        int countLeft = 1;
+        int countRight = 1;
+        int indexLeft = index;
+        int indexRight = index;
+
+        while((firstTime || countLeft != 0) && indexLeft > 0){
+            if(sentence.charAt(indexLeft) == ')'){
+                countLeft ++;
+                firstTime = false;
+            }
+            else if(sentence.charAt(indexLeft) == '('){
+                countLeft --;
+            }
+            indexLeft --;
+        }
+
+        firstTime = true;
+
+        while((firstTime || countRight != 0) && indexRight > 0){
+            if(sentence.charAt(indexRight) == '('){
+                countRight ++;
+                firstTime = false;
+            }
+            else if(sentence.charAt(indexRight) == ')'){
+                countRight --;
+            }
+            indexRight ++;
+        }
+
+        return sentence.substring(indexLeft, indexRight);
+    }
+
+
+    public boolean containsProgArg(String[] args){
+        boolean res = false;
+        for(String s : args){
+            if(s.matches(".*Prog\\(.*")){
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    public boolean containsConjArg(String[] args){
+        boolean res = false;
+        for(String s : args){
+            if(s.contains(",")){
+                res = true;
+            }
+        }
+        return  res;
+    }
+
+    public String getProgArg(String[] args){
+        String res = "";
+        for(String s : args){
+            if(s.matches(".*Prog\\(.*")){
+                res = s;
+            }
+        }
+        return res;
+    }
+
+    public String getConjArgs(String[] args){
+        String res = "";
+        for(String s : args){
+            if(s.contains(",")){
+                res = s;
+            }
+        }
+        return res;
     }
 }

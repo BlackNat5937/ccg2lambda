@@ -1,10 +1,7 @@
 package visualization.utils.formula;
 
 import visualization.Main;
-import visualization.utils.formula.node.Actor;
-import visualization.utils.formula.node.Conjunction;
-import visualization.utils.formula.node.Event;
-import visualization.utils.formula.node.Negation;
+import visualization.utils.formula.node.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +43,11 @@ public class Formula {
      * THe negation of this formula.
      */
     private ArrayList<Negation> negations = new ArrayList<>();
+
+    /**
+     * The disjunction of this formula.
+     */
+    private ArrayList<Disjunction> disjunctions = new ArrayList<>();
 
     /**
      * Private constructor for a formula, they must be created using the formula parser.
@@ -171,5 +173,13 @@ public class Formula {
     @Override
     public String toString() {
         return this.lambda;
+    }
+
+    public ArrayList<Disjunction> getDisjunctions() {
+        return disjunctions;
+    }
+
+    public void setDisjunctions(ArrayList<Disjunction> disjunctions) {
+        this.disjunctions = disjunctions;
     }
 }
