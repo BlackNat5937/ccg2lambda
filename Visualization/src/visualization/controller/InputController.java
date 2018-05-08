@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import visualization.Main;
 import visualization.utils.Tools;
 
-import javax.tools.Tool;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Objects;
@@ -298,75 +297,51 @@ public class InputController implements Stageable {
         File parsedDirectory = new File("../en_parsed");
         File resultDirectory = new File("../en_results");
 
-        if (parsedDirectory.exists() && resultDirectory.exists()) {
-            /**
-             * Check if their is file in the directory, if yes, delete them
-             */
-            try {
+        try {
+            if (parsedDirectory.exists() && resultDirectory.exists()) {
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
                 for (File file : parsedDirectory.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
                 for (File file : resultDirectory.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            /**
-             * If the file already exist, delete them
-             */
-            try {
+                /**
+                 * If the file already exist, delete them
+                 */
                 Files.deleteIfExists(parsedDirectory.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 Files.deleteIfExists(resultDirectory.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
+
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         File parsedDirectoryDefault = new File("../parsed");
         File resultDirectoryDefault = new File("../results");
 
-        if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
-            /**
-             * Check if their is file in the directory, if yes, delete them
-             */
-            try {
+        try {
+            if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
                 for (File file : parsedDirectoryDefault.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
                 for (File file : resultDirectoryDefault.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            /**
-             * If the file already exist, delete them
-             */
-            try {
+                /**
+                 * If the file already exist, delete them
+                 */
                 Files.deleteIfExists(parsedDirectoryDefault.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 Files.deleteIfExists(resultDirectoryDefault.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
         switch (Main.selectedParserType) {
             case ALL:
 
@@ -541,38 +516,17 @@ public class InputController implements Stageable {
         try {
             okParserLocation = Tools.configParserLocation.createNewFile();
             System.out.println("  okParserLocation : " + okParserLocation);
-            if (!okParserLocation)
-                //    throw new IOException();
+            if (!okParserLocation) {
                 System.out.println("erreur sur ok");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        FileWriter fwParserLocation = null;
-        try {
+                throw new IOException();
+            }
+            FileWriter fwParserLocation;
             fwParserLocation = new FileWriter(Tools.configParserLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             fwParserLocation.write("candc:" + Main.ccgCandCLocation.toPath() + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             fwParserLocation.write("easyccg:" + Main.easyCCGLocation.toPath() + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             fwParserLocation.write("depccg:" + Main.depccgLocation + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             fwParserLocation.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -763,28 +717,18 @@ public class InputController implements Stageable {
                     "Configuration file is missing and/or corrupted." + '\n' +
                             "Please redo the configuration."
             );
-            firstTimeAlertCandC.showAndWait();
-            File f2 = setCandCLocation();
-            System.out.println("------------------------------------------------ " + f2.toPath().toString());
-
-            FileWriter fwCandC = null;
             try {
+                firstTimeAlertCandC.showAndWait();
+                File f2 = setCandCLocation();
+                System.out.println("------------------------------------------------ " + f2.toPath().toString());
+                FileWriter fwCandC = null;
                 fwCandC = new FileWriter(Tools.configCandC);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
                 fwCandC.write(f2.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 fwCandC.close();
+                CandCDefined = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            CandCDefined = true;
 
             Alert firstTimeAlertEasyCCG = new Alert(Alert.AlertType.WARNING);
             firstTimeAlertEasyCCG.setTitle("First time configuration needed");
@@ -793,28 +737,17 @@ public class InputController implements Stageable {
                     "Configuration file is missing and/or corrupted." + '\n' +
                             "Please redo the configuration."
             );
-            firstTimeAlertEasyCCG.showAndWait();
-            File f3 = setEasyCCGLocation();
-
-            FileWriter fwEasyCCG = null;
             try {
+                firstTimeAlertEasyCCG.showAndWait();
+                File f3 = setEasyCCGLocation();
+                FileWriter fwEasyCCG = null;
                 fwEasyCCG = new FileWriter(Tools.configEasyCCG);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
                 fwEasyCCG.write(f3.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 fwEasyCCG.close();
+                easyCCGDefined = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            easyCCGDefined = true;
-
 
             System.out.println("depCCG location");
             Alert firstTimeAlertDepCCG = new Alert(Alert.AlertType.WARNING);
@@ -824,28 +757,18 @@ public class InputController implements Stageable {
                     "Configuration file is missing and/or corrupted." + '\n' +
                             "Please redo the configuration."
             );
-            firstTimeAlertDepCCG.showAndWait();
-            File f4 = setdepCCGLocation();
-
-            FileWriter fwDepCCG = null;
             try {
+                firstTimeAlertDepCCG.showAndWait();
+                File f4 = setdepCCGLocation();
+                FileWriter fwDepCCG = null;
                 fwDepCCG = new FileWriter(Tools.configEasyCCG);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
                 fwDepCCG.write(f4.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 fwDepCCG.close();
+
+                depCCGDefined = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            depCCGDefined = true;
-
 
             defineParserLocation();
         }
