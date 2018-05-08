@@ -44,6 +44,10 @@ public class Tools {
      */
     public static final File configEasyCCG = new File("../en/easyccg_location.txt");
     /**
+     * Config parser path file
+     */
+    public static final File configParserLocation = new File("../en/parser_location.txt");
+    /**
      * Output modes available. None means all.
      */
     public static final String[] outputModesOption = {
@@ -198,10 +202,19 @@ public class Tools {
     }
 
     /**
-     * Enum for the parser types.
+     * Enum for the templates types.
      */
     public enum TemplateType {
         CLASSIC,
         EVENT
     }
+
+    /**
+     * Enum for the parser types.
+     */
+    public enum ParserType {
+        CANDC,
+        ALL
+    }
+
 }

@@ -18,6 +18,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.Objects;
 
+import static visualization.utils.Tools.ParserType.CANDC;
+
 /**
  * Controller for the input view.
  *
@@ -43,23 +45,31 @@ public class InputController implements Stageable {
     @FXML
     public MenuItem setccg2lambdaLocationItem;
     /**
-     * MenuItem for showing information about the software.
+     * MenuItem for choosing the template
      */
     @FXML
     public Menu menuTemplate;
     /**
-     * Menu for choosing the template
+     * Radio menu template for the template event
      */
     @FXML
     public RadioMenuItem radioTemplateEvent;
     /**
-     * Radio menu template for the template event
+     * Radio menu template for the template classic
      */
     @FXML
     public RadioMenuItem radioTemplateClassic;
     /**
-     * Radio menu template for the template classic
+     * Radio menu parser for only C&C
      */
+    @FXML
+    private RadioMenuItem radioCandCOnlyItem;
+    /**
+     * Radio menu parser for only C&C
+     */
+    @FXML
+    private RadioMenuItem allParserItem;
+
     @FXML
     public MenuItem showInformationItem;
     /**
@@ -104,6 +114,18 @@ public class InputController implements Stageable {
      * For first time program is launch, install the virtual environment for python
      */
     private boolean firstTime;
+    /**
+     * boolean for when C&C location is change by the user
+     */
+    private boolean CandCDefined = false;
+    /**
+     * boolean for when easyCCG location is change by the user
+     */
+    private boolean easyCCGDefined = false;
+    /**
+     * boolean for when depCCG location is change by the user
+     */
+    private boolean depCCGDefined = false;
 
     /**
      * Initializes the view.
@@ -126,6 +148,9 @@ public class InputController implements Stageable {
     private void initMenuTemplate() {
         radioTemplateClassic.setSelected(true);
         radioTemplateEvent.setSelected(false);
+
+        radioCandCOnlyItem.setSelected(true);
+        allParserItem.setSelected(false);
     }
 
 
@@ -198,14 +223,31 @@ public class InputController implements Stageable {
         progress.set(0.25);
         if (!isWindows) {
             launchScript();
-            switch (Main.selectedTemplateType) {
-                case CLASSIC:
-                    Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+            switch (Main.selectedParserType) {
+                case CANDC:
+                    switch (Main.selectedTemplateType) {
+                        case CLASSIC:
+                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            break;
+                        case EVENT:
+                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            break;
+                    }
                     break;
-                case EVENT:
-                    Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+
+                case ALL:
+                    switch (Main.selectedTemplateType) {
+                        case CLASSIC:
+                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            break;
+                        case EVENT:
+                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            break;
+                    }
                     break;
             }
+
+
             openResultsWindow();
         } else {
             progress.set(0.0);
@@ -250,84 +292,117 @@ public class InputController implements Stageable {
         System.out.println("  template type : " + Main.selectedTemplateType);
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
-        Process process;
+        Process process = null;
 
-        File parsedDirectory = new File("../parsed");
-        File resultDirectory = new File("../results");
+        File parsedDirectory = new File("../en_parsed");
+        File resultDirectory = new File("../en_results");
 
-        if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
-            try {
-                if (parsedDirectory.exists() && resultDirectory.exists()) {
-                    /**
-                     * Check if their is file in the directory, if yes, delete them
-                     */
-                    try {
-                        for (File file : parsedDirectory.listFiles()) {
-                            Files.deleteIfExists(file.toPath());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        for (File file : resultDirectory.listFiles()) {
-                            Files.deleteIfExists(file.toPath());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * If the file already exist, delete them
-                     */
-                    Files.deleteIfExists(parsedDirectory.toPath());
-                    Files.deleteIfExists(resultDirectory.toPath());
+        try {
+            if (parsedDirectory.exists() && resultDirectory.exists()) {
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
+                for (File file : parsedDirectory.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
                 }
-
-                System.out.println("python parser classic script");
-                process = new ProcessBuilder("./src/visualization/scripts/scriptParserClassic_EMNLP2015.sh", ccg2lambdaPath).start();
-                progress.set(1.00);
-                process.waitFor();
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
-            try {
-                if (parsedDirectory.exists() && resultDirectory.exists()) {
-                    /**
-                     * Check if their is file in the directory, if yes, delete them
-                     */
-                    try {
-                        for (File file : parsedDirectory.listFiles()) {
-                            Files.deleteIfExists(file.toPath());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        for (File file : resultDirectory.listFiles()) {
-                            Files.deleteIfExists(file.toPath());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * If the file already exist, delete them
-                     */
-                    Files.deleteIfExists(parsedDirectory.toPath());
-                    Files.deleteIfExists(resultDirectory.toPath());
+                for (File file : resultDirectory.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
                 }
+                /**
+                 * If the file already exist, delete them
+                 */
+                Files.deleteIfExists(parsedDirectory.toPath());
+                Files.deleteIfExists(resultDirectory.toPath());
 
-
-                System.out.println("python parser event script");
-                process = new ProcessBuilder("./src/visualization/scripts/scriptParserEvent.sh", ccg2lambdaPath).start();
-                progress.set(1.00);
-                process.waitFor();
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File parsedDirectoryDefault = new File("../parsed");
+        File resultDirectoryDefault = new File("../results");
+
+        try {
+            if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
+                for (File file : parsedDirectoryDefault.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
+                }
+                for (File file : resultDirectoryDefault.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
+                }
+                /**
+                 * If the file already exist, delete them
+                 */
+                Files.deleteIfExists(parsedDirectoryDefault.toPath());
+                Files.deleteIfExists(resultDirectoryDefault.toPath());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        switch (Main.selectedParserType) {
+            case ALL:
+
+
+                if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
+
+                    try {
+
+                        System.out.println("python ALL parser classic script");
+                        process = new ProcessBuilder("./src/visualization/scripts/scriptParserClassic_EMNLP2015.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
+
+                    System.out.println("python parser event script");
+                    try {
+                        process = new ProcessBuilder("./src/visualization/scripts/scriptParserEvent.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+
+            case CANDC:
+
+
+                if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
+                    try {
+
+                        System.out.println("python ONLY C&C classic script");
+                        process = new ProcessBuilder("./src/visualization/scripts/scriptDefaultParser/scriptParserDefaultClassic_EMNLP2015.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
+                    try {
+                        System.out.println("python ONLY C&C event script");
+                        process = new ProcessBuilder("./src/visualization/scripts/scriptDefaultParser/scriptParserDefaultEvent.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
         }
     }
+
 
     /**
      * Check if the user already got the python virtual environment, if not, the software install it
@@ -337,7 +412,7 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()) || (!Tools.configEasyCCG.exists()));
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()));
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
@@ -357,8 +432,6 @@ public class InputController implements Stageable {
             }
             Files.deleteIfExists(Tools.configFile.toPath());
             Files.deleteIfExists(Tools.configCandC.toPath());
-            Files.deleteIfExists(Tools.configEasyCCG.toPath());
-
 
             System.out.println("ccg2lambda location");
             new File(ConfigDirectory.toPath().toString()).mkdir();
@@ -406,38 +479,13 @@ public class InputController implements Stageable {
             );
             firstTimeAlertCandC.showAndWait();
             File f2 = setCandCLocation();
+            System.out.println("------------------------------------------------ " + f2.toPath().toString());
 
             FileWriter fwCandC = new FileWriter(Tools.configCandC);
 
             fwCandC.write(f2.getAbsolutePath());
             fwCandC.close();
-
-
-            System.out.println("easyCCG location");
-            boolean okEasyCCG = true;
-            try {
-                okEasyCCG = Tools.configEasyCCG.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (!okEasyCCG)
-                throw new IOException();
-
-            Alert firstTimeAlertEasyCCG = new Alert(Alert.AlertType.WARNING);
-            firstTimeAlertEasyCCG.setTitle("First time configuration needed");
-            firstTimeAlertEasyCCG.setHeaderText("First time configuration easyCCG ");
-            firstTimeAlertEasyCCG.setContentText(
-                    "Configuration file is missing and/or corrupted." + '\n' +
-                            "Please redo the configuration."
-            );
-            firstTimeAlertEasyCCG.showAndWait();
-            File f3 = setEasyCCGLocation();
-
-            FileWriter fwEasyCCG = new FileWriter(Tools.configEasyCCG);
-
-            fwEasyCCG.write(f3.getAbsolutePath());
-            fwEasyCCG.close();
-
+            CandCDefined = true;
 
             System.out.println("python virtual");
             process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
@@ -458,6 +506,31 @@ public class InputController implements Stageable {
         }
     }
 
+    /**
+     * define the parser location in parser_location.txt
+     */
+    private void defineParserLocation() {
+        System.out.println("parser location location");
+        boolean okParserLocation = true;
+
+        try {
+            okParserLocation = Tools.configParserLocation.createNewFile();
+            System.out.println("  okParserLocation : " + okParserLocation);
+            if (!okParserLocation) {
+                System.out.println("erreur sur ok");
+                throw new IOException();
+            }
+            FileWriter fwParserLocation;
+            fwParserLocation = new FileWriter(Tools.configParserLocation);
+            fwParserLocation.write("candc:" + Main.ccgCandCLocation.toPath() + "\n");
+            fwParserLocation.write("easyccg:" + Main.easyCCGLocation.toPath() + "\n");
+            fwParserLocation.write("depccg:" + Main.depccgLocation + "\n");
+            fwParserLocation.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Fires when the return key is pressed.
@@ -507,6 +580,9 @@ public class InputController implements Stageable {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccg2lambdaLocation = selected;
         }
+        if (CandCDefined && easyCCGDefined) {
+            defineParserLocation();
+        }
         System.out.println(Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
     }
@@ -527,6 +603,9 @@ public class InputController implements Stageable {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccgCandCLocation = selected;
         }
+        if (CandCDefined && easyCCGDefined && depCCGDefined) {
+            defineParserLocation();
+        }
         System.out.println(Main.ccgCandCLocation);
         return Main.ccgCandCLocation;
     }
@@ -538,6 +617,7 @@ public class InputController implements Stageable {
      */
     @FXML
     private File setEasyCCGLocation() {
+        easyCCGDefined = true;
         DirectoryChooser locationChooser = new DirectoryChooser();
         locationChooser.setTitle("select easyCCG Parser directory");
         File selected = null;
@@ -547,8 +627,151 @@ public class InputController implements Stageable {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.easyCCGLocation = selected;
         }
+        if (CandCDefined && easyCCGDefined && depCCGDefined) {
+            defineParserLocation();
+        }
         System.out.println(Main.easyCCGLocation);
         return Main.easyCCGLocation;
+    }
+
+    /**
+     * choosing the depCCG location file
+     *
+     * @return
+     */
+    @FXML
+    private File setdepCCGLocation() {
+        depCCGDefined = true;
+        DirectoryChooser locationChooser = new DirectoryChooser();
+        locationChooser.setTitle("select easyCCG Parser directory");
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showDialog(view);
+        if (selected.isDirectory()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                Main.depccgLocation = selected;
+        }
+        if (CandCDefined && easyCCGDefined && depCCGDefined) {
+            defineParserLocation();
+        }
+        System.out.println(Main.depccgLocation);
+        return Main.depccgLocation;
+    }
+
+    /**
+     * use only C&C parser
+     */
+    @FXML
+    private void setCandCOnly() {
+        radioCandCOnlyItem.setSelected(true);
+        allParserItem.setSelected(false);
+        System.out.println("|_|_|_|_|_|_|_|_|_ Only C&C Parser");
+        Main.selectedParserType = CANDC;
+
+    }
+
+    /**
+     * use all the parsers
+     */
+    @FXML
+    private void setAllParser() {
+        radioCandCOnlyItem.setSelected(false);
+        allParserItem.setSelected(true);
+        System.out.println("|_|_|_|_|_|_|_|_|_ ALL Parser");
+
+
+        Main.selectedParserType = Tools.ParserType.ALL;
+
+        if ((!Tools.configEasyCCG.exists()) || (!Tools.configParserLocation.exists())) {
+
+
+            try {
+                Files.deleteIfExists(Tools.configEasyCCG.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                Files.deleteIfExists(Tools.configParserLocation.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("easyCCG location");
+            boolean okEasyCCG = true;
+            try {
+                okEasyCCG = Tools.configEasyCCG.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!okEasyCCG)
+                try {
+                    throw new IOException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            Alert firstTimeAlertCandC = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertCandC.setTitle("First time configuration needed");
+            firstTimeAlertCandC.setHeaderText("First time configuration C&C");
+            firstTimeAlertCandC.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            try {
+                firstTimeAlertCandC.showAndWait();
+                File f2 = setCandCLocation();
+                System.out.println("------------------------------------------------ " + f2.toPath().toString());
+                FileWriter fwCandC = null;
+                fwCandC = new FileWriter(Tools.configCandC);
+                fwCandC.write(f2.getAbsolutePath());
+                fwCandC.close();
+                CandCDefined = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Alert firstTimeAlertEasyCCG = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertEasyCCG.setTitle("First time configuration needed");
+            firstTimeAlertEasyCCG.setHeaderText("First time configuration easyCCG ");
+            firstTimeAlertEasyCCG.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            try {
+                firstTimeAlertEasyCCG.showAndWait();
+                File f3 = setEasyCCGLocation();
+                FileWriter fwEasyCCG = null;
+                fwEasyCCG = new FileWriter(Tools.configEasyCCG);
+                fwEasyCCG.write(f3.getAbsolutePath());
+                fwEasyCCG.close();
+                easyCCGDefined = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("depCCG location");
+            Alert firstTimeAlertDepCCG = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertDepCCG.setTitle("First time configuration needed");
+            firstTimeAlertDepCCG.setHeaderText("First time configuration depCCG ");
+            firstTimeAlertDepCCG.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            try {
+                firstTimeAlertDepCCG.showAndWait();
+                File f4 = setdepCCGLocation();
+                FileWriter fwDepCCG = null;
+                fwDepCCG = new FileWriter(Tools.configEasyCCG);
+                fwDepCCG.write(f4.getAbsolutePath());
+                fwDepCCG.close();
+
+                depCCGDefined = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            defineParserLocation();
+        }
     }
 
     @Override

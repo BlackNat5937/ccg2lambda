@@ -163,6 +163,7 @@ public class OutputController implements Stageable {
      */
     private void getLambdas() {
         formulaList = Tools.getSemanticsFormulas(Main.xmlSemanticsFile);
+        System.out.println(formulaList);
         lambdaListViewItems.addAll(formulaList);
         lambdaListView.setItems(lambdaListViewItems);
     }
@@ -174,14 +175,30 @@ public class OutputController implements Stageable {
         treeTab.setDisable(false);
         final WebEngine webEngine = treeContHtml.getEngine();
         treeContHtml.setZoom(2.0);
-        switch (Main.selectedTemplateType) {
-            case CLASSIC:
-                webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+        switch (Main.selectedParserType) {
+            case CANDC:
+                switch (Main.selectedTemplateType) {
+                    case CLASSIC:
+                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        break;
+                    case EVENT:
+                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        break;
+                }
                 break;
-            case EVENT:
-                webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+
+            case ALL:
+                switch (Main.selectedTemplateType) {
+                    case CLASSIC:
+                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        break;
+                    case EVENT:
+                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        break;
+                }
                 break;
         }
+
 
     }
 

@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import visualization.controller.Stageable;
 import visualization.utils.Tools;
 
+import javax.tools.Tool;
 import java.io.File;
 import java.util.Scanner;
 
@@ -45,9 +46,13 @@ public class Main extends Application {
      */
     public static Tools.ApplicationModes applicationMode = Tools.ApplicationModes.UI;
     /**
-     * Selected parser type; By default CLASSIC.
+     * Selected template type; By default CLASSIC.
      */
     public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
+    /**
+     * Selected parser type; By default only C&C.
+     */
+    public static Tools.ParserType selectedParserType = Tools.ParserType.CANDC;
     /**
      * The file containing the semantics representations output by ccg2lambda.
      */
