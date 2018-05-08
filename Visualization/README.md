@@ -12,7 +12,11 @@ Launch the visualization.jar
 
 ### If it is the first time :
 
-You will need to indicate the path to the ccg2lambda directory
+You will need to indicate the path to the ccg2lambda directory and C&C Parser.
+By default, only C&C will be use as a parser. 
+But you can choose to use C&C, easyCCG and depCCG parsers.
+For that, you need to choose the three parser in the parser menu bar, then you will need to 
+select the location of the three parser. Note that the launch is much slower with the use of the three parser.
 
 ### All the time :
 
