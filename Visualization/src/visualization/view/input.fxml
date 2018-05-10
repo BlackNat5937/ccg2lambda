@@ -76,13 +76,17 @@
                          text="easyCCG location"/>
                <MenuItem fx:id="setdepCCGLocationItem" mnemonicParsing="false" onAction="#setdepCCGLocation"
                          text="depCCG location"/>
+               <MenuItem fx:id="setJiggLocationItem" mnemonicParsing="false" onAction="#setJiggLocation"
+                         text="Jigg location"/>
            </Menu>
            <Menu mnemonicParsing="false" text="Parser">
                <items>
                    <RadioMenuItem fx:id="radioCandCOnlyItem" mnemonicParsing="false" onAction="#setCandCOnly"
                                   text="C&amp;C only"/>
-                   <RadioMenuItem fx:id="allParserItem" mnemonicParsing="false" onAction="#setAllParser"
+                   <RadioMenuItem fx:id="radioALL_EN_ParserItem" mnemonicParsing="false" onAction="#setEN_AllParser"
                                   text="C&amp;C, easyCCG and depCCG"/>
+                   <RadioMenuItem fx:id="radioJA_ParserItem" mnemonicParsing="false" onAction="#setJAParser"
+                                  text="JA Parser"/>
                </items>
            </Menu>
            <Menu fx:id="menuTemplate" mnemonicParsing="false" text="Template">

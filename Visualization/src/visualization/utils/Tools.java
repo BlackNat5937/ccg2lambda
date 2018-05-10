@@ -44,9 +44,13 @@ public class Tools {
      */
     public static final File configEasyCCG = new File("../en/easyccg_location.txt");
     /**
-     * Config parser path file
+     * Config EN parser path file
      */
-    public static final File configParserLocation = new File("../en/parser_location.txt");
+    public static final File configENParserLocation = new File("../en/parser_location.txt");
+    /**
+     * Config JA parser path file
+     */
+    public static final File configJAParserLocation = new File("../ja/parser_location_ja.txt");
     /**
      * Output modes available. None means all.
      */
@@ -214,7 +218,8 @@ public class Tools {
      */
     public enum ParserType {
         CANDC,
-        ALL
+        ALL,
+        JA
     }
 
 }
