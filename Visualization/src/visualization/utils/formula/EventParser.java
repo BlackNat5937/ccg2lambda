@@ -22,6 +22,10 @@ public class EventParser extends BaseParser {
      * List of already registered nodes. Used for limiting the recursive depth of the parsing
      */
     private List<BaseNode> registeredNodes;
+    /**
+     * Tells whether it is the first time the parser has encountered a variable declaration
+     */
+    private boolean firstExists;
 
     /**
      * Package private constructor.
@@ -65,7 +69,7 @@ public class EventParser extends BaseParser {
             Scanner sc = new Scanner(scope);
             sc.useDelimiter("&");
             String token;
-            boolean firstExists = true;
+            firstExists = true;
 
             do {
                 String varName;
@@ -76,54 +80,17 @@ public class EventParser extends BaseParser {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
                         varName = token.split("\\.")[1].split("\\)")[0].substring(1).split("\\(")[0].trim();
                         if (firstExists) {
-                            firstExists = false;
-                            BaseNode newNode;
-                            if (varId.startsWith("e")) {
-                                newNode = new Event(varId, varName);
-                                parseResult.getEventEvents().add((Event) newNode);
-                            } else {
-                                newNode = new Actor(varId, varName);
-                                parseResult.getEventActors().add((Actor) newNode);
-                            }
-                            nodes.put(varId, newNode);
-                            registeredNodes.add(newNode);
+                            registerVariable(nodes, varName, varId);
                         } else if (!registeredNodes.contains(new Actor(varId, varName))) {
                             parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes);
                         }
                     }
                 } else if (token.matches(eventSubjectDeclaration)) {
-                    registerEventSubject(nodes, nodes, token);
+                    registerEventSubject(nodes, token);
                 } else if (token.matches(eventObjectDeclaration)) {
-
+                    registerEventObject(nodes, token);
                 } else {
-                    String[] parts = token.split("\\(");
-                    if (parts[0].startsWith("_") && parts.length >= 2) {
-                        varId = "c" + conjunctionNumber;
-                        varName = parts[0].substring(1);
-                        conjunctionNumber++;
-
-                        if (!registeredNodes.contains(new Conjunction(varId, varName))) {
-                            String[] joined = parts[1].split("\\)");
-                            joined = joined[0].split(",");
-
-                            List<FormulaNode> joinedNodes = new ArrayList<>();
-                            for (String s : joined) {
-                                FormulaNode node;
-                                //its an event
-                                if (s.startsWith("e")) node = nodes.get(s);
-                                    //its a conjunction
-                                else if (s.startsWith("c")) node = nodes.get(s);
-                                    //its an actor
-                                else node = nodes.get(s);
-                                if (node != null)
-                                    joinedNodes.add(node);
-                            }
-                            Conjunction newConj = new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0]));
-                            parseResult.getEventConjunctions()
-                                    .add(newConj);
-                            registeredNodes.add(newConj);
-                        }
-                    }
+                    registerConjunction(nodes, token);
                 }
             } while (sc.hasNext());
         });
@@ -131,27 +98,111 @@ public class EventParser extends BaseParser {
     }
 
     /**
+     * Registers a variable. They may be events
+     *
+     * @param nodes   the list of all nodes
+     * @param varName the name of the variable
+     * @param varId   the id of the variable
+     */
+    private void registerVariable(Map<String, BaseNode> nodes, String varName, String varId) {
+        firstExists = false;
+        BaseNode newNode;
+        if (varId.startsWith("e")) {
+            newNode = new Event(varId, varName);
+            parseResult.getEventEvents().add((Event) newNode);
+        } else {
+            newNode = new Actor(varId, varName);
+            parseResult.getEventActors().add((Actor) newNode);
+        }
+        nodes.put(varId, newNode);
+        registeredNodes.add(newNode);
+    }
+
+    /**
+     * Registers an event's object
+     *
+     * @param nodes the list of all the nodes
+     * @param token the declaration of the event's object
+     */
+    private void registerEventObject(Map<String, BaseNode> nodes, String token) {
+        String varId;
+        String[] parts = token.split("\\)");
+        if (parts[0].contains("Acc") && parts.length >= 2) {
+            varId = parts[0].substring(1);
+            varId = varId.substring(varId.indexOf("(") + 1);
+
+            String objId = parts[1].split("=")[1].trim();
+
+            Actor object = (Actor) nodes.get(objId);
+            Event event = (Event) nodes.get(varId);
+            //the object needs to be set only the first time when descending through recursive calls
+            if (event.getObject() == null) {
+                event.setObject(object);
+                event.getActors().add(object);
+            }
+        }
+    }
+
+    /**
      * Registers an event's subject
      *
-     * @param actors the list of actors
-     * @param events the list of events
-     * @param token  the declaration of the event's subject
+     * @param nodes the list of all nodes
+     * @param token the declaration of the event's subject
      */
-    private void registerEventSubject(Map<String, BaseNode> actors, Map<String, BaseNode> events, String token) {
+    private void registerEventSubject(Map<String, BaseNode> nodes, String token) {
         String varId;
         String[] parts = token.split("\\)");
         if (parts[0].contains("Subj") && parts.length >= 2) {
             varId = parts[0].substring(1);
             varId = varId.substring(varId.indexOf("(") + 1);
 
-            String subjId = parts[1].substring(parts[1].length() - 1);
+            String subjId = parts[1].split("=")[1].trim();
 
-            Actor subject = (Actor) actors.get(subjId);
-            Event event = (Event) events.get(varId);
+            Actor subject = (Actor) nodes.get(subjId);
+            Event event = (Event) nodes.get(varId);
             //the subject needs to be set only the first time when descending through recursive calls
             if (event.getSubject() == null) {
                 event.setSubject(subject);
                 event.getActors().add(subject);
+            }
+        }
+    }
+
+    /**
+     * Registers a conjunction.
+     *
+     * @param nodes the list of all the nodes
+     * @param token the declaration of the conjuction
+     */
+    private void registerConjunction(Map<String, BaseNode> nodes, String token) {
+        String varId;
+        String varName;
+        String[] parts = token.split("\\(");
+        if (parts[0].startsWith("_") && parts.length >= 2) {
+            varId = "c" + conjunctionNumber;
+            varName = parts[0].substring(1);
+            conjunctionNumber++;
+
+            if (!registeredNodes.contains(new Conjunction(varId, varName))) {
+                String[] joined = parts[1].split("\\)");
+                joined = joined[0].split(",");
+
+                List<FormulaNode> joinedNodes = new ArrayList<>();
+                for (String s : joined) {
+                    FormulaNode node;
+                    //its an event
+                    if (s.startsWith("e")) node = nodes.get(s);
+                        //its a conjunction
+                    else if (s.startsWith("c")) node = nodes.get(s);
+                        //its an actor
+                    else node = nodes.get(s);
+                    if (node != null)
+                        joinedNodes.add(node);
+                }
+                Conjunction newConj = new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0]));
+                parseResult.getEventConjunctions()
+                        .add(newConj);
+                registeredNodes.add(newConj);
             }
         }
     }
