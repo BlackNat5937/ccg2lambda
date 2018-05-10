@@ -15,6 +15,10 @@ public class EventParser extends BaseParser {
      */
     private static final String eventSubjectDeclaration = "\\(Subj\\(\\w+\\) = \\w+\\).*";
     /**
+     * Pattern for the declaration of an events object
+     */
+    private static final String eventObjectDeclaration = "\\(Acc\\(\\w+\\) = \\w+\\).*";
+    /**
      * List of already registered nodes. Used for limiting the recursive depth of the parsing
      */
     private List<BaseNode> registeredNodes;
@@ -54,7 +58,7 @@ public class EventParser extends BaseParser {
      * @param nodes  the nodes lists
      * @return a Formula containing the parsed information
      */
-    public Formula parse(String lambda, Map<String, BaseNode> nodes) {
+    private Formula parse(String lambda, Map<String, BaseNode> nodes) {
         List<String> scopes = getScopes(lambda);
         scopes.forEach(scope -> {
             int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
@@ -89,6 +93,8 @@ public class EventParser extends BaseParser {
                     }
                 } else if (token.matches(eventSubjectDeclaration)) {
                     registerEventSubject(nodes, nodes, token);
+                } else if (token.matches(eventObjectDeclaration)) {
+
                 } else {
                     String[] parts = token.split("\\(");
                     if (parts[0].startsWith("_") && parts.length >= 2) {
@@ -142,9 +148,11 @@ public class EventParser extends BaseParser {
 
             Actor subject = (Actor) actors.get(subjId);
             Event event = (Event) events.get(varId);
-
-            event.setSubject(subject);
-            event.getActors().add(subject);
+            //the subject needs to be set only the first time when descending through recursive calls
+            if (event.getSubject() == null) {
+                event.setSubject(subject);
+                event.getActors().add(subject);
+            }
         }
     }
 
