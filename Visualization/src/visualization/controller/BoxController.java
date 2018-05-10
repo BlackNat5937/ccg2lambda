@@ -69,7 +69,10 @@ public class BoxController implements Parametrable<Object> {
             container.setContent(createContentNegation((Negation) data));
             box.setDisable(true);
             container.setText(setHeaderNegation((Negation) data));
+        } else if (data instanceof Disjunction) {
 
+            container.setContent(createContentDisjunction((Disjunction) data));
+            box.setDisable(true);
         }
     }
 
@@ -78,14 +81,7 @@ public class BoxController implements Parametrable<Object> {
      * Creates the content of the box by using the formula.
      */
     private void createContent() {
-
-
         for (Actor actor : formula.getActors().values()) {
-
-            //    if(formula.getNegations().contains(actor))
-
-//            System.out.println("actor.getEqualities().toString() " + actor.getEqualities().toString());
-
             boxContent.add(actor.toString());
             if (!actor.getEqualities().isEmpty()) {
                 boxContent.add(actor.getEqualities().toString());
@@ -98,7 +94,6 @@ public class BoxController implements Parametrable<Object> {
         for (Conjunction conjunction : formula.getConjunctions().values()) {
             boxContent.add(conjunction.toString());
         }
-
         for (Negation negation : this.formula.getNegations()) {
             for (BaseNode bn : negation.getNegated()) {
                 if (bn.getClass() == Event.class) {
@@ -112,12 +107,13 @@ public class BoxController implements Parametrable<Object> {
 
             }
         }
-
+        for (Disjunction disjunction : this.formula.getDisjunctions()) {
+            // for(BaseNode bn : disjunction.)
+        }
         for (String s : boxContent) {
             Text display = new Text(s);
             contentContainer.getChildren().add(display);
         }
-
         for (Negation negation : this.formula.getNegations()) {
             HBox hBoxNeg = new HBox(15);
             Text negText = new Text("¬");
@@ -125,7 +121,12 @@ public class BoxController implements Parametrable<Object> {
             hBoxNeg.getChildren().add(negText);
             hBoxNeg.getChildren().add(getLoadedPane(negation, "../view/box.fxml"));
             contentContainer.getChildren().add(hBoxNeg);
+        }
 
+        for (Disjunction disjunction : this.formula.getDisjunctions()) {
+            HBox hBoxDisj = new HBox(15);
+
+            hBoxDisj.getChildren().add(getLoadedPane(disjunction, "../view/box.fxml"));
         }
 
     }
@@ -200,6 +201,31 @@ public class BoxController implements Parametrable<Object> {
             headerNeg = headerNeg + bn.getId() + " ";
         }
         return headerNeg;
+    }
+
+    private Node createContentDisjunction(Disjunction disjunction) {
+        HBox hBoxDisj = new HBox(15);
+        Text disjText = new Text("∨");
+        disjText.resize(35, 35);
+
+        // hBoxDisj.getChildren().add(getLoadedPane(disjunction.getArg1(),"../view/box.fxml") );
+
+        VBox vBoxDisj = new VBox();
+
+        vBoxDisj.getChildren().add(new Text(disjunction.getArg1().toString()));
+
+        hBoxDisj.getChildren().add(vBoxDisj);
+
+
+        hBoxDisj.getChildren().add(disjText);
+
+        VBox vBoxDisj2 = new VBox();
+        vBoxDisj2.getChildren().add(new Text(disjunction.getArg2().toString()));
+        hBoxDisj.getChildren().add(vBoxDisj2);
+
+        //   hBoxDisj.getChildren().add(getLoadedPane(disjunction.getArg2(),"../view/box.fxml") );
+
+        return hBoxDisj;
     }
 
 }
