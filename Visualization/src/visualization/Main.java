@@ -47,7 +47,7 @@ public class Main extends Application {
     /**
      * Selected template type; By default CLASSIC.
      */
-    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.EVENT;
+    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
     /**
      * Selected parser type; By default only C&C.
      */
