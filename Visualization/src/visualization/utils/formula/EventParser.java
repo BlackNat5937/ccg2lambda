@@ -20,6 +20,7 @@ public class EventParser extends BaseParser {
      * List of already used variable identifiers
      */
     private Map<String, Integer> usedIdentifiers;
+    private List<BaseNode> registeredNodes;
 
     EventParser() {
     }
@@ -28,45 +29,14 @@ public class EventParser extends BaseParser {
     public Formula parse(String lambda, String sentence) {
         parseResult = new Formula(FormulaParser.simplifyLambda(lambda.trim()), sentence);
 
-        Map<String, BaseNode> nodes = new HashMap<>();
-        parse(parseResult.getLambda(), nodes);
-
+        registeredNodes = new ArrayList<>();
         actorNumber = 0;
         eventNumber = 0;
         conjunctionNumber = 0;
+        Map<String, BaseNode> nodes = new HashMap<>();
+        
+        parseResult = parse(parseResult.getLambda(), nodes);
 
-        usedIdentifiers = new HashMap<>();
-        renameDuplicateIdentifiers(parseResult.getLambda());
-        //recursiveRenameDuplicateIdentifiers(parseResult.getLambda());
-
-        String token;
-        String varId;
-        String varName;
-
-        Scanner sc = new Scanner(parseResult.getLambda());
-        sc.useDelimiter("&");
-        do {
-            token = sc.next();
-            token = token.trim();
-            if (!token.isEmpty()) {
-                // if the token is a declaration of a variable,
-                if (token.matches(varDeclaration)) {
-                    registerVariable(token);
-                }
-                // or if it is a declaration of the subject of an event variable,
-                else if (token.matches(eventSubjectDeclaration)) {
-                    registerEventSubject(token);
-                }
-                // or if it is an equality declaration,
-                else if (token.matches("\\(+\\w+ = \\w+\\)+")) {
-                    registerSynonym(token);
-                }
-                // or if it anything else (a conjunction),
-                else {
-                    registerConjunction(token);
-                }
-            }
-        } while (sc.hasNext());
         return parseResult;
     }
 
@@ -98,15 +68,42 @@ public class EventParser extends BaseParser {
                                 parseResult.getEventActors().add((Actor) newNode);
                             }
                             nodes.put(varId, newNode);
-                            System.out.println(varId + " : " + varName);
-                        } else if (nodes.get(varId) == null) {
+                            registeredNodes.add(newNode);
+                        } else if (!registeredNodes.contains(new Actor(varId, varName))) {
                             parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes);
                         }
                     }
                 } else if (token.matches(eventSubjectDeclaration)) {
                     registerEventSubject(nodes, nodes, token);
                 } else {
+                    String[] parts = token.split("\\(");
+                    if (parts[0].startsWith("_") && parts.length >= 2) {
+                        varId = "c" + conjunctionNumber;
+                        varName = parts[0].substring(1);
+                        conjunctionNumber++;
 
+                        if (!registeredNodes.contains(new Conjunction(varId, varName))) {
+                            String[] joined = parts[1].split("\\)");
+                            joined = joined[0].split(",");
+
+                            List<FormulaNode> joinedNodes = new ArrayList<>();
+                            for (String s : joined) {
+                                FormulaNode node;
+                                //its an event
+                                if (s.startsWith("e")) node = nodes.get(s);
+                                    //its a conjunction
+                                else if (s.startsWith("c")) node = nodes.get(s);
+                                    //its an actor
+                                else node = nodes.get(s);
+                                if (node != null)
+                                    joinedNodes.add(node);
+                            }
+                            Conjunction newConj = new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0]));
+                            parseResult.getEventConjunctions()
+                                    .add(newConj);
+                            registeredNodes.add(newConj);
+                        }
+                    }
                 }
             } while (sc.hasNext());
         });

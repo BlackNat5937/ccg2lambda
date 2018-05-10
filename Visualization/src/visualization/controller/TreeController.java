@@ -73,10 +73,12 @@ public class TreeController implements Parametrable<Formula> {
 
         //System.out.println(tree.toString());
 
-        TreeItem<String> ti = new TreeItem<>(tree.getLabel());
-        displayTree(tree, ti);
+        if (tree != null) {
+            TreeItem<String> ti = new TreeItem<>(tree.getLabel());
+            displayTree(tree, ti);
 
-        treeViewCont.setRoot(ti);
+            treeViewCont.setRoot(ti);
+        }
 
 
         box.setText(formula.getLambda());

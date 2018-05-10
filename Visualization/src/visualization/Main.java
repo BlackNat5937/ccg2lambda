@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import visualization.controller.Stageable;
 import visualization.utils.Tools;
 
-import javax.tools.Tool;
 import java.io.File;
 import java.util.Scanner;
 
@@ -48,7 +47,7 @@ public class Main extends Application {
     /**
      * Selected template type; By default CLASSIC.
      */
-    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
+    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.EVENT;
     /**
      * Selected parser type; By default only C&C.
      */
