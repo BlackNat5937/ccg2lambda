@@ -27,15 +27,33 @@ public class ClassicParser extends BaseParser {
         conjunctionNumber = 0;
 
         String token;
-        String varId;
-        String varName;
+        String varId = null;
+        String varName = null;
 
         String tmp = parseResult.getLambda();
         String disjunctionScope = "";
+        boolean disjunctionTreated = false;
         if(tmp.contains("|")){
             //the disjunction scope is saved for later, and isn't processed by the scanner
             disjunctionScope = getDisjunctionScope(tmp.indexOf("|"), tmp);
+
+            //if the subject is in the disjonction it is necessary to process it first
+            if(tmp.contains("exists x." + disjunctionScope)){
+                String[] subj = disjunctionScope.split("\\|");
+                String subj1 = subj[0].substring(subj[0].indexOf('_') + 1).substring(0,subj[0].substring(subj[0].indexOf('_') + 1).indexOf('('));
+                String subj2 = subj[1].substring(subj[1].indexOf('_') + 1).substring(0,subj[1].substring(subj[1].indexOf('_') + 1).indexOf('('));
+                System.out.println("SUbjects : " + subj1 + " - " + subj2 + " id  : x");
+
+                parseResult.getActors().put("x", new Actor("x", subj1+"|"+subj2));
+                disjunctionTreated = true;
+                tmp = tmp.replace("exists x.", "");
+             }
+
             tmp = tmp.replace(disjunctionScope, "");
+
+            System.out.println("TMP : " + tmp);
+
+
         }
 
         Scanner sc = new Scanner(tmp);
@@ -46,72 +64,21 @@ public class ClassicParser extends BaseParser {
             if (!"&".equals(token)) {
                 // if the token is an actor declaration, add it to the actors map
                 if (token.matches(varDeclaration)) {
-                    Matcher m = varIdPattern.matcher(token);
-                    Matcher n = varNamePattern.matcher(token);
-                    if (m.find() && n.find()) {
-                        varId = m.group();
-                        varId = varId.substring(0, varId.length() - 1);
-                        varName = n.group().substring(1);
-
-                        parseResult.getActors().put(varId, new Actor(varId, varName));
-                    }
+                    addVar(token, varId, varName);
                 }
                 // if the token is an event, add it to the events map
                 else if (token.matches(".*Prog\\(.*")) {
-                    Matcher m = varNamePattern.matcher(token);
-                    Matcher n = varIdPattern.matcher(token);
-                    String actorId;
-
-                    if (m.find() && n.find()) {
-                        varName = m.group().substring(1);
-                        //varId = "e" + eventNumber;
-                        varId = getEventKey(tmp.indexOf('_' + varName + '(' + n.group().substring(1)),varName);
-                        actorId = n.group();
-                        actorId = actorId.substring(1, actorId.length() - 1);
-                        // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
-                        if (actorId.startsWith("_")) {
-                            actorId = parseResult.getActorByName(actorId.substring(1));
-                        }
-                        eventNumber++;
-
-                        parseResult.getEvents().put(varId, new Event(varId, varName, parseResult.getActors().get(actorId)));
-                    }
+                    addEvent(token, varId, varName);
                 }
                 // if it is not anything else, then it is a conjunction, we need to add it to the conjunctions map
                 else {
-                    String joinedId;
-                    Matcher m = varNamePattern.matcher(token);
-                    Matcher n = varIdPattern.matcher(token);
-
-                    if (m.find() && n.find()) {
-                        varName = m.group().substring(1);
-                        varId = getConjunctionKey(tmp.indexOf('_' + varName + '(' + n.group().substring(1)),varName);
-                        conjunctionNumber++;
-
-                        joinedId = n.group();
-                        joinedId = joinedId.substring(1, joinedId.length() - 1);
-                        String[] ids = joinedId.split(",");
-                        List<Actor> joined = new ArrayList<>();
-                        for (String id : ids) {
-                            if (!(id.startsWith("e") || id.startsWith("c"))) {
-                                // if the id stats with "_" then it is a proper noun and we have to search for it in the map
-                                if (id.startsWith("_")) {
-                                    id = parseResult.getActorByName(id.substring(1));
-                                }
-                                // else we just add it to the list of actors joined
-                                joined.add(parseResult.getActors().get(id));
-                            }
-                        }
-                        parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
-                    }
+                    addConj(token,varId,varName);
                 }
             }
         } while (sc.hasNext());
 
         //check if there is any disjunction in the sentence
-        if(disjunctionScope.contains("|")){
-            //System.out.println("Complete sentence : " + parseResult.getLambda());
-            //System.out.println("Disjunction scope : " + disjunctionScope);
+        if(disjunctionScope.contains("|") && !disjunctionTreated){
             String[] args = disjunctionScope.split("\\|");
             String[] args1 = args[0].split("&");
             String[] args2 = args[1].split("&");
@@ -120,78 +87,25 @@ public class ClassicParser extends BaseParser {
                 for(String s : subScope.split("&")){
                     //System.out.println("Arg : " + s);
                     if(s.matches(varDeclaration)){
-                        Matcher m = varIdPattern.matcher(s);
-                        Matcher n = varNamePattern.matcher(s);
-                        if (m.find() && n.find()) {
-                            varId = m.group();
-                            varId = varId.substring(0, varId.length() - 1);
-                            varName = n.group().substring(1);
-
-                            parseResult.getActors().put(varId, new Actor(varId, varName));
-                        }
+                        addVar(s, varId,varName);
                     }
                     else if(s.matches(".*Prog\\(.*")){
-                        Matcher m = varNamePattern.matcher(s);
-                        Matcher n = varIdPattern.matcher(s);
-                        String actorId;
-
-                        if (m.find() && n.find()) {
-                            varName = m.group().substring(1);
-                            //varId = "e" + eventNumber;
-                            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
-                            actorId = n.group();
-                            actorId = actorId.substring(1, actorId.length() - 1);
-                            // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
-                            if (actorId.startsWith("_")) {
-                                actorId = parseResult.getActorByName(actorId.substring(1));
-                            }
-                            eventNumber++;
-
-                            parseResult.getEvents().put(varId, new Event(varId, varName, parseResult.getActors().get(actorId)));
-                        }
+                       addEvent(s, varId, varName);
                     }
                     else{
-                        String joinedId;
-                        Matcher m = varNamePattern.matcher(s);
-                        Matcher n = varIdPattern.matcher(s);
-
-                        if (m.find() && n.find()) {
-                            varName = m.group().substring(1);
-                            varId = getConjunctionKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
-                            conjunctionNumber++;
-
-                            joinedId = n.group();
-                            joinedId = joinedId.substring(1, joinedId.length() - 1);
-                            String[] ids = joinedId.split(",");
-                            List<Actor> joined = new ArrayList<>();
-                            for (String id : ids) {
-                                if (!(id.startsWith("e") || id.startsWith("c"))) {
-                                    // if the id stats with "_" then it is a proper noun and we have to search for it in the map
-                                    if (id.startsWith("_")) {
-                                        id = parseResult.getActorByName(id.substring(1));
-                                    }
-                                    // else we just add it to the list of actors joined
-                                    joined.add(parseResult.getActors().get(id));
-                                }
-                            }
-                            parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
-                        }
+                        addConj(s, varId, varName);
                     }
                 }
             }
-
-
 
             //case PROG || Prog
             if(containsProgArg(args1) && containsProgArg(args2) && !containsConjArg(args1) && !containsConjArg(args2)){
                 Disjunction disjunction = new Disjunction();
                 String prog1 = getProgArg(args1);
                 String prog2 = getProgArg(args2);
-                System.out.println("Args : " + prog1 + " / " + prog2);
+
                 String name1 = prog1.substring(prog1.indexOf('_') + 1).substring(0,prog1.substring(prog1.indexOf('_') + 1).indexOf('('));
                 String name2 = prog2.substring(prog2.indexOf('_') + 1).substring(0,prog2.substring(prog2.indexOf('_') + 1).indexOf('('));
-
-                System.out.println("    Name : " + name1 + " & " + name2);
 
                 disjunction.setArg1(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name1), name1)));
                 disjunction.setArg2(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name2), name2)));
@@ -464,5 +378,65 @@ public class ClassicParser extends BaseParser {
             }
         }
         return res;
+    }
+
+    public void addVar(String token, String varId, String varName){
+        Matcher m = varIdPattern.matcher(token);
+        Matcher n = varNamePattern.matcher(token);
+        if (m.find() && n.find()) {
+            varId = m.group();
+            varId = varId.substring(0, varId.length() - 1);
+            varName = n.group().substring(1);
+
+            parseResult.getActors().put(varId, new Actor(varId, varName));
+        }
+    }
+
+    public void addEvent(String s, String varName, String varId){
+        Matcher m = varNamePattern.matcher(s);
+        Matcher n = varIdPattern.matcher(s);
+        String actorId;
+
+        if (m.find() && n.find()) {
+            varName = m.group().substring(1);
+            //varId = "e" + eventNumber;
+            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+            actorId = n.group();
+            actorId = actorId.substring(1, actorId.length() - 1);
+            // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
+            if (actorId.startsWith("_")) {
+                actorId = parseResult.getActorByName(actorId.substring(1));
+            }
+            eventNumber++;
+            parseResult.getEvents().put(varId, new Event(varId, varName, parseResult.getActors().get(actorId)));
+        }
+    }
+
+    public void addConj(String s, String varId, String varName ){
+        String joinedId;
+        Matcher m = varNamePattern.matcher(s);
+        Matcher n = varIdPattern.matcher(s);
+
+        if (m.find() && n.find()) {
+            varName = m.group().substring(1);
+            varId = getConjunctionKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)),varName);
+            conjunctionNumber++;
+
+            joinedId = n.group();
+            joinedId = joinedId.substring(1, joinedId.length() - 1);
+            String[] ids = joinedId.split(",");
+            List<Actor> joined = new ArrayList<>();
+            for (String id : ids) {
+                if (!(id.startsWith("e") || id.startsWith("c"))) {
+                    // if the id stats with "_" then it is a proper noun and we have to search for it in the map
+                    if (id.startsWith("_")) {
+                        id = parseResult.getActorByName(id.substring(1));
+                    }
+                    // else we just add it to the list of actors joined
+                    joined.add(parseResult.getActors().get(id));
+                }
+            }
+            parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
+        }
     }
 }
