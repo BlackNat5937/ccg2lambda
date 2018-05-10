@@ -116,6 +116,9 @@ public class GraphController implements Parametrable<Formula> {
                 g.getNodes().add(a);
             }
 
+           for(BaseNode bn : actor.getEqualities()){
+                x.addLink(g.getNodeByLabel(bn.getId()), "equals");
+           }
             g.getNodes().add(x);
 
         }

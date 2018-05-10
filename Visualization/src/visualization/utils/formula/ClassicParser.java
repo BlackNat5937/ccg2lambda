@@ -128,8 +128,6 @@ public class ClassicParser extends BaseParser {
 
         //check if there is any disjunction in the sentence
         if(disjunctionScope.contains("|") && !disjunctionTreated){
-            //System.out.println("Complete sentence : " + parseResult.getLambda());
-            //System.out.println("Disjunction scope : " + disjunctionScope);
             String[] args = disjunctionScope.split("\\|");
             String[] args1 = args[0].split("&");
             String[] args2 = args[1].split("&");
@@ -197,18 +195,14 @@ public class ClassicParser extends BaseParser {
                 }
             }
 
-
-
             //case PROG || Prog
             if(containsProgArg(args1) && containsProgArg(args2) && !containsConjArg(args1) && !containsConjArg(args2)){
                 Disjunction disjunction = new Disjunction();
                 String prog1 = getProgArg(args1);
                 String prog2 = getProgArg(args2);
-                System.out.println("Args : " + prog1 + " / " + prog2);
+
                 String name1 = prog1.substring(prog1.indexOf('_') + 1).substring(0,prog1.substring(prog1.indexOf('_') + 1).indexOf('('));
                 String name2 = prog2.substring(prog2.indexOf('_') + 1).substring(0,prog2.substring(prog2.indexOf('_') + 1).indexOf('('));
-
-                System.out.println("    Name : " + name1 + " & " + name2);
 
                 disjunction.setArg1(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name1), name1)));
                 disjunction.setArg2(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name2), name2)));
