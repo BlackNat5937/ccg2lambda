@@ -68,7 +68,7 @@ public class BoxController implements Parametrable<Object> {
         } else if (data instanceof Negation) {
             container.setContent(createContentNegation((Negation) data));
             box.setDisable(true);
-            container.setText("¬ " + data.toString());
+            container.setText(setHeaderNegation((Negation) data));
 
         }
     }
@@ -78,6 +78,8 @@ public class BoxController implements Parametrable<Object> {
      * Creates the content of the box by using the formula.
      */
     private void createContent() {
+
+
         for (Actor actor : formula.getActors().values()) {
 
             //    if(formula.getNegations().contains(actor))
@@ -91,38 +93,40 @@ public class BoxController implements Parametrable<Object> {
         }
         for (Event event : formula.getEvents().values()) {
             boxContent.add(event.getName() + '(' + event.getId() + ')');
-            boxContent.add(event.toString().substring(5, event.toString().length() - 1));
+            boxContent.add(event.toString());
         }
         for (Conjunction conjunction : formula.getConjunctions().values()) {
             boxContent.add(conjunction.toString());
         }
+
+        for (Negation negation : this.formula.getNegations()) {
+            for (BaseNode bn : negation.getNegated()) {
+                if (bn.getClass() == Event.class) {
+                    if (boxContent.contains(bn.getName() + "(" + bn.getId() + ")")) {
+                        boxContent.remove(bn.getName() + "(" + bn.getId() + ")");
+                    }
+                }
+                if (boxContent.contains(bn.toString())) {
+                    boxContent.remove(bn.toString());
+                }
+
+            }
+        }
+
         for (String s : boxContent) {
             Text display = new Text(s);
             contentContainer.getChildren().add(display);
         }
 
         for (Negation negation : this.formula.getNegations()) {
-            for (BaseNode bn : negation.getNegated()) {
-                if (boxContent.contains(bn)) {
-                    boxContent.remove(bn);
-                }
-            }
-
             HBox hBoxNeg = new HBox(15);
-
             Text negText = new Text("¬");
-
             negText.resize(35, 35);
-
             hBoxNeg.getChildren().add(negText);
             hBoxNeg.getChildren().add(getLoadedPane(negation, "../view/box.fxml"));
-
             contentContainer.getChildren().add(hBoxNeg);
 
-            // contentContainer.getChildren().add();
-
         }
-
 
     }
 
@@ -174,10 +178,28 @@ public class BoxController implements Parametrable<Object> {
     private Node createContentNegation(Negation negation) {
         VBox vBoxNeg = new VBox();
         for (BaseNode bn : negation.getNegated()) {
-            vBoxNeg.getChildren().add(new Text(bn.toString()));
+            if (bn.getClass() == Event.class) {
+                vBoxNeg.getChildren().add(new Text(bn.getName() + "(" + bn.getId() + ")"));
+                vBoxNeg.getChildren().add(new Text(bn.toString()));
+            } else {
+                vBoxNeg.getChildren().add(new Text(bn.toString()));
+            }
         }
-
         return vBoxNeg;
+    }
+
+    /**
+     * Create and return the hearder for the negation
+     *
+     * @param negation
+     * @return
+     */
+    private String setHeaderNegation(Negation negation) {
+        String headerNeg = "";
+        for (BaseNode bn : negation.getNegated()) {
+            headerNeg = headerNeg + bn.getId() + " ";
+        }
+        return headerNeg;
     }
 
 }
