@@ -4,7 +4,8 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<TitledPane xmlns:fx="http://javafx.com/fxml/1" fx:id="cont" text="DRS Title" xmlns="http://javafx.com/javafx/8.0.121"
+<TitledPane xmlns:fx="http://javafx.com/fxml/1" fx:id="container" text="DRS Title"
+            xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="visualization.controller.BoxController">
     <content>
         <HBox>
