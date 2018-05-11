@@ -55,7 +55,7 @@ public class EventParser extends BaseParser {
         eventNumber = 0;
         conjunctionNumber = 0;
         negationNumber = 0;
-        Map<String, BaseNode> nodes = new HashMap<>();
+        Map<String, FormulaNode> nodes = new HashMap<>();
 
         parseResult = parse(parseResult.getLambda(), nodes, null);
 
@@ -70,7 +70,7 @@ public class EventParser extends BaseParser {
      * @param inherited the negation inherited from the higher scope
      * @return a Formula containing the parsed information
      */
-    private Formula parse(String lambda, Map<String, BaseNode> nodes, Negation inherited) {
+    private Formula parse(String lambda, Map<String, FormulaNode> nodes, Negation inherited) {
         List<String> scopes = getScopes(lambda);
         scopes.forEach(scope -> {
             int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
@@ -125,7 +125,7 @@ public class EventParser extends BaseParser {
      * @param varId    the id of the variable
      * @param negation the negation of the current scope
      */
-    private void registerVariable(Map<String, BaseNode> nodes, String varName, String varId, Negation negation) {
+    private void registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, Negation negation) {
         firstExists = false;
         BaseNode newNode;
         if (varId.startsWith("e")) {
@@ -148,7 +148,7 @@ public class EventParser extends BaseParser {
      * @param nodes the list of all the nodes
      * @param token the declaration of the event's object
      */
-    private void registerEventObject(Map<String, BaseNode> nodes, String token) {
+    private void registerEventObject(Map<String, FormulaNode> nodes, String token) {
         String varId;
         String[] parts = token.split("\\)");
         if (parts[0].contains("Acc") && parts.length >= 2) {
@@ -169,11 +169,10 @@ public class EventParser extends BaseParser {
 
     /**
      * Registers an event's subject
-     *
-     * @param nodes the list of all nodes
+     *  @param nodes the list of all nodes
      * @param token the declaration of the event's subject
      */
-    private void registerEventSubject(Map<String, BaseNode> nodes, String token) {
+    private void registerEventSubject(Map<String, FormulaNode> nodes, String token) {
         String varId;
         String[] parts = token.split("\\)");
         if (parts[0].contains("Subj") && parts.length >= 2) {
@@ -194,12 +193,11 @@ public class EventParser extends BaseParser {
 
     /**
      * Registers a conjunction.
-     *
-     * @param nodes    the list of all the nodes
+     *  @param nodes    the list of all the nodes
      * @param token    the declaration of the conjuction
      * @param negation the current negation
      */
-    private void registerConjunction(Map<String, BaseNode> nodes, String token, Negation negation) {
+    private void registerConjunction(Map<String, FormulaNode> nodes, String token, Negation negation) {
         String varId;
         String varName;
         String[] parts = token.split("\\(");
