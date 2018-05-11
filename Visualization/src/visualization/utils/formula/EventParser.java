@@ -111,7 +111,7 @@ public class EventParser extends BaseParser {
                     registerConjunction(nodes, token, negation);
                 }
             } while (sc.hasNext());
-            if (scope.equals(lambda))
+            if (scope.equals(lambda) && negation != null)
                 parseResult.getNegations().add(negation);
         });
         return parseResult;
