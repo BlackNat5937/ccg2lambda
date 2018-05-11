@@ -145,17 +145,17 @@ public class OutputController implements Stageable {
         for (Formula formula : formulaList) {
             TitledPane boxPane = initBox(formula);
             TitledPane graphPane = initGraph(formula);
-            TitledPane treePane = initTree(formula);
+            //   TitledPane treePane = initTree(formula);
             boxPane.setExpanded(false);
             graphPane.setExpanded(false);
-            treePane.setExpanded(false);
+            //   treePane.setExpanded(false);
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
-            treeCont.getChildren().add(treePane);
+            //    treeCont.getChildren().add(treePane);
         }
         ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
         ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
-        ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
+        //  ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
     }
 
     /**
@@ -194,6 +194,17 @@ public class OutputController implements Stageable {
                         break;
                     case EVENT:
                         webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        break;
+                }
+                break;
+
+            case JA:
+                switch (Main.selectedTemplateType) {
+                    case CLASSIC:
+                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        break;
+                    case EVENT:
+                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -265,8 +276,6 @@ public class OutputController implements Stageable {
         this.view = primaryStage;
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(this::setDividerPosition);
-            /*System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
-        System.out.println("test initStage");*/
         };
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
