@@ -151,7 +151,6 @@ public class OutputController implements Stageable {
 
                     try {
                         ImageIO.write(image, "png", new File("graph" + graphCont.getChildren().indexOf(n) + ".png"));
-                        System.out.println("graph" + graphCont.getChildren().indexOf(n) + ".png" + " -> SAVED");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
