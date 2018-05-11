@@ -13,8 +13,10 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -25,8 +27,12 @@ import visualization.utils.formula.node.*;
 import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.Negation;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,21 +110,21 @@ public class GraphController implements Parametrable<Formula> {
                 Node actor1 = new Node(actors[0], NodeType.ACTOR);
                 Node actor2 = new Node(actors[1], NodeType.ACTOR);
 
-                or.addLink(actor1,"is-a");
-                or.addLink(actor2,"is-a");
+                or.addLink(actor1, "is-a");
+                or.addLink(actor2, "is-a");
 
                 g.getNodes().add(or);
                 g.getNodes().add(actor1);
                 g.getNodes().add(actor2);
-            }else{
+            } else {
                 Node a = new Node(actor.getName(), NodeType.ACTOR);
                 x.addLink(a, "is-a");
                 g.getNodes().add(a);
             }
 
-           for(BaseNode bn : actor.getEqualities()){
+            for (BaseNode bn : actor.getEqualities()) {
                 x.addLink(g.getNodeByLabel(bn.getId()), "equals");
-           }
+            }
             g.getNodes().add(x);
 
         }
@@ -132,7 +138,7 @@ public class GraphController implements Parametrable<Formula> {
 
             for (Actor a : event.getActors()) {
 
-                    g.getNodeByLabel(a.getId()).addLink(x, "event");
+                g.getNodeByLabel(a.getId()).addLink(x, "event");
 
             }
         }
@@ -158,41 +164,40 @@ public class GraphController implements Parametrable<Formula> {
             g.getNegations().add(neg);
         }
 
-        for(Disjunction disjunction : this.formula.getDisjunctions()){
+        for (Disjunction disjunction : this.formula.getDisjunctions()) {
             System.out.println(disjunction);
 
-            Node or = new Node("OR", NodeType.DISJUNCTION);
+            Node or = new Node("or", NodeType.DISJUNCTION);
 
             //origin :
             g.getNodeByLabel(disjunction.getOrigin().getId()).addLink(or, "disjunction");
 
             ArrayList<Link> toDelete = new ArrayList<>();
 
-            if(disjunction.getArg1().getClass() == Event.class){
+            if (disjunction.getArg1().getClass() == Event.class) {
                 or.addLink(g.getNodeByLabel(disjunction.getArg1().getId()), g.getNodeByLabel(disjunction.getArg1().getId()).getNodeType().toString());
                 or.addLink(g.getNodeByLabel(disjunction.getArg2().getId()), g.getNodeByLabel(disjunction.getArg2().getId()).getNodeType().toString());
 
                 //delete of useless links
-                for(Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()){
-                    if(l.getDestination().equals(g.getNodeByLabel(disjunction.getArg1().getId())) ||
-                            l.getDestination().equals(g.getNodeByLabel(disjunction.getArg2().getId()))){
+                for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
+                    if (l.getDestination().equals(g.getNodeByLabel(disjunction.getArg1().getId())) ||
+                            l.getDestination().equals(g.getNodeByLabel(disjunction.getArg2().getId()))) {
                         toDelete.add(l);
                     }
                 }
-                for(Link l : toDelete){
+                for (Link l : toDelete) {
                     g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
                 }
-            }else if(disjunction.getArg1().getClass() == Conjunction.class){
-                System.out.println("Conj ID : " + disjunction.getArg1().getId() + " | " + disjunction.getArg2().getId());
-                or.addLink(g.getConjById(disjunction.getArg1().getId()), g.getConjById(disjunction.getArg1().getId()).getNodeType().toString());
-                or.addLink(g.getConjById(disjunction.getArg2().getId()), g.getConjById(disjunction.getArg2().getId()).getNodeType().toString());
+            } else if (disjunction.getArg1().getClass() == Conjunction.class) {
+                or.addLink(g.getConjById(disjunction.getArg1().getId()), "conj");
+                or.addLink(g.getConjById(disjunction.getArg2().getId()), "conj");
                 //delete of useless links (here from origin to the conj)
-                for(Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()){
-                    if(l.getDestination().equals(g.getConjById(disjunction.getArg1().getId())) || l.getDestination().equals(g.getConjById(disjunction.getArg2().getId()))){
+                for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
+                    if (l.getDestination().equals(g.getConjById(disjunction.getArg1().getId())) || l.getDestination().equals(g.getConjById(disjunction.getArg2().getId()))) {
                         toDelete.add(l);
                     }
                 }
-                for(Link l : toDelete){
+                for (Link l : toDelete) {
                     g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
                 }
 
@@ -200,13 +205,12 @@ public class GraphController implements Parametrable<Formula> {
             g.getNodes().add(or);
         }
 
-
-
         box.setText(formula.getLambda());
 
         addGraph(g);
-
     }
+
+
 
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
@@ -230,8 +234,8 @@ public class GraphController implements Parametrable<Formula> {
             @Override
             public String transform(Node node) {
                 String res = node.getLabel();
-                if(node.getNodeType() == NodeType.EVENT && node.getLabel().matches(".*\\d+.*") ){
-                    res = node.getLabel().substring(0,1);
+                if (node.getNodeType() == NodeType.EVENT && node.getLabel().matches(".*\\d+.*")) {
+                    res = node.getLabel().substring(0, 1);
                 }
                 return res;
             }
@@ -252,7 +256,7 @@ public class GraphController implements Parametrable<Formula> {
                         s = new Ellipse2D.Double(-10, -10, 20, 20);
                         break;
                     case DISJUNCTION:
-                        s = new Ellipse2D.Double(-10,-10,25,25);
+                        s = new Ellipse2D.Double(-10, -10, 25, 25);
                         break;
                 }
                 return s;
@@ -317,8 +321,18 @@ public class GraphController implements Parametrable<Formula> {
                     case CONJUNCTION:
                         p = Color.GREEN;
                         break;
+                    case DISJUNCTION:
+                        p = Color.YELLOW;
+                        break;
                 }
                 return p;
+            }
+        });
+
+        vv.getRenderContext().setVertexFontTransformer(new Transformer<Node, Font>() {
+            @Override
+            public Font transform(Node node) {
+                return new Font("Arial", 1, 25);
             }
         });
 
@@ -347,6 +361,7 @@ public class GraphController implements Parametrable<Formula> {
 
 
         sp.setContent(container);
+
 
     }
 
@@ -396,20 +411,20 @@ public class GraphController implements Parametrable<Formula> {
             });
 
             anchor.init(javafx.scene.paint.Color.GOLD, xProperty, yProperty);
-            if(!SimilarAnchor(anchor)){
+            if (!SimilarAnchor(anchor)) {
                 anchors.add(anchor);
             }
         }
         return anchors;
     }
 
-    public boolean SimilarAnchor(Anchor anchor){
+    public boolean SimilarAnchor(Anchor anchor) {
         boolean res = false;
-        for(javafx.scene.Node a : container.getChildren()){
-            if(a.getClass() == Anchor.class){
+        for (javafx.scene.Node a : container.getChildren()) {
+            if (a.getClass() == Anchor.class) {
                 Anchor castedAnchor = (Anchor) a;
                 System.out.println("    --> " + castedAnchor.getSelected().getLabel() + " ?= " + anchor.getSelected().getLabel());
-                if(castedAnchor.getSelected().getLabel().equals(anchor.getSelected().getLabel())){
+                if (castedAnchor.getSelected().getLabel().equals(anchor.getSelected().getLabel())) {
                     res = true;
                 }
             }

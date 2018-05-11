@@ -4,9 +4,18 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -16,6 +25,10 @@ import visualization.Main;
 import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -88,6 +101,7 @@ public class OutputController implements Stageable {
      */
     private ObservableList<Formula> lambdaListViewItems = FXCollections.observableArrayList();
 
+    private final ContextMenu contextMenu = new ContextMenu();
 
     /**
      * Initializes the window, loads the formulas
@@ -113,7 +127,38 @@ public class OutputController implements Stageable {
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) ->
                         currentTabIndex = tabPanel.getSelectionModel().getSelectedIndex());
+
+        MenuItem item1 = new MenuItem("Print");
+        item1.setOnAction(printEvent);
+        contextMenu.getItems().add(item1);
+
+        lambdaListView.setContextMenu(contextMenu);
     }
+
+    private final EventHandler<ActionEvent> printEvent = event -> {
+        Node n = graphCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
+            //here save the image
+            if (n.getClass() == TitledPane.class) {
+                TitledPane tp = (TitledPane) n;
+                Node n2 = tp.getContent();
+                if (n2.getClass() == ScrollPane.class) {
+                    ScrollPane sp = (ScrollPane) n2;
+                    Node n3 = sp.getContent();
+                    WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
+
+                    n3.snapshot(new SnapshotParameters(), wi);
+                    BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
+
+                    try {
+                        ImageIO.write(image, "png", new File("graph" + graphCont.getChildren().indexOf(n) + ".png"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+    };
+
 
     /**
      * Changes the element which has the focus in the visualization.
@@ -145,17 +190,17 @@ public class OutputController implements Stageable {
         for (Formula formula : formulaList) {
             TitledPane boxPane = initBox(formula);
             TitledPane graphPane = initGraph(formula);
-            TitledPane treePane = initTree(formula);
+            //   TitledPane treePane = initTree(formula);
             boxPane.setExpanded(false);
             graphPane.setExpanded(false);
-            treePane.setExpanded(false);
+            //   treePane.setExpanded(false);
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
-            treeCont.getChildren().add(treePane);
+            //    treeCont.getChildren().add(treePane);
         }
         ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
         ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
-        ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
+        //  ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
     }
 
     /**
@@ -197,6 +242,17 @@ public class OutputController implements Stageable {
                         break;
                 }
                 break;
+
+            case JA:
+                switch (Main.selectedTemplateType) {
+                    case CLASSIC:
+                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        break;
+                    case EVENT:
+                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        break;
+                }
+                break;
         }
 
 
@@ -231,8 +287,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the graph representation of the formula
      */
     private TitledPane initGraph(Formula formula) {
-        TitledPane loadedPane = getLoadedPane(formula, "../view/graph.fxml");
-        return loadedPane;
+        return getLoadedPane(formula, "../view/graph.fxml");
     }
 
     /**

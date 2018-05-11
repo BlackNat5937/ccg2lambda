@@ -162,8 +162,9 @@ public class InputController implements Stageable {
         radioCandCOnlyItem.setSelected(true);
         radioALL_EN_ParserItem.setSelected(false);
         radioJA_ParserItem.setSelected(false);
-    }
 
+
+    }
 
     /**
      * Initializes the context menus for each listView item.
@@ -795,12 +796,12 @@ public class InputController implements Stageable {
         radioCandCOnlyItem.setSelected(false);
         radioALL_EN_ParserItem.setSelected(true);
         radioJA_ParserItem.setSelected(false);
-        System.out.println("|_|_|_|_|_|_|_|_|_ ALL Parser");
+        System.out.println("|_|_|_|_|_|_|_|_|_ ALL EN Parser");
 
 
         Main.selectedParserType = Tools.ParserType.ALL;
 
-        if ((!Tools.configEasyCCG.exists()) || (!Tools.configENParserLocation.exists())) {
+        if ((!Tools.configENParserLocation.exists())) {
 
 
             try {
@@ -892,39 +893,44 @@ public class InputController implements Stageable {
     @FXML
     private void setJAParser() {
         radioCandCOnlyItem.setSelected(false);
-        radioALL_EN_ParserItem.setSelected(true);
+        radioALL_EN_ParserItem.setSelected(false);
         radioJA_ParserItem.setSelected(true);
+
+        System.out.println("|_|_|_|_|_|_|_|_|_ JA Parser");
 
         Main.selectedParserType = Tools.ParserType.JA;
 
-        System.out.println("depCCG location");
-        Alert firstTimeAlertDepCCG = new Alert(Alert.AlertType.WARNING);
-        firstTimeAlertDepCCG.setTitle("First time configuration needed");
-        firstTimeAlertDepCCG.setHeaderText("First time configuration depCCG ");
-        firstTimeAlertDepCCG.setContentText(
-                "Configuration file is missing and/or corrupted." + '\n' +
-                        "Please redo the configuration."
-        );
+        if ((!Tools.configJAParserLocation.exists())) {
 
-        firstTimeAlertDepCCG.showAndWait();
-        File f4 = setdepCCGLocation();
-        depCCGDefined = true;
+            System.out.println("depCCG location");
+            Alert firstTimeAlertDepCCG = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertDepCCG.setTitle("First time configuration needed");
+            firstTimeAlertDepCCG.setHeaderText("First time configuration depCCG ");
+            firstTimeAlertDepCCG.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
 
-
-        System.out.println("jigg location");
-        Alert firstTimeAlertJigg = new Alert(Alert.AlertType.WARNING);
-        firstTimeAlertJigg.setTitle("First time configuration needed");
-        firstTimeAlertJigg.setHeaderText("First time configuration Jigg ");
-        firstTimeAlertJigg.setContentText(
-                "Configuration file is missing and/or corrupted." + '\n' +
-                        "Please redo the configuration."
-        );
-        firstTimeAlertJigg.showAndWait();
-        File f5 = setJiggLocation();
-        jiggDefined = true;
+            firstTimeAlertDepCCG.showAndWait();
+            File f4 = setdepCCGLocation();
+            depCCGDefined = true;
 
 
-        defineJA_ParserLocation();
+            System.out.println("jigg location");
+            Alert firstTimeAlertJigg = new Alert(Alert.AlertType.WARNING);
+            firstTimeAlertJigg.setTitle("First time configuration needed");
+            firstTimeAlertJigg.setHeaderText("First time configuration Jigg ");
+            firstTimeAlertJigg.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            firstTimeAlertJigg.showAndWait();
+            File f5 = setJiggLocation();
+            jiggDefined = true;
+
+
+            defineJA_ParserLocation();
+        }
     }
 
     @Override

@@ -98,8 +98,8 @@ public class ClassicParser extends BaseParser {
                 String name1 = prog1.substring(prog1.indexOf('_') + 1).substring(0, prog1.substring(prog1.indexOf('_') + 1).indexOf('('));
                 String name2 = prog2.substring(prog2.indexOf('_') + 1).substring(0, prog2.substring(prog2.indexOf('_') + 1).indexOf('('));
 
-                disjunction.setArg1(parseResult.getEvents().get(getEventConjKey(parseResult.getLambda().indexOf(name1), name1)));
-                disjunction.setArg2(parseResult.getEvents().get(getEventConjKey(parseResult.getLambda().indexOf(name2), name2)));
+                disjunction.setArg1(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name1), name1)));
+                disjunction.setArg2(parseResult.getEvents().get(getEventKey(parseResult.getLambda().indexOf(name2), name2)));
 
                 String nameOrigin = prog1.substring(prog1.indexOf('_') + 1).substring(prog1.substring(prog1.indexOf('_') + 1).indexOf('(') + 1, prog1.substring(prog1.indexOf('_') + 1).indexOf(')'));
 
@@ -117,8 +117,8 @@ public class ClassicParser extends BaseParser {
                 String name1 = conj1.substring(conj1.indexOf('_') + 1, conj1.indexOf('('));
                 String name2 = conj2.substring(conj2.indexOf('_') + 1, conj2.indexOf('('));
 
-                disjunction.setArg1(parseResult.getConjunctions().get(getEventConjKey(parseResult.getLambda().indexOf(conj1), name1)));
-                disjunction.setArg2(parseResult.getConjunctions().get(getEventConjKey(parseResult.getLambda().indexOf(conj2), name2)));
+                disjunction.setArg1(parseResult.getConjunctions().get(getEventKey(parseResult.getLambda().indexOf(conj1), name1)));
+                disjunction.setArg2(parseResult.getConjunctions().get(getEventKey(parseResult.getLambda().indexOf(conj2), name2)));
 
                 String nameOrigin = conj1.substring(conj1.indexOf('(') + 1, conj1.indexOf(','));
 
@@ -201,7 +201,7 @@ public class ClassicParser extends BaseParser {
                 if (isEvent) {
                     String eventName = s.substring(s.indexOf('_') + 1, s.indexOf('('));
                     int indexEvent = parseResult.getLambda().indexOf(s);
-                    String eventKey = getEventConjKey(indexEvent, eventName);
+                    String eventKey = getEventKey(indexEvent, eventName);
                     n.getNegated().add(parseResult.getEvents().get(eventKey));
                 } else {
                     if (s.contains(",")) {
@@ -209,7 +209,7 @@ public class ClassicParser extends BaseParser {
                         String conjName = s.substring(s.indexOf('_') + 1, s.indexOf('('));
                         String conjParams = ssubstring;
                         int indexConj = parseResult.getLambda().indexOf("_" + conjName + "(" + conjParams + ")");
-                        String conjKey = getEventConjKey(indexConj, conjName);
+                        String conjKey = getEventKey(indexConj, conjName);
                         n.getNegated().add(parseResult.getConjunctions().get(conjKey));
                     } else {
                         if (!ssubstring.equals(subj)) {
@@ -219,7 +219,7 @@ public class ClassicParser extends BaseParser {
                                 n.getNegated().add(parseResult.getActors().get(ssubstring));
                             }
                         } else {
-                            String key = getEventConjKey(parseResult.getLambda().indexOf(s), s.substring(s.indexOf('_') + 1, s.indexOf('(')));
+                            String key = getEventKey(parseResult.getLambda().indexOf(s), s.substring(s.indexOf('_') + 1, s.indexOf('(')));
                             n.getNegated().add(parseResult.getConjunctions().get(key));
                         }
                     }
@@ -234,11 +234,11 @@ public class ClassicParser extends BaseParser {
                 int index = parseResult.getLambda().indexOf(s);
                 if (s.matches(".*Prog\\(.*")) {
                     //event
-                    String key = getEventConjKey(index, name);
+                    String key = getEventKey(index, name);
                     n.getNegated().add(parseResult.getEvents().get(key));
                 } else {
                     //conj
-                    String key = getEventConjKey(index, name);
+                    String key = getEventKey(index, name);
                     n.getNegated().add(parseResult.getConjunctions().get(key));
                 }
 
@@ -248,13 +248,13 @@ public class ClassicParser extends BaseParser {
             String conjName = scope.substring(scope.indexOf('_') + 1);
             conjName = conjName.substring(0, conjName.indexOf('('));
             int indexConj = parseResult.getLambda().indexOf(scope);
-            String conjKey = getEventConjKey(indexConj, conjName);
+            String conjKey = getEventKey(indexConj, conjName);
             n.getNegated().add(parseResult.getConjunctions().get(conjKey));
         }
         return n;
     }
-    
-    public String getEventConjKey(int indexEvent, String event) {
+
+    public String getEventKey(int indexEvent, String event) {
         String searchedString = parseResult.getLambda().substring(0, indexEvent);
         int lastIndex = 0;
         int count = 1;
@@ -362,7 +362,7 @@ public class ClassicParser extends BaseParser {
         if (m.find() && n.find()) {
             varName = m.group().substring(1);
             //varId = "e" + eventNumber;
-            varId = getEventConjKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
+            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
             actorId = n.group();
             actorId = actorId.substring(1, actorId.length() - 1);
             // if the actorId starts with "_" then it is a proper noun and we have to search for it in the map
@@ -381,7 +381,7 @@ public class ClassicParser extends BaseParser {
 
         if (m.find() && n.find()) {
             varName = m.group().substring(1);
-            varId = getEventConjKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
+            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
             conjunctionNumber++;
 
             joinedId = n.group();
