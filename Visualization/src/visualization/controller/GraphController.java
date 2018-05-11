@@ -21,7 +21,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
+import visualization.Main;
 import visualization.graph.*;
+import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 import visualization.utils.formula.node.*;
 import visualization.utils.formula.node.Event;
@@ -97,60 +99,132 @@ public class GraphController implements Parametrable<Formula> {
 
         this.formula = data;
 
-        for (Actor actor : this.formula.getActors().values()) {
-            Node x = new Node(actor.getId(), NodeType.ACTOR);
-            if (actor.getName().contains("|")) {
-                //disjunction
-                Node or = new Node("OR", NodeType.DISJUNCTION);
-                x.addLink(or, "is-a");
-
-                String actors[] = actor.getName().split("\\|");
-                System.out.println(actor.getName());
-
-                Node actor1 = new Node(actors[0], NodeType.ACTOR);
-                Node actor2 = new Node(actors[1], NodeType.ACTOR);
-
-                or.addLink(actor1, "is-a");
-                or.addLink(actor2, "is-a");
-
-                g.getNodes().add(or);
-                g.getNodes().add(actor1);
-                g.getNodes().add(actor2);
-            } else {
+        if(Main.selectedTemplateType == Tools.TemplateType.EVENT){
+            for(Actor actor : this.formula.getEventActors()){
+                Node x = new Node(actor.getId(), NodeType.ACTOR);
                 Node a = new Node(actor.getName(), NodeType.ACTOR);
                 x.addLink(a, "is-a");
                 g.getNodes().add(a);
+                g.getNodes().add(x);
             }
+            for(Event event : this.formula.getEventEvents()){
+                Node e = new Node(event.getName(), NodeType.EVENT);
+                Node x = new Node(event.getId(), NodeType.EVENT);
+                x.addLink(e, "is-a");
 
-            for (BaseNode bn : actor.getEqualities()) {
-                x.addLink(g.getNodeByLabel(bn.getId()), "equals");
+                g.getNodes().add(x);
+                g.getNodes().add(e);
+
+                for (Actor a : event.getActors()) {
+                    g.getNodeByLabel(a.getId()).addLink(x, "event");
+                }
             }
-            g.getNodes().add(x);
+            for (Conjunction conjunction : this.formula.getEventConjunctions()) {
+                Node c = new Node(conjunction.getName(), NodeType.CONJUNCTION);
+                c.setId(conjunction.getId());
+                g.getNodes().add(c);
 
+                for (FormulaNode f : conjunction.getJoined()) {
+                    g.getNodeByLabel(f.getId()).addLink(c, "conj");
+                }
+            }
+        }else{
+            for (Actor actor : this.formula.getActors().values()) {
+                Node x = new Node(actor.getId(), NodeType.ACTOR);
+                if (actor.getName().contains("|")) {
+                    //disjunction
+                    Node or = new Node("OR", NodeType.DISJUNCTION);
+                    x.addLink(or, "is-a");
+
+                    String actors[] = actor.getName().split("\\|");
+                    System.out.println(actor.getName());
+
+                    Node actor1 = new Node(actors[0], NodeType.ACTOR);
+                    Node actor2 = new Node(actors[1], NodeType.ACTOR);
+
+                    or.addLink(actor1, "is-a");
+                    or.addLink(actor2, "is-a");
+
+                    g.getNodes().add(or);
+                    g.getNodes().add(actor1);
+                    g.getNodes().add(actor2);
+                } else {
+                    Node a = new Node(actor.getName(), NodeType.ACTOR);
+                    x.addLink(a, "is-a");
+                    g.getNodes().add(a);
+                }
+
+                for (BaseNode bn : actor.getEqualities()) {
+                    x.addLink(g.getNodeByLabel(bn.getId()), "equals");
+                }
+                g.getNodes().add(x);
+
+            }
+            for (Event event : this.formula.getEvents().values()) {
+                Node e = new Node(event.getName(), NodeType.EVENT);
+                Node x = new Node(event.getId(), NodeType.EVENT);
+                x.addLink(e, "is-a");
+
+                g.getNodes().add(x);
+                g.getNodes().add(e);
+
+                for (Actor a : event.getActors()) {
+
+                    g.getNodeByLabel(a.getId()).addLink(x, "event");
+
+                }
+            }
+            for (Conjunction conjunction : this.formula.getConjunctions().values()) {
+                Node c = new Node(conjunction.getName(), NodeType.CONJUNCTION);
+                c.setId(conjunction.getId());
+                g.getNodes().add(c);
+
+                for (FormulaNode f : conjunction.getJoined()) {
+                    g.getNodeByLabel(f.getId()).addLink(c, "conj");
+                }
+            }
+            for (Disjunction disjunction : this.formula.getDisjunctions()) {
+                System.out.println(disjunction);
+
+                Node or = new Node("or", NodeType.DISJUNCTION);
+
+                //origin :
+                g.getNodeByLabel(disjunction.getOrigin().getId()).addLink(or, "disjunction");
+
+                ArrayList<Link> toDelete = new ArrayList<>();
+
+                if (disjunction.getArg1().getClass() == Event.class) {
+                    or.addLink(g.getNodeByLabel(disjunction.getArg1().getId()), g.getNodeByLabel(disjunction.getArg1().getId()).getNodeType().toString());
+                    or.addLink(g.getNodeByLabel(disjunction.getArg2().getId()), g.getNodeByLabel(disjunction.getArg2().getId()).getNodeType().toString());
+
+                    //delete of useless links
+                    for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
+                        if (l.getDestination().equals(g.getNodeByLabel(disjunction.getArg1().getId())) ||
+                                l.getDestination().equals(g.getNodeByLabel(disjunction.getArg2().getId()))) {
+                            toDelete.add(l);
+                        }
+                    }
+                    for (Link l : toDelete) {
+                        g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
+                    }
+                } else if (disjunction.getArg1().getClass() == Conjunction.class) {
+                    or.addLink(g.getConjById(disjunction.getArg1().getId()), "conj");
+                    or.addLink(g.getConjById(disjunction.getArg2().getId()), "conj");
+                    //delete of useless links (here from origin to the conj)
+                    for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
+                        if (l.getDestination().equals(g.getConjById(disjunction.getArg1().getId())) || l.getDestination().equals(g.getConjById(disjunction.getArg2().getId()))) {
+                            toDelete.add(l);
+                        }
+                    }
+                    for (Link l : toDelete) {
+                        g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
+                    }
+
+                }
+                g.getNodes().add(or);
+            }
         }
-        for (Event event : this.formula.getEvents().values()) {
-            Node e = new Node(event.getName(), NodeType.EVENT);
-            Node x = new Node(event.getId(), NodeType.EVENT);
-            x.addLink(e, "is-a");
 
-            g.getNodes().add(x);
-            g.getNodes().add(e);
-
-            for (Actor a : event.getActors()) {
-
-                g.getNodeByLabel(a.getId()).addLink(x, "event");
-
-            }
-        }
-        for (Conjunction conjunction : this.formula.getConjunctions().values()) {
-            Node c = new Node(conjunction.getName(), NodeType.CONJUNCTION);
-            c.setId(conjunction.getId());
-            g.getNodes().add(c);
-
-            for (FormulaNode f : conjunction.getJoined()) {
-                g.getNodeByLabel(f.getId()).addLink(c, "conj");
-            }
-        }
         for (Negation negation : this.formula.getNegations()) {
             visualization.graph.Negation neg = new visualization.graph.Negation();
 
@@ -164,46 +238,6 @@ public class GraphController implements Parametrable<Formula> {
             g.getNegations().add(neg);
         }
 
-        for (Disjunction disjunction : this.formula.getDisjunctions()) {
-            System.out.println(disjunction);
-
-            Node or = new Node("or", NodeType.DISJUNCTION);
-
-            //origin :
-            g.getNodeByLabel(disjunction.getOrigin().getId()).addLink(or, "disjunction");
-
-            ArrayList<Link> toDelete = new ArrayList<>();
-
-            if (disjunction.getArg1().getClass() == Event.class) {
-                or.addLink(g.getNodeByLabel(disjunction.getArg1().getId()), g.getNodeByLabel(disjunction.getArg1().getId()).getNodeType().toString());
-                or.addLink(g.getNodeByLabel(disjunction.getArg2().getId()), g.getNodeByLabel(disjunction.getArg2().getId()).getNodeType().toString());
-
-                //delete of useless links
-                for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
-                    if (l.getDestination().equals(g.getNodeByLabel(disjunction.getArg1().getId())) ||
-                            l.getDestination().equals(g.getNodeByLabel(disjunction.getArg2().getId()))) {
-                        toDelete.add(l);
-                    }
-                }
-                for (Link l : toDelete) {
-                    g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
-                }
-            } else if (disjunction.getArg1().getClass() == Conjunction.class) {
-                or.addLink(g.getConjById(disjunction.getArg1().getId()), "conj");
-                or.addLink(g.getConjById(disjunction.getArg2().getId()), "conj");
-                //delete of useless links (here from origin to the conj)
-                for (Link l : g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks()) {
-                    if (l.getDestination().equals(g.getConjById(disjunction.getArg1().getId())) || l.getDestination().equals(g.getConjById(disjunction.getArg2().getId()))) {
-                        toDelete.add(l);
-                    }
-                }
-                for (Link l : toDelete) {
-                    g.getNodeByLabel(disjunction.getOrigin().getId()).getLinks().remove(l);
-                }
-
-            }
-            g.getNodes().add(or);
-        }
 
         box.setText(formula.getLambda());
 
@@ -358,11 +392,7 @@ public class GraphController implements Parametrable<Formula> {
             container.getChildren().add(negationPolygon);
             container.getChildren().addAll(createControlAnchorsFor(negationPolygon.getPoints()));
         }
-
-
         sp.setContent(container);
-
-
     }
 
     private javafx.scene.shape.Polygon createStartingPolygon(ArrayList<javafx.geometry.Point2D> points) {

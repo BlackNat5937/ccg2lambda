@@ -107,9 +107,6 @@ public class BoxController implements Parametrable<Object> {
 
             }
         }
-        for (Disjunction disjunction : this.formula.getDisjunctions()) {
-            // for(BaseNode bn : disjunction.)
-        }
         for (String s : boxContent) {
             Text display = new Text(s);
             contentContainer.getChildren().add(display);
