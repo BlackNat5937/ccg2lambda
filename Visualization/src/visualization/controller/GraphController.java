@@ -115,8 +115,10 @@ public class GraphController implements Parametrable<Formula> {
                 g.getNodes().add(x);
                 g.getNodes().add(e);
 
-                for (Actor a : event.getActors()) {
-                    g.getNodeByLabel(a.getId()).addLink(x, "event");
+
+                g.getNodeByLabel(event.getSubject().getId()).addLink(x, "subject");
+                if(event.getObject() != null){
+                    x.addLink(g.getNodeByLabel(event.getObject().getId()), "object");
                 }
             }
             for (Conjunction conjunction : this.formula.getEventConjunctions()) {
