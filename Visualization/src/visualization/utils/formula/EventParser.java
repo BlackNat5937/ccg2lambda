@@ -32,6 +32,10 @@ public class EventParser extends BaseParser {
      * The number of the current negation
      */
     private int negationNumber;
+    /**
+     * List of already used variable identifiers
+     */
+    private List<String> usedIdentifiers;
 
     /**
      * Package private constructor.
@@ -56,6 +60,7 @@ public class EventParser extends BaseParser {
         conjunctionNumber = 0;
         negationNumber = 0;
         Map<String, FormulaNode> nodes = new HashMap<>();
+        usedIdentifiers = new ArrayList<>();
 
         parseResult = parse(parseResult.getLambda(), nodes, null);
 
@@ -129,10 +134,10 @@ public class EventParser extends BaseParser {
         firstExists = false;
         BaseNode newNode;
         if (varId.startsWith("e")) {
-            newNode = new Event(varId, varName);
+            newNode = new Event(getUnusedIdentifier(varId), varName);
             parseResult.getEventEvents().add((Event) newNode);
         } else {
-            newNode = new Actor(varId, varName);
+            newNode = new Actor(getUnusedIdentifier(varId), varName);
             parseResult.getEventActors().add((Actor) newNode);
         }
         nodes.put(varId, newNode);
@@ -169,7 +174,8 @@ public class EventParser extends BaseParser {
 
     /**
      * Registers an event's subject
-     *  @param nodes the list of all nodes
+     *
+     * @param nodes the list of all nodes
      * @param token the declaration of the event's subject
      */
     private void registerEventSubject(Map<String, FormulaNode> nodes, String token) {
@@ -193,7 +199,8 @@ public class EventParser extends BaseParser {
 
     /**
      * Registers a conjunction.
-     *  @param nodes    the list of all the nodes
+     *
+     * @param nodes    the list of all the nodes
      * @param token    the declaration of the conjuction
      * @param negation the current negation
      */
@@ -222,7 +229,7 @@ public class EventParser extends BaseParser {
                     if (node != null)
                         joinedNodes.add(node);
                 }
-                Conjunction newConj = new Conjunction(varId, varName, joinedNodes.toArray(new FormulaNode[0]));
+                Conjunction newConj = new Conjunction(getUnusedIdentifier(varId), varName, joinedNodes.toArray(new FormulaNode[0]));
                 parseResult.getEventConjunctions()
                         .add(newConj);
                 registeredNodes.add(newConj);
@@ -257,6 +264,13 @@ public class EventParser extends BaseParser {
         return scopes;
     }
 
+    /**
+     * Gets the index of the next variable declaration.
+     *
+     * @param subLambda the lambda
+     * @param p         the pattern to search for
+     * @return the index of the first declaration
+     */
     private int getNextExistsIndex(String subLambda, Pattern p) {
         int nextExistsIndex;
         Matcher m = p.matcher(subLambda);
@@ -295,5 +309,24 @@ public class EventParser extends BaseParser {
                 return index;
         }
         return -1;
+    }
+
+    /**
+     * Gets an unused variable identifier.
+     *
+     * @param varId the base identifier
+     * @return the new, unused identifier
+     */
+    private String getUnusedIdentifier(String varId) {
+        if (usedIdentifiers.contains(varId)) {
+            String base = varId.replaceAll("\\d", "");
+            int id = 0;
+            do {
+                varId = base + id;
+                id++;
+            } while (usedIdentifiers.contains(varId));
+        }
+        usedIdentifiers.add(varId);
+        return varId;
     }
 }
