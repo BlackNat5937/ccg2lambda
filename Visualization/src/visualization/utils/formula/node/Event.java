@@ -99,6 +99,6 @@ public class Event extends BaseNode {
             actorL.setLength(actorL.length() - 1);
         }
 
-        return "Prog(" + name + '(' + actorL + "))";
+        return name + '(' + actorL + ")";
     }
 }

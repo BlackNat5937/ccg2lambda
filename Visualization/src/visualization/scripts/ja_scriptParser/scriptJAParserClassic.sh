@@ -7,4 +7,4 @@ source py3/bin/activate
 
 cd $1
 
-./en/rte_en_mp_any.sh sentences.txt en/semantic_templates_en_emnlp2015.yaml
+./ja/rte_ja_mp.sh  sentences.txt $1/ja/semantic_templates_ja_emnlp2016.yaml

@@ -20,7 +20,7 @@ public class BaseNode implements FormulaNode {
     /**
      * The nodes which are "equal" to this one in a semantic sense
      */
-    List<BaseNode> equalities = new ArrayList<>();
+    protected List<BaseNode> equalities = new ArrayList<>();
 
     /**
      * Get the id of this node.
@@ -63,6 +63,6 @@ public class BaseNode implements FormulaNode {
     public boolean equals(Object obj) {
         if (!(obj instanceof FormulaNode))
             return false;
-        else return ((FormulaNode) obj).getId().equals(this.id) || ((FormulaNode) obj).getName().equals(this.name);
+        else return ((FormulaNode) obj).getName().equals(this.name);
     }
 }

@@ -37,6 +37,10 @@ public class Main extends Application {
      */
     public static File depccgLocation;
     /**
+     * The location for the JA Jigg parser
+     */
+    public static File jiggLocation;
+    /**
      * Desired visualization outputs. All by default.
      */
     private static Tools.RepresentationModes visualizationMode = Tools.RepresentationModes.ALL;

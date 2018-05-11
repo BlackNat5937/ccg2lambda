@@ -65,10 +65,15 @@ public class InputController implements Stageable {
     @FXML
     private RadioMenuItem radioCandCOnlyItem;
     /**
-     * Radio menu parser for only C&C
+     * Radio menu parser all EN parser
      */
     @FXML
-    private RadioMenuItem allParserItem;
+    private RadioMenuItem radioALL_EN_ParserItem;
+    /**
+     * Radio menu for JA parser
+     */
+    @FXML
+    private RadioMenuItem radioJA_ParserItem;
 
     @FXML
     public MenuItem showInformationItem;
@@ -128,6 +133,11 @@ public class InputController implements Stageable {
     private boolean depCCGDefined = false;
 
     /**
+     * boolean for when jigg location is change by the user
+     */
+    private boolean jiggDefined = false;
+
+    /**
      * Initializes the view.
      */
     @FXML
@@ -150,7 +160,8 @@ public class InputController implements Stageable {
         radioTemplateEvent.setSelected(false);
 
         radioCandCOnlyItem.setSelected(true);
-        allParserItem.setSelected(false);
+        radioALL_EN_ParserItem.setSelected(false);
+        radioJA_ParserItem.setSelected(false);
     }
 
 
@@ -245,6 +256,17 @@ public class InputController implements Stageable {
                             break;
                     }
                     break;
+
+                case JA:
+                    switch (Main.selectedTemplateType) {
+                        case CLASSIC:
+                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            break;
+                        case EVENT:
+                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            break;
+                    }
+                    break;
             }
 
 
@@ -294,25 +316,25 @@ public class InputController implements Stageable {
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process = null;
 
-        File parsedDirectory = new File("../en_parsed");
-        File resultDirectory = new File("../en_results");
+        File parsedDirectoryEN = new File("../en_parsed");
+        File resultDirectoryEN = new File("../en_results");
 
         try {
-            if (parsedDirectory.exists() && resultDirectory.exists()) {
+            if (parsedDirectoryEN.exists() && resultDirectoryEN.exists()) {
                 /**
                  * Check if their is file in the directory, if yes, delete them
                  */
-                for (File file : parsedDirectory.listFiles()) {
+                for (File file : parsedDirectoryEN.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-                for (File file : resultDirectory.listFiles()) {
+                for (File file : resultDirectoryEN.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
                 /**
                  * If the file already exist, delete them
                  */
-                Files.deleteIfExists(parsedDirectory.toPath());
-                Files.deleteIfExists(resultDirectory.toPath());
+                Files.deleteIfExists(parsedDirectoryEN.toPath());
+                Files.deleteIfExists(resultDirectoryEN.toPath());
 
             }
         } catch (Exception e) {
@@ -342,6 +364,30 @@ public class InputController implements Stageable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        File parsedDirectoryJA = new File("../ja_parsed");
+        File resultDirectoryJA = new File("../ja_results");
+
+        try {
+            if (parsedDirectoryJA.exists() && resultDirectoryJA.exists()) {
+                /**
+                 * Check if their is file in the directory, if yes, delete them
+                 */
+                for (File file : parsedDirectoryJA.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
+                }
+                for (File file : resultDirectoryJA.listFiles()) {
+                    Files.deleteIfExists(file.toPath());
+                }
+                /**
+                 * If the file already exist, delete them
+                 */
+                Files.deleteIfExists(parsedDirectoryJA.toPath());
+                Files.deleteIfExists(resultDirectoryJA.toPath());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         switch (Main.selectedParserType) {
             case ALL:
 
@@ -392,6 +438,31 @@ public class InputController implements Stageable {
                     try {
                         System.out.println("python ONLY C&C event script");
                         process = new ProcessBuilder("./src/visualization/scripts/scriptDefaultParser/scriptParserDefaultEvent.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+
+            case JA:
+                if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
+                    try {
+
+                        System.out.println("python JA classic script");
+                        process = new ProcessBuilder("./src/visualization/scripts/ja_scriptParser/scriptJAParserClassic.sh", ccg2lambdaPath).start();
+                        progress.set(1.00);
+                        process.waitFor();
+
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
+                    try {
+                        System.out.println("python JA event script");
+                        process = new ProcessBuilder("./src/visualization/scripts/ja_scriptParser/scriptJAParserEvent.sh", ccg2lambdaPath).start();
                         progress.set(1.00);
                         process.waitFor();
 
@@ -507,23 +578,48 @@ public class InputController implements Stageable {
     }
 
     /**
-     * define the parser location in parser_location.txt
+     * define the EN parser location in parser_location.txt
      */
-    private void defineParserLocation() {
-        System.out.println("parser location location");
+    private void defineEN_ALL_ParserLocation() {
+        System.out.println("EN parser location location");
         boolean okParserLocation = true;
 
         try {
-            okParserLocation = Tools.configParserLocation.createNewFile();
+            okParserLocation = Tools.configENParserLocation.createNewFile();
             System.out.println("  okParserLocation : " + okParserLocation);
             if (!okParserLocation) {
                 System.out.println("erreur sur ok");
                 throw new IOException();
             }
             FileWriter fwParserLocation;
-            fwParserLocation = new FileWriter(Tools.configParserLocation);
+            fwParserLocation = new FileWriter(Tools.configENParserLocation);
             fwParserLocation.write("candc:" + Main.ccgCandCLocation.toPath() + "\n");
             fwParserLocation.write("easyccg:" + Main.easyCCGLocation.toPath() + "\n");
+            fwParserLocation.write("depccg:" + Main.depccgLocation + "\n");
+            fwParserLocation.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * define the JA parser location in parser_location_ja.txt
+     */
+    private void defineJA_ParserLocation() {
+        System.out.println("JA parser location location");
+        boolean okJA_ParserLocation = true;
+
+        try {
+            okJA_ParserLocation = Tools.configJAParserLocation.createNewFile();
+            System.out.println("  okParserLocation : " + okJA_ParserLocation);
+            if (!okJA_ParserLocation) {
+                System.out.println("erreur sur ok");
+                throw new IOException();
+            }
+            FileWriter fwParserLocation;
+            fwParserLocation = new FileWriter(Tools.configJAParserLocation);
+            fwParserLocation.write("jigg:" + Main.jiggLocation + "\n");
             fwParserLocation.write("depccg:" + Main.depccgLocation + "\n");
             fwParserLocation.close();
 
@@ -581,7 +677,7 @@ public class InputController implements Stageable {
                 Main.ccg2lambdaLocation = selected;
         }
         if (CandCDefined && easyCCGDefined) {
-            defineParserLocation();
+            defineEN_ALL_ParserLocation();
         }
         System.out.println(Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
@@ -604,7 +700,7 @@ public class InputController implements Stageable {
                 Main.ccgCandCLocation = selected;
         }
         if (CandCDefined && easyCCGDefined && depCCGDefined) {
-            defineParserLocation();
+            defineEN_ALL_ParserLocation();
         }
         System.out.println(Main.ccgCandCLocation);
         return Main.ccgCandCLocation;
@@ -628,7 +724,7 @@ public class InputController implements Stageable {
                 Main.easyCCGLocation = selected;
         }
         if (CandCDefined && easyCCGDefined && depCCGDefined) {
-            defineParserLocation();
+            defineEN_ALL_ParserLocation();
         }
         System.out.println(Main.easyCCGLocation);
         return Main.easyCCGLocation;
@@ -643,7 +739,7 @@ public class InputController implements Stageable {
     private File setdepCCGLocation() {
         depCCGDefined = true;
         DirectoryChooser locationChooser = new DirectoryChooser();
-        locationChooser.setTitle("select easyCCG Parser directory");
+        locationChooser.setTitle("select depCCG Parser directory");
         File selected = null;
         while (selected == null)
             selected = locationChooser.showDialog(view);
@@ -652,10 +748,30 @@ public class InputController implements Stageable {
                 Main.depccgLocation = selected;
         }
         if (CandCDefined && easyCCGDefined && depCCGDefined) {
-            defineParserLocation();
+            defineEN_ALL_ParserLocation();
+        } else if (depCCGDefined && jiggDefined) {
+            defineJA_ParserLocation();
         }
         System.out.println(Main.depccgLocation);
         return Main.depccgLocation;
+    }
+
+    @FXML
+    private File setJiggLocation() {
+        DirectoryChooser locationChooser = new DirectoryChooser();
+        locationChooser.setTitle("select Jigg Parser directory");
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showDialog(view);
+        if (selected.isDirectory()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                Main.jiggLocation = selected;
+        }
+        if (depCCGDefined && jiggDefined) {
+            defineJA_ParserLocation();
+        }
+        System.out.println(Main.jiggLocation);
+        return Main.jiggLocation;
     }
 
     /**
@@ -664,25 +780,27 @@ public class InputController implements Stageable {
     @FXML
     private void setCandCOnly() {
         radioCandCOnlyItem.setSelected(true);
-        allParserItem.setSelected(false);
+        radioALL_EN_ParserItem.setSelected(false);
+        radioJA_ParserItem.setSelected(false);
         System.out.println("|_|_|_|_|_|_|_|_|_ Only C&C Parser");
         Main.selectedParserType = CANDC;
 
     }
 
     /**
-     * use all the parsers
+     * use all the EN parsers  setEN_AllParser
      */
     @FXML
-    private void setAllParser() {
+    private void setEN_AllParser() {
         radioCandCOnlyItem.setSelected(false);
-        allParserItem.setSelected(true);
+        radioALL_EN_ParserItem.setSelected(true);
+        radioJA_ParserItem.setSelected(false);
         System.out.println("|_|_|_|_|_|_|_|_|_ ALL Parser");
 
 
         Main.selectedParserType = Tools.ParserType.ALL;
 
-        if ((!Tools.configEasyCCG.exists()) || (!Tools.configParserLocation.exists())) {
+        if ((!Tools.configEasyCCG.exists()) || (!Tools.configENParserLocation.exists())) {
 
 
             try {
@@ -691,7 +809,7 @@ public class InputController implements Stageable {
                 e.printStackTrace();
             }
             try {
-                Files.deleteIfExists(Tools.configParserLocation.toPath());
+                Files.deleteIfExists(Tools.configENParserLocation.toPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -757,21 +875,56 @@ public class InputController implements Stageable {
                     "Configuration file is missing and/or corrupted." + '\n' +
                             "Please redo the configuration."
             );
-            try {
-                firstTimeAlertDepCCG.showAndWait();
-                File f4 = setdepCCGLocation();
-                FileWriter fwDepCCG = null;
-                fwDepCCG = new FileWriter(Tools.configEasyCCG);
-                fwDepCCG.write(f4.getAbsolutePath());
-                fwDepCCG.close();
+            firstTimeAlertDepCCG.showAndWait();
+            File f4 = setdepCCGLocation();
 
-                depCCGDefined = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            depCCGDefined = true;
 
-            defineParserLocation();
+
+            defineEN_ALL_ParserLocation();
         }
+    }
+
+
+    /**
+     * use all the JA parsers
+     */
+    @FXML
+    private void setJAParser() {
+        radioCandCOnlyItem.setSelected(false);
+        radioALL_EN_ParserItem.setSelected(true);
+        radioJA_ParserItem.setSelected(true);
+
+        Main.selectedParserType = Tools.ParserType.JA;
+
+        System.out.println("depCCG location");
+        Alert firstTimeAlertDepCCG = new Alert(Alert.AlertType.WARNING);
+        firstTimeAlertDepCCG.setTitle("First time configuration needed");
+        firstTimeAlertDepCCG.setHeaderText("First time configuration depCCG ");
+        firstTimeAlertDepCCG.setContentText(
+                "Configuration file is missing and/or corrupted." + '\n' +
+                        "Please redo the configuration."
+        );
+
+        firstTimeAlertDepCCG.showAndWait();
+        File f4 = setdepCCGLocation();
+        depCCGDefined = true;
+
+
+        System.out.println("jigg location");
+        Alert firstTimeAlertJigg = new Alert(Alert.AlertType.WARNING);
+        firstTimeAlertJigg.setTitle("First time configuration needed");
+        firstTimeAlertJigg.setHeaderText("First time configuration Jigg ");
+        firstTimeAlertJigg.setContentText(
+                "Configuration file is missing and/or corrupted." + '\n' +
+                        "Please redo the configuration."
+        );
+        firstTimeAlertJigg.showAndWait();
+        File f5 = setJiggLocation();
+        jiggDefined = true;
+
+
+        defineJA_ParserLocation();
     }
 
     @Override
