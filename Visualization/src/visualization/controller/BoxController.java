@@ -73,6 +73,10 @@ public class BoxController implements Parametrable<Object> {
 
             container.setContent(createContentDisjunction((Disjunction) data));
             box.setDisable(true);
+            container.setText(setHeaderDisjunction((Disjunction) data));
+        } else if (data instanceof BaseNode) {
+            container.setContent(createContentDisjunctionBox((BaseNode) data));
+            box.setDisable(true);
         }
     }
 
@@ -107,6 +111,38 @@ public class BoxController implements Parametrable<Object> {
 
             }
         }
+
+        for (Disjunction disjunction : this.formula.getDisjunctions()) {
+            if (boxContent.contains(disjunction.getArg1().toString())) {
+                boxContent.remove(disjunction.getArg1().toString());
+            }
+            if (boxContent.contains(disjunction.getArg2().toString())) {
+                boxContent.remove(disjunction.getArg2().toString());
+            }
+            if (disjunction.getArg1().getClass() == Conjunction.class) {
+                if (disjunction.getArg1().toString().contains(",")) {
+                    String id = disjunction.getArg1().toString().split(",")[1].split("\\)")[0];
+                    Conjunction conj = (Conjunction) disjunction.getArg1();
+                    for (FormulaNode fn : conj.getJoined()) {
+                        if (id.equals(fn.getId())) {
+                            boxContent.remove(fn.toString());
+                        }
+                    }
+                }
+            }
+            if (disjunction.getArg2().getClass() == Conjunction.class) {
+                if (disjunction.getArg2().toString().contains(",")) {
+                    String id = disjunction.getArg2().toString().split(",")[1].split("\\)")[0];
+                    Conjunction conj = (Conjunction) disjunction.getArg2();
+                    for (FormulaNode fn : conj.getJoined()) {
+                        if (id.equals(fn.getId())) {
+                            boxContent.remove(fn.toString());
+                        }
+                    }
+                }
+            }
+        }
+
         for (String s : boxContent) {
             Text display = new Text(s);
             contentContainer.getChildren().add(display);
@@ -121,9 +157,16 @@ public class BoxController implements Parametrable<Object> {
         }
 
         for (Disjunction disjunction : this.formula.getDisjunctions()) {
+
+            System.out.println("in disjunction for");
+            System.out.println("disjunction :" + disjunction);
+
             HBox hBoxDisj = new HBox(15);
 
+
             hBoxDisj.getChildren().add(getLoadedPane(disjunction, "../view/box.fxml"));
+
+            contentContainer.getChildren().add(hBoxDisj);
         }
 
     }
@@ -201,28 +244,52 @@ public class BoxController implements Parametrable<Object> {
     }
 
     private Node createContentDisjunction(Disjunction disjunction) {
-        HBox hBoxDisj = new HBox(15);
+
+        System.out.println("in createContentDisjunction : " + disjunction);
+        System.out.println("disjunction origin " + disjunction.getOrigin().toString());
+        System.out.println("disjunction arg1 " + disjunction.getArg1().toString());
+        System.out.println("disjunction arg2 " + disjunction.getArg2().toString());
+
+        HBox HBOX = new HBox(15);
         Text disjText = new Text("∨");
-        disjText.resize(35, 35);
-
-        // hBoxDisj.getChildren().add(getLoadedPane(disjunction.getArg1(),"../view/box.fxml") );
-
-        VBox vBoxDisj = new VBox();
-
-        vBoxDisj.getChildren().add(new Text(disjunction.getArg1().toString()));
-
-        hBoxDisj.getChildren().add(vBoxDisj);
 
 
-        hBoxDisj.getChildren().add(disjText);
+        HBOX.getChildren().add(getLoadedPane(disjunction.getArg1(), "../view/box.fxml"));
 
-        VBox vBoxDisj2 = new VBox();
-        vBoxDisj2.getChildren().add(new Text(disjunction.getArg2().toString()));
-        hBoxDisj.getChildren().add(vBoxDisj2);
+        HBOX.getChildren().add(disjText);
 
-        //   hBoxDisj.getChildren().add(getLoadedPane(disjunction.getArg2(),"../view/box.fxml") );
+        HBOX.getChildren().add(getLoadedPane(disjunction.getArg2(), "../view/box.fxml"));
 
-        return hBoxDisj;
+
+        return HBOX;
     }
 
+    private Node createContentDisjunctionBox(BaseNode disjArg) {
+
+        VBox vBoxDisj = new VBox();
+        vBoxDisj.getChildren().add(new Text(disjArg.toString()));
+
+        if (disjArg.getClass() == Conjunction.class) {
+            if (disjArg.toString().contains(",")) {
+                String id = disjArg.toString().split(",")[1].split("\\)")[0];
+                Conjunction conj = (Conjunction) disjArg;
+                for (FormulaNode fn : conj.getJoined()) {
+                    if (id.equals(fn.getId())) {
+                        vBoxDisj.getChildren().add(new Text(fn.toString()));
+                    }
+                }
+            }
+        }
+
+
+        return vBoxDisj;
+    }
+
+    private String setHeaderDisjunction(Disjunction disjunction) {
+        String headerDisj = "";
+        for (BaseNode bn : disjunction.getEqualities()) {
+            headerDisj = headerDisj + bn.getId() + " ";
+        }
+        return headerDisj;
+    }
 }

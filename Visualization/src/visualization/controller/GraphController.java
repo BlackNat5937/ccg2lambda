@@ -186,7 +186,6 @@ public class GraphController implements Parametrable<Formula> {
                 }
             }
             for (Disjunction disjunction : this.formula.getDisjunctions()) {
-                System.out.println(disjunction);
 
                 Node or = new Node("or", NodeType.DISJUNCTION);
 
