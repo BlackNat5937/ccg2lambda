@@ -3,6 +3,8 @@ package visualization.utils.formula;
 import visualization.utils.formula.node.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parser for event-template lambdas.
@@ -26,6 +28,10 @@ public class EventParser extends BaseParser {
      * Tells whether it is the first time the parser has encountered a variable declaration
      */
     private boolean firstExists;
+    /**
+     * The number of the current negation
+     */
+    private int negationNumber;
 
     /**
      * Package private constructor.
@@ -48,9 +54,10 @@ public class EventParser extends BaseParser {
         actorNumber = 0;
         eventNumber = 0;
         conjunctionNumber = 0;
+        negationNumber = 0;
         Map<String, BaseNode> nodes = new HashMap<>();
 
-        parseResult = parse(parseResult.getLambda(), nodes);
+        parseResult = parse(parseResult.getLambda(), nodes, null);
 
         return parseResult;
     }
@@ -58,14 +65,25 @@ public class EventParser extends BaseParser {
     /**
      * Parses a formula recursively by successive scopes
      *
-     * @param lambda the part of the lambda we want to parse
-     * @param nodes  the nodes lists
+     * @param lambda    the part of the lambda we want to parse
+     * @param nodes     the nodes lists
+     * @param inherited the negation inherited from the higher scope
      * @return a Formula containing the parsed information
      */
-    private Formula parse(String lambda, Map<String, BaseNode> nodes) {
+    private Formula parse(String lambda, Map<String, BaseNode> nodes, Negation inherited) {
         List<String> scopes = getScopes(lambda);
         scopes.forEach(scope -> {
             int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
+            Negation negation = null;
+            if (scope.startsWith("-") || scope.substring(0, scopeStartIndex).endsWith("-")) {
+                String negId = "n" + negationNumber;
+                negation = new Negation(negId, "");
+                negationNumber++;
+                if (inherited != null)
+                    inherited.getNegated().add(negation);
+            } else if (inherited != null) {
+                negation = inherited;
+            }
             Scanner sc = new Scanner(scope);
             sc.useDelimiter("&");
             String token;
@@ -80,9 +98,9 @@ public class EventParser extends BaseParser {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
                         varName = token.split("\\.")[1].split("\\)")[0].substring(1).split("\\(")[0].trim();
                         if (firstExists) {
-                            registerVariable(nodes, varName, varId);
+                            registerVariable(nodes, varName, varId, negation);
                         } else if (!registeredNodes.contains(new Actor(varId, varName))) {
-                            parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes);
+                            parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes, negation);
                         }
                     }
                 } else if (token.matches(eventSubjectDeclaration)) {
@@ -90,9 +108,11 @@ public class EventParser extends BaseParser {
                 } else if (token.matches(eventObjectDeclaration)) {
                     registerEventObject(nodes, token);
                 } else {
-                    registerConjunction(nodes, token);
+                    registerConjunction(nodes, token, negation);
                 }
             } while (sc.hasNext());
+            if (scope.equals(lambda))
+                parseResult.getNegations().add(negation);
         });
         return parseResult;
     }
@@ -100,11 +120,12 @@ public class EventParser extends BaseParser {
     /**
      * Registers a variable. They may be events
      *
-     * @param nodes   the list of all nodes
-     * @param varName the name of the variable
-     * @param varId   the id of the variable
+     * @param nodes    the list of all nodes
+     * @param varName  the name of the variable
+     * @param varId    the id of the variable
+     * @param negation the negation of the current scope
      */
-    private void registerVariable(Map<String, BaseNode> nodes, String varName, String varId) {
+    private void registerVariable(Map<String, BaseNode> nodes, String varName, String varId, Negation negation) {
         firstExists = false;
         BaseNode newNode;
         if (varId.startsWith("e")) {
@@ -116,6 +137,9 @@ public class EventParser extends BaseParser {
         }
         nodes.put(varId, newNode);
         registeredNodes.add(newNode);
+        if (negation != null) {
+            negation.getNegated().add(newNode);
+        }
     }
 
     /**
@@ -171,10 +195,11 @@ public class EventParser extends BaseParser {
     /**
      * Registers a conjunction.
      *
-     * @param nodes the list of all the nodes
-     * @param token the declaration of the conjuction
+     * @param nodes    the list of all the nodes
+     * @param token    the declaration of the conjuction
+     * @param negation the current negation
      */
-    private void registerConjunction(Map<String, BaseNode> nodes, String token) {
+    private void registerConjunction(Map<String, BaseNode> nodes, String token, Negation negation) {
         String varId;
         String varName;
         String[] parts = token.split("\\(");
@@ -203,6 +228,8 @@ public class EventParser extends BaseParser {
                 parseResult.getEventConjunctions()
                         .add(newConj);
                 registeredNodes.add(newConj);
+                if (negation != null)
+                    negation.getNegated().add(newConj);
             }
         }
     }
@@ -216,18 +243,28 @@ public class EventParser extends BaseParser {
     private List<String> getScopes(String lambda) {
         List<String> scopes = new ArrayList<>();
         String subLambda = lambda;
+        Pattern p = Pattern.compile("-?exists");
         int nextExistsIndex;
         do {
-            nextExistsIndex = subLambda.indexOf("exists");
+            nextExistsIndex = getNextExistsIndex(subLambda, p);
             if (nextExistsIndex != -1) {
                 subLambda = subLambda.substring(nextExistsIndex);
+                int startOfScopeIndex = getNextExistsIndex(subLambda, p);
                 int endOfScopeIndex = getClosingBracketIndex(subLambda);
-                String scope = subLambda.substring(subLambda.indexOf("exists"), endOfScopeIndex + 1);
+                String scope = subLambda.substring(startOfScopeIndex, endOfScopeIndex + 1);
                 scopes.add(scope);
                 subLambda = subLambda.substring(endOfScopeIndex + 1);
             }
         } while (nextExistsIndex != -1);
         return scopes;
+    }
+
+    private int getNextExistsIndex(String subLambda, Pattern p) {
+        int nextExistsIndex;
+        Matcher m = p.matcher(subLambda);
+        boolean found = m.find();
+        nextExistsIndex = found ? m.start() : -1;
+        return nextExistsIndex;
     }
 
     /**

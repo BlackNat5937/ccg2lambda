@@ -8,16 +8,21 @@ public class Negation extends BaseNode {
      */
     private ArrayList<BaseNode> negated = new ArrayList<>();
 
-    public Negation(){
+    public Negation() {
         super();
     }
 
-    public String toString(){
-        String res = "Negation : ";
-        for(BaseNode bn : negated){
-            res += " " + bn.toString();
+    public Negation(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public String toString() {
+        StringBuilder res = new StringBuilder("Negation : ");
+        for (BaseNode bn : negated) {
+            res.append(" ").append(bn.toString());
         }
-        return res;
+        return res.toString();
     }
 
     public ArrayList<BaseNode> getNegated() {
