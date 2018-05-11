@@ -92,6 +92,7 @@ public class Main extends Application {
             if (validFile) {
                 if (!sc.hasNext()) {
                     applicationMode = Tools.ApplicationModes.VIEWER;
+                    System.err.println("Please provide one of ");
                 } else {
                     for (String option : Tools.outputModesOption) {
                         if (sc.findInLine(option).equals(option)) {

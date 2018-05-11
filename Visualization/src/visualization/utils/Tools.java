@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Tools {
@@ -57,6 +58,13 @@ public class Tools {
     public static final String[] outputModesOption = {
             "--graph",
             "--drt",
+    };
+    /**
+     * Input templates supported. Required for file loading.
+     */
+    public static final String[] inputModeOption = {
+            "--classic",
+            "--event",
     };
     /**
      * Option to get html output on the console.
@@ -209,8 +217,30 @@ public class Tools {
      * Enum for the templates types.
      */
     public enum TemplateType {
-        CLASSIC,
-        EVENT
+        CLASSIC(inputModeOption[0]),
+        EVENT(inputModeOption[1]);
+
+        /**
+         * The possible values for this enum.
+         */
+        private static final TemplateType[] vals = TemplateType.values();
+        /**
+         * The option associated with this template type.
+         */
+        private final String option;
+
+        /**
+         * Default constructor; takes a string to associate with TemplateType value.
+         *
+         * @param option the option to associate the enum values with
+         */
+        TemplateType(String option) {
+            this.option = option;
+        }
+
+        public static TemplateType fromString(@NotNull String str) {
+            return Arrays.stream(vals).filter(templateType -> templateType.option.equals(str)).findFirst().orElse(null);
+        }
     }
 
     /**
