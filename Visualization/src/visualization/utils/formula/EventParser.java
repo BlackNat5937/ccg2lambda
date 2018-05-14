@@ -77,7 +77,7 @@ public class EventParser extends BaseParser {
      */
     private Formula parse(String lambda, Map<String, FormulaNode> nodes, Negation inherited) {
         List<String> scopes = getScopes(lambda);
-        scopes.forEach(scope -> {
+        for (String scope : scopes) {
             int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
             Negation negation = null;
             if (scope.startsWith("-") || scope.substring(0, scopeStartIndex).endsWith("-")) {
@@ -97,15 +97,25 @@ public class EventParser extends BaseParser {
             do {
                 String varName;
                 String varId;
+                String otherId;
                 token = sc.next().trim();
                 if (token.contains("exists")) {
                     if (token.matches(varDeclaration)) {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
+                        if (token.contains(",")) {
+                            otherId = token.split(",")[1].split("\\)")[0];
+                        } else otherId = null;
                         varName = token.split("\\.")[1].split("\\)")[0].substring(1).split("\\(")[0].trim();
                         if (firstExists) {
-                            registerVariable(nodes, varName, varId, negation);
+                            registerVariable(nodes, varName, varId, otherId, negation);
                         } else if (!registeredNodes.contains(new Actor(varId, varName))) {
-                            parse(scope.substring(scopeStartIndex, scopeEndIndex), nodes, negation);
+                            Map<String, FormulaNode> reccNodes = new HashMap<>();
+                            nodes.forEach(reccNodes::put);
+                            parse(scope.substring(scopeStartIndex, scopeEndIndex), reccNodes, negation);
+                            reccNodes.forEach((s, formulaNode) -> {
+                                if (!nodes.containsKey(s))
+                                    nodes.put(s, formulaNode);
+                            });
                         }
                     }
                 } else if (token.matches(eventSubjectDeclaration)) {
@@ -118,7 +128,7 @@ public class EventParser extends BaseParser {
             } while (sc.hasNext());
             if (scope.equals(lambda) && negation != null)
                 parseResult.getNegations().add(negation);
-        });
+        }
         return parseResult;
     }
 
@@ -130,11 +140,16 @@ public class EventParser extends BaseParser {
      * @param varId    the id of the variable
      * @param negation the negation of the current scope
      */
-    private void registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, Negation negation) {
+    private void registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, String otherId, Negation negation) {
         firstExists = false;
         BaseNode newNode;
         if (varId.startsWith("e")) {
             newNode = new Event(getUnusedIdentifier(varId), varName);
+            if (otherId != null) {
+                Actor object = (Actor) nodes.get(otherId);
+                if (object != null)
+                    ((Event) newNode).setObject(object);
+            }
             parseResult.getEventEvents().add((Event) newNode);
         } else {
             newNode = new Actor(getUnusedIdentifier(varId), varName);
@@ -213,6 +228,7 @@ public class EventParser extends BaseParser {
             varName = parts[0].substring(1);
             conjunctionNumber++;
 
+            System.out.println(varName);
             if (!registeredNodes.contains(new Conjunction(varId, varName))) {
                 String[] joined = parts[1].split("\\)");
                 joined = joined[0].split(",");
