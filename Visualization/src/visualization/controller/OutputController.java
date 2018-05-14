@@ -30,7 +30,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class OutputController implements Stageable {
@@ -150,7 +154,13 @@ public class OutputController implements Stageable {
                     BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
 
                     try {
-                        ImageIO.write(image, "png", new File("graph" + graphCont.getChildren().indexOf(n) + ".png"));
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+                        Date date = new Date();
+                        String path = "graph" + graphCont.getChildren().indexOf(n) + "_" + dateFormat.format(date) + ".png";
+                        ImageIO.write(image, "png", new File(path));
+                        Alert success = new Alert(Alert.AlertType.CONFIRMATION);
+                        success.setContentText("Your graph was saved in : " + path);
+                        success.showAndWait();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

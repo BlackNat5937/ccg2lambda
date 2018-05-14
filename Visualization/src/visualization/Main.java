@@ -51,7 +51,7 @@ public class Main extends Application {
     /**
      * Selected template type; By default CLASSIC.
      */
-    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.EVENT;
+    public static Tools.TemplateType selectedTemplateType = Tools.TemplateType.CLASSIC;
     /**
      * Selected parser type; By default only C&C.
      */
@@ -69,6 +69,7 @@ public class Main extends Application {
     public static void main(String[] args) {
         StringBuilder command = new StringBuilder();
         for (String arg : args) {
+            System.out.println("  ARG : " + arg);
             command.append(arg).append(' ');
         }
         interpretArgs(command.toString());
