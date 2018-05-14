@@ -227,7 +227,7 @@ public class Tools {
         /**
          * The option associated with this template type.
          */
-        private final String option;
+        public final String option;
 
         /**
          * Default constructor; takes a string to associate with TemplateType value.
