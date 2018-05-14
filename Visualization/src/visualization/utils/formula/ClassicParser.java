@@ -73,6 +73,7 @@ public class ClassicParser extends BaseParser {
 
         //check if there is any disjunction in the sentence
         if (disjunctionScope.contains("|") && !disjunctionTreated) {
+            System.out.println("DISJUNCTION SCOPE : " + disjunctionScope);
             String[] args = disjunctionScope.split("\\|");
             String[] args1 = args[0].split("&");
             String[] args2 = args[1].split("&");
@@ -107,7 +108,26 @@ public class ClassicParser extends BaseParser {
 
                 parseResult.getDisjunctions().add(disjunction);
             }
+            //case Prog || Prog AND Conj || Conj (Capital letter on John for example)
+            else if(containsConjArg(args1) && containsConjArg(args2) && containsProgArg(args1) && containsProgArg(args2)){
+                System.out.println("CONTAINS JOHN");
+                Disjunction disjunction = new Disjunction();
+                String conj1 = getConjArgs(args1);
+                String conj2 = getConjArgs(args2);
 
+                String name1 = conj1.substring(conj1.indexOf('_') + 1, conj1.indexOf('('));
+                String name2 = conj2.substring(conj2.indexOf('_') + 1, conj2.indexOf('('));
+
+                disjunction.setArg1(parseResult.getConjunctions().get(getEventKey(parseResult.getLambda().indexOf(conj1), name1)));
+                disjunction.setArg2(parseResult.getConjunctions().get(getEventKey(parseResult.getLambda().indexOf(conj2), name2)));
+
+                String nameOrigin = conj1.substring(conj1.indexOf('(') + 1, conj1.indexOf(','));
+                String keyOrigin = getActorKey(nameOrigin);
+
+                disjunction.setOrigin(parseResult.getActors().get(keyOrigin));
+
+                parseResult.getDisjunctions().add(disjunction);
+            }
             //case Conj || Conj
             else if (containsConjArg(args1) && containsConjArg(args2)) {
                 Disjunction disjunction = new Disjunction();
@@ -401,4 +421,20 @@ public class ClassicParser extends BaseParser {
             parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
         }
     }
+
+    public String getActorKey(String name){
+        String res = "";
+        if(parseResult.getLambda().contains(" = " + name)){
+            //index of '('
+            int i = parseResult.getLambda().indexOf(" = " + name);
+            while (parseResult.getLambda().charAt(i) != '('){
+                i--;
+            }
+            res = parseResult.getLambda().substring(i + 1);
+            res = res.substring(0,res.indexOf(' '));
+        }
+        return res;
+    }
+
+
 }
