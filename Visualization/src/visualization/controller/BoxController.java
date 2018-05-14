@@ -1,10 +1,8 @@
 package visualization.controller;
 
-import com.sun.org.apache.xpath.internal.operations.Neg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -101,24 +99,16 @@ public class BoxController implements Parametrable<Object> {
         for (Negation negation : this.formula.getNegations()) {
             for (BaseNode bn : negation.getNegated()) {
                 if (bn.getClass() == Event.class) {
-                    if (boxContent.contains(bn.getName() + "(" + bn.getId() + ")")) {
-                        boxContent.remove(bn.getName() + "(" + bn.getId() + ")");
-                    }
+                    boxContent.remove(bn.getName() + "(" + bn.getId() + ")");
                 }
-                if (boxContent.contains(bn.toString())) {
-                    boxContent.remove(bn.toString());
-                }
+                boxContent.remove(bn.toString());
 
             }
         }
 
         for (Disjunction disjunction : this.formula.getDisjunctions()) {
-            if (boxContent.contains(disjunction.getArg1().toString())) {
-                boxContent.remove(disjunction.getArg1().toString());
-            }
-            if (boxContent.contains(disjunction.getArg2().toString())) {
-                boxContent.remove(disjunction.getArg2().toString());
-            }
+            boxContent.remove(disjunction.getArg1().toString());
+            boxContent.remove(disjunction.getArg2().toString());
             if (disjunction.getArg1().getClass() == Conjunction.class) {
                 if (disjunction.getArg1().toString().contains(",")) {
                     String id = disjunction.getArg1().toString().split(",")[1].split("\\)")[0];
@@ -152,7 +142,7 @@ public class BoxController implements Parametrable<Object> {
             Text negText = new Text("¬");
             negText.resize(35, 35);
             hBoxNeg.getChildren().add(negText);
-            hBoxNeg.getChildren().add(getLoadedPane(negation, "../view/box.fxml"));
+            hBoxNeg.getChildren().add(getLoadedPane(negation, "visualization/view/box.fxml"));
             contentContainer.getChildren().add(hBoxNeg);
         }
 
@@ -164,7 +154,7 @@ public class BoxController implements Parametrable<Object> {
             HBox hBoxDisj = new HBox(15);
 
 
-            hBoxDisj.getChildren().add(getLoadedPane(disjunction, "../view/box.fxml"));
+            hBoxDisj.getChildren().add(getLoadedPane(disjunction, "visualization/view/box.fxml"));
 
             contentContainer.getChildren().add(hBoxDisj);
         }
@@ -193,11 +183,12 @@ public class BoxController implements Parametrable<Object> {
      * @param other
      * @param viewPath
      * @return
+     * @author Nathan Joubert
      */
     private TitledPane getLoadedPane(Object other, String viewPath) {
         TitledPane negationPane = null;
         Parametrable<Object> objectParametrable;
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(viewPath));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
 
         try {
             negationPane = fxmlLoader.load();
@@ -215,6 +206,7 @@ public class BoxController implements Parametrable<Object> {
      *
      * @param negation
      * @return
+     * @author Nathan Joubert
      */
     private Node createContentNegation(Negation negation) {
         VBox vBoxNeg = new VBox();
@@ -234,13 +226,14 @@ public class BoxController implements Parametrable<Object> {
      *
      * @param negation
      * @return
+     * @author Nathan Joubert
      */
     private String setHeaderNegation(Negation negation) {
-        String headerNeg = "";
+        StringBuilder headerNeg = new StringBuilder();
         for (BaseNode bn : negation.getNegated()) {
-            headerNeg = headerNeg + bn.getId() + " ";
+            headerNeg.append(bn.getId()).append(" ");
         }
-        return headerNeg;
+        return headerNeg.toString();
     }
 
     private Node createContentDisjunction(Disjunction disjunction) {
@@ -254,11 +247,11 @@ public class BoxController implements Parametrable<Object> {
         Text disjText = new Text("∨");
 
 
-        HBOX.getChildren().add(getLoadedPane(disjunction.getArg1(), "../view/box.fxml"));
+        HBOX.getChildren().add(getLoadedPane(disjunction.getArg1(), "visualization/view/box.fxml"));
 
         HBOX.getChildren().add(disjText);
 
-        HBOX.getChildren().add(getLoadedPane(disjunction.getArg2(), "../view/box.fxml"));
+        HBOX.getChildren().add(getLoadedPane(disjunction.getArg2(), "visualization/view/box.fxml"));
 
 
         return HBOX;
@@ -286,10 +279,10 @@ public class BoxController implements Parametrable<Object> {
     }
 
     private String setHeaderDisjunction(Disjunction disjunction) {
-        String headerDisj = "";
+        StringBuilder headerDisj = new StringBuilder();
         for (BaseNode bn : disjunction.getEqualities()) {
-            headerDisj = headerDisj + bn.getId() + " ";
+            headerDisj.append(bn.getId()).append(" ");
         }
-        return headerDisj;
+        return headerDisj.toString();
     }
 }

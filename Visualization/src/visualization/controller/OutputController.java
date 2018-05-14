@@ -11,11 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -27,7 +23,6 @@ import visualization.utils.formula.Formula;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -268,7 +263,7 @@ public class OutputController implements Stageable {
     private TitledPane getLoadedPane(Formula formula, String viewPath) {
         TitledPane loadedPane = null;
         Parametrable<Formula> formulaParametrable;
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(viewPath));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
 
         try {
             loadedPane = fxmlLoader.load();
@@ -287,7 +282,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the graph representation of the formula
      */
     private TitledPane initGraph(Formula formula) {
-        return getLoadedPane(formula, "../view/graph.fxml");
+        return getLoadedPane(formula, "visualization/view/graph.fxml");
     }
 
     /**
@@ -297,7 +292,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the DRS representation of the formula
      */
     private TitledPane initBox(Formula formula) {
-        return getLoadedPane(formula, "../view/box.fxml");
+        return getLoadedPane(formula, "visualization/view/box.fxml");
     }
 
     /**
@@ -307,7 +302,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the Tree representation of the formula
      */
     private TitledPane initTree(Formula formula) {
-        return getLoadedPane(formula, "../view/tree.fxml");
+        return getLoadedPane(formula, "visualization/view/tree.fxml");
     }
 
     /**
