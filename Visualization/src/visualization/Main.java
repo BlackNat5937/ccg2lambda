@@ -26,6 +26,10 @@ public class Main extends Application {
      */
     public static File ccg2lambdaLocation;
     /**
+     * The location of python
+     */
+    public static File pythonLocation;
+    /**
      * The location of the CCG Parser C&C
      */
     public static File ccgCandCLocation;

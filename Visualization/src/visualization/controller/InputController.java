@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import visualization.Main;
 import visualization.utils.Tools;
@@ -612,18 +613,27 @@ public class InputController implements Stageable {
 
             System.out.println("python virtual");
 
+            Alert firstTimePy3 = new Alert(Alert.AlertType.WARNING);
+            firstTimePy3.setTitle("First time configuration needed");
+            firstTimePy3.setHeaderText("First time configuration Python Virtual Environment ");
+            firstTimePy3.setContentText(
+                    "Configuration file is missing and/or corrupted." + '\n' +
+                            "Please redo the configuration."
+            );
+            firstTimePy3.showAndWait();
+            setPy3Location();
+            System.out.println("------------------------------------------------ " + Main.pythonLocation.toPath().toString());
+
+
             File pythonVirtual = File.createTempFile("pythonVirtual", ".sh");
             pythonVirtual.deleteOnExit();
             is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/pythonVirtual.sh");
             copyRessourceToTmpFile(is, pythonVirtual);
             pythonVirtual.setExecutable(true);
 
-            process = new ProcessBuilder(pythonVirtual.getPath()).start();
+            String pythonLocation = Main.pythonLocation.getAbsolutePath();
 
-
-
-
-
+            process = new ProcessBuilder(pythonVirtual.getPath(), pythonLocation).start();
 
             process.waitFor();
             Alert py3InstallEnded = new Alert(Alert.AlertType.CONFIRMATION);
@@ -632,6 +642,7 @@ public class InputController implements Stageable {
                     "Configuration is now complete." + '\n' +
                             "ccg2lambda location registered & python 3 virtual environment installed in :" + '\n' +
                             py3Directory.getAbsolutePath());
+            py3InstallEnded.showAndWait();
             firstTime = false;
 
             System.out.println("------------------------First Time END ----------------------------");
@@ -641,6 +652,7 @@ public class InputController implements Stageable {
             Main.ccg2lambdaLocation = ccg2lambdaPath != null ? new File(ccg2lambdaPath) : null;
         }
     }
+
 
 
     private void copyRessourceToTmpFile(InputStream source, File destination) {
@@ -783,6 +795,24 @@ public class InputController implements Stageable {
         System.out.println("  ||location mainCCG2lambda : " + Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
     }
+
+    /**
+     * for choosing the Python location
+     */
+    private void setPy3Location() {
+        FileChooser locationChooser = new FileChooser();
+        locationChooser.setTitle("select python directory");
+        File selected = null;
+        while (selected == null)
+            selected = locationChooser.showOpenDialog(view);
+        if (selected.isFile()) {
+            if (selected.canRead() && selected.canExecute() && selected.canWrite())
+                System.out.println("selected " + selected);
+            Main.pythonLocation = selected;
+        }
+        System.out.println(Main.pythonLocation);
+    }
+
 
     /**
      * for choosing the C&C location file
