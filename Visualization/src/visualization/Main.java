@@ -86,7 +86,7 @@ public class Main extends Application {
      */
     private static void interpretArgs(String command) {
         String[] args = command.split(" ");
-        if (args.length == 0) applicationMode = Tools.ApplicationModes.UI;
+        if (args.length == 0 || command.isEmpty()) applicationMode = Tools.ApplicationModes.UI;
         else {
             String firstArg = args[0];
             File xmlFilePath = new File(firstArg);
