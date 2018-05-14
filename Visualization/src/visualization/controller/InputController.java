@@ -239,10 +239,10 @@ public class InputController implements Stageable {
                 case CANDC:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -250,10 +250,10 @@ public class InputController implements Stageable {
                 case ALL:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/en_parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/en_parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -261,10 +261,10 @@ public class InputController implements Stageable {
                 case JA:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/ja_parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/ja_parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -285,7 +285,7 @@ public class InputController implements Stageable {
      */
     private void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream("../sentences.txt"), "utf-8"))) {
+                new FileOutputStream(Main.ccg2lambdaLocation + "/sentences.txt"), "utf-8"))) {
 
             //Browse the list and write each items to "sentences.txt"
             for (String s : listSentencesItems) {
@@ -317,8 +317,8 @@ public class InputController implements Stageable {
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process = null;
 
-        File parsedDirectoryEN = new File("../en_parsed");
-        File resultDirectoryEN = new File("../en_results");
+        File parsedDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_parsed");
+        File resultDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_results");
 
         try {
             if (parsedDirectoryEN.exists() && resultDirectoryEN.exists()) {
@@ -342,8 +342,8 @@ public class InputController implements Stageable {
             e.printStackTrace();
         }
 
-        File parsedDirectoryDefault = new File("../parsed");
-        File resultDirectoryDefault = new File("../results");
+        File parsedDirectoryDefault = new File(Main.ccg2lambdaLocation + "/parsed");
+        File resultDirectoryDefault = new File(Main.ccg2lambdaLocation + "/results");
 
         try {
             if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
@@ -365,8 +365,8 @@ public class InputController implements Stageable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        File parsedDirectoryJA = new File("../ja_parsed");
-        File resultDirectoryJA = new File("../ja_results");
+        File parsedDirectoryJA = new File(Main.ccg2lambdaLocation + "/ja_parsed");
+        File resultDirectoryJA = new File(Main.ccg2lambdaLocation + "/ja_results");
 
         try {
             if (parsedDirectoryJA.exists() && resultDirectoryJA.exists()) {

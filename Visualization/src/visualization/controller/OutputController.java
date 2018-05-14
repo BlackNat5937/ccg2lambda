@@ -137,25 +137,25 @@ public class OutputController implements Stageable {
 
     private final EventHandler<ActionEvent> printEvent = event -> {
         Node n = graphCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
-            //here save the image
-            if (n.getClass() == TitledPane.class) {
-                TitledPane tp = (TitledPane) n;
-                Node n2 = tp.getContent();
-                if (n2.getClass() == ScrollPane.class) {
-                    ScrollPane sp = (ScrollPane) n2;
-                    Node n3 = sp.getContent();
-                    WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
+        //here save the image
+        if (n.getClass() == TitledPane.class) {
+            TitledPane tp = (TitledPane) n;
+            Node n2 = tp.getContent();
+            if (n2.getClass() == ScrollPane.class) {
+                ScrollPane sp = (ScrollPane) n2;
+                Node n3 = sp.getContent();
+                WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
 
-                    n3.snapshot(new SnapshotParameters(), wi);
-                    BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
+                n3.snapshot(new SnapshotParameters(), wi);
+                BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
 
-                    try {
-                        ImageIO.write(image, "png", new File("graph" + graphCont.getChildren().indexOf(n) + ".png"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    ImageIO.write(image, "png", new File("graph" + graphCont.getChildren().indexOf(n) + ".png"));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+        }
 
     };
 
@@ -224,10 +224,10 @@ public class OutputController implements Stageable {
             case CANDC:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -235,10 +235,10 @@ public class OutputController implements Stageable {
             case ALL:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/en_results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/en_results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -246,10 +246,10 @@ public class OutputController implements Stageable {
             case JA:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/ja_results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/ja_results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;

@@ -39,19 +39,19 @@ public class Tools {
     /**
      * Config C&C path file
      */
-    public static final File configCandC = new File("../en/candc_location.txt");
+    public static final File configCandC = new File(Main.ccg2lambdaLocation + "/en/candc_location.txt");
     /**
      * Config easyCCG path file
      */
-    public static final File configEasyCCG = new File("../en/easyccg_location.txt");
+    public static final File configEasyCCG = new File(Main.ccg2lambdaLocation + "/en/easyccg_location.txt");
     /**
      * Config EN parser path file
      */
-    public static final File configENParserLocation = new File("../en/parser_location.txt");
+    public static final File configENParserLocation = new File(Main.ccg2lambdaLocation + "/en/parser_location.txt");
     /**
      * Config JA parser path file
      */
-    public static final File configJAParserLocation = new File("../ja/parser_location_ja.txt");
+    public static final File configJAParserLocation = new File(Main.ccg2lambdaLocation + "/ja/parser_location_ja.txt");
     /**
      * Output modes available. None means all.
      */
