@@ -10,7 +10,8 @@ import visualization.controller.Stageable;
 import visualization.utils.Tools;
 
 import java.io.File;
-import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Main entry point for the application.
@@ -60,6 +61,7 @@ public class Main extends Application {
      * The file containing the semantics representations output by ccg2lambda.
      */
     public static File xmlSemanticsFile;
+    private static boolean canRun = true;
 
     /**
      * Main method
@@ -73,7 +75,9 @@ public class Main extends Application {
             command.append(arg).append(' ');
         }
         interpretArgs(command.toString());
-        launch(args);
+        if (canRun)
+            launch(args);
+        else System.exit(1);
     }
 
     /**
@@ -82,28 +86,41 @@ public class Main extends Application {
      * @param command the complete line of arguments
      */
     private static void interpretArgs(String command) {
-        Scanner sc = new Scanner(command);
-        if (!sc.hasNext()) {
-            applicationMode = Tools.ApplicationModes.UI;
-        } else {
-            Main.xmlSemanticsFile = new File(sc.next());
-            boolean validFile = Main.xmlSemanticsFile.canRead();
-            validFile = validFile && Main.xmlSemanticsFile.isFile();
+        String[] args = command.split(" ");
+        if (args.length == 0 || command.isEmpty()) applicationMode = Tools.ApplicationModes.UI;
+        else {
+            String firstArg = args[0];
+            File xmlFilePath = new File(firstArg);
+            if (xmlFilePath.canRead()) {
+                boolean hasPipeOutArg = false;
+                boolean isClassicTemplate = false;
+                if (xmlFilePath.isFile()) {
+                    Main.xmlSemanticsFile = xmlFilePath;
 
-            if (validFile) {
-                if (!sc.hasNext()) {
-                    applicationMode = Tools.ApplicationModes.VIEWER;
-                    System.err.println("Please provide one of ");
-                } else {
-                    for (String option : Tools.outputModesOption) {
-                        if (sc.findInLine(option).equals(option)) {
-                            visualizationMode = Tools.RepresentationModes.fromString(option);
+                    hasPipeOutArg = Arrays.stream(args).anyMatch(arg -> arg.equals(Tools.htmlOutputOption));
+                    Main.applicationMode = hasPipeOutArg ? Tools.ApplicationModes.PIPELINE : Tools.ApplicationModes.VIEWER;
+                    if (Main.applicationMode == Tools.ApplicationModes.VIEWER) {
+                        isClassicTemplate = Arrays.stream(args).anyMatch(arg -> arg.equals(Tools.TemplateType.CLASSIC.option));
+                        Main.selectedTemplateType = isClassicTemplate ? Tools.TemplateType.CLASSIC : Tools.TemplateType.EVENT;
+                        String templateTypeOption;
+                        Optional<String> search = Arrays.stream(args).filter(
+                                s -> s.equals(Tools.TemplateType.CLASSIC.option)
+                                        || s.equals(Tools.TemplateType.EVENT.option)).findFirst();
+                        if (search.isPresent()) {
+                            templateTypeOption = search.get();
+                            Main.selectedTemplateType = Tools.TemplateType.fromString(templateTypeOption);
+                        } else {
+                            System.err.println("Please provide a template type option :");
+                            for (Tools.TemplateType templateType : Tools.TemplateType.values()) {
+                                System.err.println("    " + templateType.option);
+                            }
+                            canRun = false;
                         }
                     }
-                    if (sc.findInLine(Tools.htmlOutputOption).equals(Tools.htmlOutputOption)) {
-                        applicationMode = Tools.ApplicationModes.PIPELINE;
-                    }
                 }
+            } else {
+                System.err.println("File could not be read.");
+                canRun = false;
             }
         }
     }

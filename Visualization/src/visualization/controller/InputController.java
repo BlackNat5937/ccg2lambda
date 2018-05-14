@@ -15,6 +15,7 @@ import visualization.Main;
 import visualization.utils.Tools;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Objects;
 
@@ -105,7 +106,10 @@ public class InputController implements Stageable {
      * List of all the sentences.
      */
     private ObservableList<String> listSentencesItems = FXCollections.observableArrayList();
-
+    /**
+     * input stream for calling our scripts
+     */
+    private InputStream is;
     /**
      * Enables knowing if the host OS is windows.
      */
@@ -163,7 +167,6 @@ public class InputController implements Stageable {
         radioALL_EN_ParserItem.setSelected(false);
         radioJA_ParserItem.setSelected(false);
 
-
     }
 
     /**
@@ -212,7 +215,8 @@ public class InputController implements Stageable {
      */
     private void openResultsWindow() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/output.fxml"));
+            System.out.println(getClass().getClassLoader().getResource("visualization/view/output.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("visualization/view/output.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle(Tools.windowTitleBase);
@@ -239,10 +243,10 @@ public class InputController implements Stageable {
                 case CANDC:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -250,10 +254,10 @@ public class InputController implements Stageable {
                 case ALL:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/en_parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../en_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/en_parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -261,10 +265,10 @@ public class InputController implements Stageable {
                 case JA:
                     switch (Main.selectedTemplateType) {
                         case CLASSIC:
-                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/ja_parsed/sentences.txt.sem.xml");
                             break;
                         case EVENT:
-                            Main.xmlSemanticsFile = new File("../ja_parsed/sentences.txt.sem.xml");
+                            Main.xmlSemanticsFile = new File(Main.ccg2lambdaLocation + "/ja_parsed/sentences.txt.sem.xml");
                             break;
                     }
                     break;
@@ -285,7 +289,7 @@ public class InputController implements Stageable {
      */
     private void writeTxt() {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream("../sentences.txt"), "utf-8"))) {
+                new FileOutputStream(Main.ccg2lambdaLocation + "/sentences.txt"), "utf-8"))) {
 
             //Browse the list and write each items to "sentences.txt"
             for (String s : listSentencesItems) {
@@ -317,8 +321,8 @@ public class InputController implements Stageable {
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
         Process process = null;
 
-        File parsedDirectoryEN = new File("../en_parsed");
-        File resultDirectoryEN = new File("../en_results");
+        File parsedDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_parsed");
+        File resultDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_results");
 
         try {
             if (parsedDirectoryEN.exists() && resultDirectoryEN.exists()) {
@@ -342,8 +346,8 @@ public class InputController implements Stageable {
             e.printStackTrace();
         }
 
-        File parsedDirectoryDefault = new File("../parsed");
-        File resultDirectoryDefault = new File("../results");
+        File parsedDirectoryDefault = new File(Main.ccg2lambdaLocation + "/parsed");
+        File resultDirectoryDefault = new File(Main.ccg2lambdaLocation + "/results");
 
         try {
             if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
@@ -365,8 +369,8 @@ public class InputController implements Stageable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        File parsedDirectoryJA = new File("../ja_parsed");
-        File resultDirectoryJA = new File("../ja_results");
+        File parsedDirectoryJA = new File(Main.ccg2lambdaLocation + "/ja_parsed");
+        File resultDirectoryJA = new File(Main.ccg2lambdaLocation + "/ja_results");
 
         try {
             if (parsedDirectoryJA.exists() && resultDirectoryJA.exists()) {
@@ -398,7 +402,14 @@ public class InputController implements Stageable {
                     try {
 
                         System.out.println("python ALL parser classic script");
-                        process = new ProcessBuilder("./src/visualization/scripts/scriptParserClassic_EMNLP2015.sh", ccg2lambdaPath).start();
+
+                        File scriptParserClassic_EMNLP2015 = File.createTempFile("scriptParserClassic_EMNLP2015", ".sh");
+                        scriptParserClassic_EMNLP2015.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/scriptParserClassic_EMNLP2015.sh");
+                        copyRessourceToTmpFile(is, scriptParserClassic_EMNLP2015);
+                        scriptParserClassic_EMNLP2015.setExecutable(true);
+                        process = new ProcessBuilder(scriptParserClassic_EMNLP2015.getPath(), ccg2lambdaPath).start();
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -411,7 +422,13 @@ public class InputController implements Stageable {
 
                     System.out.println("python parser event script");
                     try {
-                        process = new ProcessBuilder("./src/visualization/scripts/scriptParserEvent.sh", ccg2lambdaPath).start();
+                        File scriptParserEvent = File.createTempFile("scriptParserEvent", ".sh");
+                        scriptParserEvent.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/scriptParserEvent.sh");
+                        copyRessourceToTmpFile(is, scriptParserEvent);
+                        scriptParserEvent.setExecutable(true);
+                        process = new ProcessBuilder(scriptParserEvent.getPath(), ccg2lambdaPath).start();
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -428,7 +445,14 @@ public class InputController implements Stageable {
                     try {
 
                         System.out.println("python ONLY C&C classic script");
-                        process = new ProcessBuilder("./src/visualization/scripts/scriptDefaultParser/scriptParserDefaultClassic_EMNLP2015.sh", ccg2lambdaPath).start();
+
+                        File ParserDefaultClassic_EMNLP2015 = File.createTempFile("ParserDefaultClassic_EMNLP2015", ".sh");
+                        ParserDefaultClassic_EMNLP2015.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/scriptDefaultParser/scriptParserDefaultClassic_EMNLP2015.sh");
+                        copyRessourceToTmpFile(is, ParserDefaultClassic_EMNLP2015);
+                        ParserDefaultClassic_EMNLP2015.setExecutable(true);
+                        process = new ProcessBuilder(ParserDefaultClassic_EMNLP2015.getPath(), ccg2lambdaPath).start();
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -438,7 +462,15 @@ public class InputController implements Stageable {
                 } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
                     try {
                         System.out.println("python ONLY C&C event script");
-                        process = new ProcessBuilder("./src/visualization/scripts/scriptDefaultParser/scriptParserDefaultEvent.sh", ccg2lambdaPath).start();
+
+                        File scriptParserDefaultEvent = File.createTempFile("scriptParserDefaultEvent", ".sh");
+                        scriptParserDefaultEvent.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/scriptDefaultParser/scriptParserDefaultEvent.sh");
+                        copyRessourceToTmpFile(is, scriptParserDefaultEvent);
+                        scriptParserDefaultEvent.setExecutable(true);
+                        process = new ProcessBuilder(scriptParserDefaultEvent.getPath(), ccg2lambdaPath).start();
+
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -453,7 +485,14 @@ public class InputController implements Stageable {
                     try {
 
                         System.out.println("python JA classic script");
-                        process = new ProcessBuilder("./src/visualization/scripts/ja_scriptParser/scriptJAParserClassic.sh", ccg2lambdaPath).start();
+
+                        File scriptJAParserClassic = File.createTempFile("scriptJAParserClassic", ".sh");
+                        scriptJAParserClassic.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/ja_scriptParser/scriptJAParserClassic.sh");
+                        copyRessourceToTmpFile(is, scriptJAParserClassic);
+                        scriptJAParserClassic.setExecutable(true);
+                        process = new ProcessBuilder(scriptJAParserClassic.getPath(), ccg2lambdaPath).start();
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -463,7 +502,14 @@ public class InputController implements Stageable {
                 } else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
                     try {
                         System.out.println("python JA event script");
-                        process = new ProcessBuilder("./src/visualization/scripts/ja_scriptParser/scriptJAParserEvent.sh", ccg2lambdaPath).start();
+
+                        File scriptJAParserEvent = File.createTempFile("scriptJAParserEvent", ".sh");
+                        scriptJAParserEvent.deleteOnExit();
+                        is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/ja_scriptParser/scriptJAParserEvent.sh");
+                        copyRessourceToTmpFile(is, scriptJAParserEvent);
+                        scriptJAParserEvent.setExecutable(true);
+                        process = new ProcessBuilder(scriptJAParserEvent.getPath(), ccg2lambdaPath).start();
+
                         progress.set(1.00);
                         process.waitFor();
 
@@ -484,7 +530,7 @@ public class InputController implements Stageable {
      */
     private void checkConfigAndInitializeEnvironment() throws IOException, InterruptedException {
         File py3Directory = new File("py3");
-        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists() || (!Tools.configCandC.exists()));
+        firstTime = (!py3Directory.exists() && !py3Directory.isDirectory()) || (!Tools.configFile.exists());
         Process process;
         if (firstTime) {
             //boolean ok = Tools.configFile.mkdirs();
@@ -494,16 +540,19 @@ public class InputController implements Stageable {
             /**
              * If the file already exist, delete them
              */
-            File ConfigDirectory = new File("config");
-            try {
-                for (File file : ConfigDirectory.listFiles()) {
-                    Files.deleteIfExists(file.toPath());
+
+            File ConfigDirectory = new File("./config");
+            if (ConfigDirectory.isDirectory()) {
+                try {
+                    for (File file : ConfigDirectory.listFiles()) {
+                        Files.deleteIfExists(file.toPath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             Files.deleteIfExists(Tools.configFile.toPath());
-            Files.deleteIfExists(Tools.configCandC.toPath());
+
 
             System.out.println("ccg2lambda location");
             new File(ConfigDirectory.toPath().toString()).mkdir();
@@ -531,6 +580,7 @@ public class InputController implements Stageable {
             fw.write(f1.getAbsolutePath());
             fw.close();
 
+            Files.deleteIfExists(Tools.configCandC.toPath());
 
             System.out.println("C&C location");
             boolean okCandC = true;
@@ -559,8 +609,22 @@ public class InputController implements Stageable {
             fwCandC.close();
             CandCDefined = true;
 
+
             System.out.println("python virtual");
-            process = new ProcessBuilder("./src/visualization/scripts/pythonVirtual.sh").start();
+
+            File pythonVirtual = File.createTempFile("pythonVirtual", ".sh");
+            pythonVirtual.deleteOnExit();
+            is = getClass().getClassLoader().getResourceAsStream("visualization/scripts/pythonVirtual.sh");
+            copyRessourceToTmpFile(is, pythonVirtual);
+            pythonVirtual.setExecutable(true);
+
+            process = new ProcessBuilder(pythonVirtual.getPath()).start();
+
+
+
+
+
+
             process.waitFor();
             Alert py3InstallEnded = new Alert(Alert.AlertType.CONFIRMATION);
             py3InstallEnded.setTitle("First time configuration success");
@@ -575,6 +639,41 @@ public class InputController implements Stageable {
             BufferedReader br = new BufferedReader(new FileReader(Tools.configFile));
             String ccg2lambdaPath = br.readLine();
             Main.ccg2lambdaLocation = ccg2lambdaPath != null ? new File(ccg2lambdaPath) : null;
+        }
+    }
+
+
+    private void copyRessourceToTmpFile(InputStream source, File destination) {
+        InputStreamReader fr = null;
+        FileWriter fw = null;
+        try {
+            fr = new InputStreamReader(source);
+            fw = new FileWriter(destination);
+
+            int c;
+            do {
+                c = fr.read();
+                if (c != -1) {
+                    fw.write(c);
+                }
+            } while (c != -1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fr != null) {
+                try {
+                    fr.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -676,11 +775,12 @@ public class InputController implements Stageable {
         if (selected.isDirectory()) {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccg2lambdaLocation = selected;
+            Tools.createPathFile();
         }
         if (CandCDefined && easyCCGDefined) {
             defineEN_ALL_ParserLocation();
         }
-        System.out.println(Main.ccg2lambdaLocation);
+        System.out.println("  ||location mainCCG2lambda : " + Main.ccg2lambdaLocation);
         return Main.ccg2lambdaLocation;
     }
 

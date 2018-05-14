@@ -39,19 +39,19 @@ public class Tools {
     /**
      * Config C&C path file
      */
-    public static final File configCandC = new File("../en/candc_location.txt");
+    public static File configCandC;
     /**
      * Config easyCCG path file
      */
-    public static final File configEasyCCG = new File("../en/easyccg_location.txt");
+    public static File configEasyCCG;
     /**
      * Config EN parser path file
      */
-    public static final File configENParserLocation = new File("../en/parser_location.txt");
+    public static File configENParserLocation;
     /**
      * Config JA parser path file
      */
-    public static final File configJAParserLocation = new File("../ja/parser_location_ja.txt");
+    public static File configJAParserLocation;
     /**
      * Output modes available. None means all.
      */
@@ -145,6 +145,13 @@ public class Tools {
         return formulas;
     }
 
+    public static void createPathFile() {
+        configCandC = new File(Main.ccg2lambdaLocation + "/en/candc_location.txt");
+        configEasyCCG = new File(Main.ccg2lambdaLocation + "/en/easyccg_location.txt");
+        configENParserLocation = new File(Main.ccg2lambdaLocation + "/en/parser_location.txt");
+        configJAParserLocation = new File(Main.ccg2lambdaLocation + "/ja/parser_location_ja.txt");
+    }
+
     /**
      * Enum for the available operation modes of the application.
      */
@@ -227,7 +234,7 @@ public class Tools {
         /**
          * The option associated with this template type.
          */
-        private final String option;
+        public final String option;
 
         /**
          * Default constructor; takes a string to associate with TemplateType value.

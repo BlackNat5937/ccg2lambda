@@ -11,11 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -27,7 +23,6 @@ import visualization.utils.formula.Formula;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -141,22 +136,22 @@ public class OutputController implements Stageable {
 
     private final EventHandler<ActionEvent> printEvent = event -> {
         Node n = graphCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
-            //here save the image
-            if (n.getClass() == TitledPane.class) {
-                TitledPane tp = (TitledPane) n;
-                Node n2 = tp.getContent();
-                if (n2.getClass() == ScrollPane.class) {
-                    ScrollPane sp = (ScrollPane) n2;
-                    Node n3 = sp.getContent();
-                    WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
+        //here save the image
+        if (n.getClass() == TitledPane.class) {
+            TitledPane tp = (TitledPane) n;
+            Node n2 = tp.getContent();
+            if (n2.getClass() == ScrollPane.class) {
+                ScrollPane sp = (ScrollPane) n2;
+                Node n3 = sp.getContent();
+                WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
 
-                    n3.snapshot(new SnapshotParameters(), wi);
-                    BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
+                n3.snapshot(new SnapshotParameters(), wi);
+                BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
 
                     try {
                         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
                         Date date = new Date();
-                        String path = "graph" + graphCont.getChildren().indexOf(n) + "_" + dateFormat.format(date) + ".png";
+                        String path ="graph" + graphCont.getChildren().indexOf(n) + "_" + dateFormat.format(date) + ".png";
                         ImageIO.write(image, "png", new File(path));
                         Alert success = new Alert(Alert.AlertType.CONFIRMATION);
                         success.setContentText("Your graph was saved in : " + path);
@@ -234,10 +229,10 @@ public class OutputController implements Stageable {
             case CANDC:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -245,10 +240,10 @@ public class OutputController implements Stageable {
             case ALL:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/en_results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../en_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/en_results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -256,10 +251,10 @@ public class OutputController implements Stageable {
             case JA:
                 switch (Main.selectedTemplateType) {
                     case CLASSIC:
-                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/ja_results/sentences.txt.html").toUri().toString());
                         break;
                     case EVENT:
-                        webEngine.load(Paths.get("../ja_results/sentences.txt.html").toUri().toString());
+                        webEngine.load(Paths.get(Main.ccg2lambdaLocation + "/ja_results/sentences.txt.html").toUri().toString());
                         break;
                 }
                 break;
@@ -278,7 +273,7 @@ public class OutputController implements Stageable {
     private TitledPane getLoadedPane(Formula formula, String viewPath) {
         TitledPane loadedPane = null;
         Parametrable<Formula> formulaParametrable;
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(viewPath));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource(viewPath));
 
         try {
             loadedPane = fxmlLoader.load();
@@ -297,7 +292,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the graph representation of the formula
      */
     private TitledPane initGraph(Formula formula) {
-        return getLoadedPane(formula, "../view/graph.fxml");
+        return getLoadedPane(formula, "visualization/view/graph.fxml");
     }
 
     /**
@@ -307,7 +302,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the DRS representation of the formula
      */
     private TitledPane initBox(Formula formula) {
-        return getLoadedPane(formula, "../view/box.fxml");
+        return getLoadedPane(formula, "visualization/view/box.fxml");
     }
 
     /**
@@ -317,7 +312,7 @@ public class OutputController implements Stageable {
      * @return a TitledPane with the Tree representation of the formula
      */
     private TitledPane initTree(Formula formula) {
-        return getLoadedPane(formula, "../view/tree.fxml");
+        return getLoadedPane(formula, "visualization/view/tree.fxml");
     }
 
     /**
