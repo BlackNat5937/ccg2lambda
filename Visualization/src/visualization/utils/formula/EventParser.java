@@ -104,16 +104,17 @@ public class EventParser extends BaseParser {
                 String varId;
                 String otherId;
                 token = sc.next().trim();
-                if (token.contains("|") && disjunction == null) {
+                /*if (token.contains("|") && disjunction == null) {
                     String disjunctionScope = getDisjunctionScope(scope);
                     Pair<FormulaNode, FormulaNode> disjunctionArgs = getDisjunctionArgs(disjunctionScope);
                     Disjunction newDisjunction = new Disjunction();
                     newDisjunction.setArg1(disjunctionArgs.getKey());
                     newDisjunction.setArg2(disjunctionArgs.getValue());
+                    newDisjunction.setOrigin(nodes.get(disjunctionArgs.getKey().getId()));
 
                     parseResult.getDisjunctions().add(newDisjunction);
                     //parse(lambda, nodes, negation, newDisjunction);
-                }
+                }*/
                 if (token.contains("exists")) {
                     if (token.matches(varDeclaration)) {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
@@ -160,14 +161,13 @@ public class EventParser extends BaseParser {
                     firstStr = parts[0];
                     secondStr = parts[1];
                 }
-                FormulaNode firstNode = getVariable(firstStr), secondNode = getVariable(secondStr);
-                return new Pair<>(firstNode, secondNode);
+                return null;
             }
         }
         return null;
     }
 
-    private FormulaNode getVariable(String lambda) {
+    private Pair<String, String> getVarIdAndName(String lambda) {
         FormulaNode node;
         String varId;
         String varName;
@@ -187,7 +187,7 @@ public class EventParser extends BaseParser {
         }
         node = varId.startsWith("e") ? new Event(getUnusedIdentifier(varId), varName)
                 : new Actor(getUnusedIdentifier(varId), varName);
-        return node;
+        return new Pair<>(varId, varName);
     }
 
     private String getDisjunctionScope(String scope) {
@@ -251,8 +251,9 @@ public class EventParser extends BaseParser {
      * @param varName  the name of the variable
      * @param varId    the id of the variable
      * @param negation the negation of the current scope
+     * @return the registered node
      */
-    private void registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, String otherId, Negation negation) {
+    private FormulaNode registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, String otherId, Negation negation) {
         firstExists = false;
         FormulaNode newNode;
         if (varId.startsWith("e")) {
@@ -272,6 +273,7 @@ public class EventParser extends BaseParser {
         if (negation != null) {
             negation.getNegated().add(newNode);
         }
+        return newNode;
     }
 
     /**

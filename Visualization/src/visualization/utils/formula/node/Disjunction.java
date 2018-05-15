@@ -22,7 +22,7 @@ public class Disjunction extends BaseNode {
         return origin;
     }
 
-    public void setOrigin(BaseNode origin) {
+    public void setOrigin(FormulaNode origin) {
         this.origin = origin;
     }
 
