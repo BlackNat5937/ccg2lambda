@@ -97,7 +97,7 @@ public class BoxController implements Parametrable<Object> {
             boxContent.add(conjunction.toString());
         }
         for (Negation negation : this.formula.getNegations()) {
-            for (BaseNode bn : negation.getNegated()) {
+            for (FormulaNode bn : negation.getNegated()) {
                 if (bn.getClass() == Event.class) {
                     boxContent.remove(bn.getName() + "(" + bn.getId() + ")");
                 }
@@ -210,7 +210,7 @@ public class BoxController implements Parametrable<Object> {
      */
     private Node createContentNegation(Negation negation) {
         VBox vBoxNeg = new VBox();
-        for (BaseNode bn : negation.getNegated()) {
+        for (FormulaNode bn : negation.getNegated()) {
             if (bn.getClass() == Event.class) {
                 vBoxNeg.getChildren().add(new Text(bn.getName() + "(" + bn.getId() + ")"));
                 vBoxNeg.getChildren().add(new Text(bn.toString()));
@@ -230,7 +230,7 @@ public class BoxController implements Parametrable<Object> {
      */
     private String setHeaderNegation(Negation negation) {
         StringBuilder headerNeg = new StringBuilder();
-        for (BaseNode bn : negation.getNegated()) {
+        for (FormulaNode bn : negation.getNegated()) {
             headerNeg.append(bn.getId()).append(" ");
         }
         return headerNeg.toString();

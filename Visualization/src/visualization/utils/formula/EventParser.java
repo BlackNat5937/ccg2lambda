@@ -1,5 +1,6 @@
 package visualization.utils.formula;
 
+import javafx.util.Pair;
 import visualization.utils.formula.node.*;
 
 import java.util.*;
@@ -23,7 +24,7 @@ public class EventParser extends BaseParser {
     /**
      * List of already registered nodes. Used for limiting the recursive depth of the parsing
      */
-    private List<BaseNode> registeredNodes;
+    private List<FormulaNode> registeredNodes;
     /**
      * Tells whether it is the first time the parser has encountered a variable declaration
      */
@@ -62,7 +63,7 @@ public class EventParser extends BaseParser {
         Map<String, FormulaNode> nodes = new HashMap<>();
         usedIdentifiers = new ArrayList<>();
 
-        parseResult = parse(parseResult.getLambda(), nodes, null);
+        parseResult = parse(parseResult.getLambda(), nodes, null, null);
 
         return parseResult;
     }
@@ -70,25 +71,29 @@ public class EventParser extends BaseParser {
     /**
      * Parses a formula recursively by successive scopes
      *
-     * @param lambda    the part of the lambda we want to parse
-     * @param nodes     the nodes lists
-     * @param inherited the negation inherited from the higher scope
+     * @param lambda            the part of the lambda we want to parse
+     * @param nodes             the nodes lists
+     * @param inheritedNegation the negation inheritedNegation from the higher scope
      * @return a Formula containing the parsed information
      */
-    private Formula parse(String lambda, Map<String, FormulaNode> nodes, Negation inherited) {
+    private Formula parse(String lambda, Map<String, FormulaNode> nodes, Negation inheritedNegation, Disjunction inheritedDisjunction) {
         List<String> scopes = getScopes(lambda);
         for (String scope : scopes) {
             int scopeStartIndex = scope.indexOf('('), scopeEndIndex = getClosingBracketIndex(scope);
+
             Negation negation = null;
             if (scope.startsWith("-") || scope.substring(0, scopeStartIndex).endsWith("-")) {
                 String negId = "n" + negationNumber;
                 negation = new Negation(negId, "");
                 negationNumber++;
-                if (inherited != null)
-                    inherited.getNegated().add(negation);
-            } else if (inherited != null) {
-                negation = inherited;
+                if (inheritedNegation != null)
+                    inheritedNegation.getNegated().add(negation);
+            } else if (inheritedNegation != null) {
+                negation = inheritedNegation;
             }
+
+            Disjunction disjunction = inheritedDisjunction;
+
             Scanner sc = new Scanner(scope);
             sc.useDelimiter("&");
             String token;
@@ -99,6 +104,17 @@ public class EventParser extends BaseParser {
                 String varId;
                 String otherId;
                 token = sc.next().trim();
+                /*if (token.contains("|") && disjunction == null) {
+                    String disjunctionScope = getDisjunctionScope(scope);
+                    Pair<FormulaNode, FormulaNode> disjunctionArgs = getDisjunctionArgs(disjunctionScope);
+                    Disjunction newDisjunction = new Disjunction();
+                    newDisjunction.setArg1(disjunctionArgs.getKey());
+                    newDisjunction.setArg2(disjunctionArgs.getValue());
+                    newDisjunction.setOrigin(nodes.get(disjunctionArgs.getKey().getId()));
+
+                    parseResult.getDisjunctions().add(newDisjunction);
+                    //parse(lambda, nodes, negation, newDisjunction);
+                }*/
                 if (token.contains("exists")) {
                     if (token.matches(varDeclaration)) {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
@@ -111,7 +127,7 @@ public class EventParser extends BaseParser {
                         } else if (!registeredNodes.contains(new Actor(varId, varName))) {
                             Map<String, FormulaNode> reccNodes = new HashMap<>();
                             nodes.forEach(reccNodes::put);
-                            parse(scope.substring(scopeStartIndex, scopeEndIndex), reccNodes, negation);
+                            parse(scope.substring(scopeStartIndex, scopeEndIndex), reccNodes, negation, disjunction);
                             reccNodes.forEach((s, formulaNode) -> {
                                 if (!nodes.containsKey(s))
                                     nodes.put(s, formulaNode);
@@ -132,6 +148,102 @@ public class EventParser extends BaseParser {
         return parseResult;
     }
 
+    private Pair<FormulaNode, FormulaNode> getDisjunctionArgs(String disjunctionScope) {
+        if (disjunctionScope.contains("|")) {
+            String[] parts = disjunctionScope.split("\\|");
+            if (parts.length >= 2) {
+                String firstStr;
+                String secondStr;
+                if (parts[0].contains("&") && parts[1].contains(("&"))) {
+                    firstStr = getScopes(parts[0]).get(0).split("&")[0].trim();
+                    secondStr = getScopes(parts[1]).get(0).split("&")[0].trim();
+                } else {
+                    firstStr = parts[0];
+                    secondStr = parts[1];
+                }
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private Pair<String, String> getVarIdAndName(String lambda) {
+        FormulaNode node;
+        String varId;
+        String varName;
+        if (lambda.contains(".")) {
+            varId = lambda.split("\\.")[0].split(" ")[1].trim();
+            String otherId;
+            if (lambda.contains(",")) {
+                otherId = lambda.split(",")[1].split("\\)")[0];
+            } else otherId = null;
+            varName = lambda.split("\\.")[1].split("\\)")[0].substring(1).split("\\(")[0].trim();
+        } else {
+            while (lambda.charAt(0) == '(')
+                lambda = lambda.substring(1);
+            String[] parts = lambda.split("\\(");
+            varId = parts[1].substring(0, parts[1].length() - 1);
+            varName = parts[0];
+        }
+        node = varId.startsWith("e") ? new Event(getUnusedIdentifier(varId), varName)
+                : new Actor(getUnusedIdentifier(varId), varName);
+        return new Pair<>(varId, varName);
+    }
+
+    private String getDisjunctionScope(String scope) {
+        if (scope.contains("|")) {
+            int disjunctionIndex = scope.indexOf('|');
+            int endOfDisjunctionScope = getClosingBracketIndex(disjunctionIndex, scope, 1);
+            int startOfDisjunctionScope = getOpeningBracketIndex(disjunctionIndex, scope, 1);
+            return scope.substring(startOfDisjunctionScope, endOfDisjunctionScope + 1);
+        }
+        return null;
+    }
+
+    private int getOpeningBracketIndex(int endIndex, String str, int offset) {
+        char[] chars = str.toCharArray();
+        int length = chars.length;
+        if (endIndex > length)
+            return -1;
+
+        Deque<Character> brackets = new ArrayDeque<>();
+        for (int i = 0; i < offset; i++) {
+            brackets.push(')');
+        }
+        for (int index = endIndex; index >= 0; index--) {
+            char c = chars[index];
+            if (c == ')')
+                brackets.push(c);
+            else if (c == '(')
+                brackets.pop();
+            else continue;
+            if (brackets.isEmpty())
+                return index;
+        }
+        return -1;
+    }
+
+    private int getClosingBracketIndex(int startindex, String str, int offset) {
+        char[] chars = str.toCharArray();
+        int length = chars.length;
+
+        Deque<Character> brackets = new ArrayDeque<>();
+        for (int i = 0; i < offset; i++) {
+            brackets.push('(');
+        }
+        for (int index = startindex; index < length; index++) {
+            char c = chars[index];
+            if (c == '(')
+                brackets.push(c);
+            else if (c == ')')
+                brackets.pop();
+            else continue;
+            if (brackets.isEmpty())
+                return index;
+        }
+        return -1;
+    }
+
     /**
      * Registers a variable. They may be events
      *
@@ -139,10 +251,11 @@ public class EventParser extends BaseParser {
      * @param varName  the name of the variable
      * @param varId    the id of the variable
      * @param negation the negation of the current scope
+     * @return the registered node
      */
-    private void registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, String otherId, Negation negation) {
+    private FormulaNode registerVariable(Map<String, FormulaNode> nodes, String varName, String varId, String otherId, Negation negation) {
         firstExists = false;
-        BaseNode newNode;
+        FormulaNode newNode;
         if (varId.startsWith("e")) {
             newNode = new Event(getUnusedIdentifier(varId), varName);
             if (otherId != null) {
@@ -160,6 +273,7 @@ public class EventParser extends BaseParser {
         if (negation != null) {
             negation.getNegated().add(newNode);
         }
+        return newNode;
     }
 
     /**
@@ -228,7 +342,6 @@ public class EventParser extends BaseParser {
             varName = parts[0].substring(1);
             conjunctionNumber++;
 
-            System.out.println(varName);
             if (!registeredNodes.contains(new Conjunction(varId, varName))) {
                 String[] joined = parts[1].split("\\)");
                 joined = joined[0].split(",");
@@ -313,18 +426,7 @@ public class EventParser extends BaseParser {
         if (bracketsStartIndex > length)
             return -1;
 
-        Deque<Character> brackets = new ArrayDeque<>();
-        for (int index = bracketsStartIndex; index < length; index++) {
-            char c = chars[index];
-            if (c == '(')
-                brackets.push(c);
-            else if (c == ')')
-                brackets.pop();
-            else continue;
-            if (brackets.isEmpty())
-                return index;
-        }
-        return -1;
+        return getClosingBracketIndex(bracketsStartIndex, str, 0);
     }
 
     /**

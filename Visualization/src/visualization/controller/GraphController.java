@@ -5,8 +5,6 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
@@ -16,7 +14,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import org.apache.commons.collections15.Transformer;
 import visualization.Main;
 import visualization.controller.graphVisual.CustomVisualizationServer;
 import visualization.graph.*;
@@ -219,7 +216,7 @@ public class GraphController implements Parametrable<Formula> {
         for (Negation negation : this.formula.getNegations()) {
             visualization.graph.Negation neg = new visualization.graph.Negation();
 
-            for (BaseNode bn : negation.getNegated()) {
+            for (FormulaNode bn : negation.getNegated()) {
                 neg.getNegated().add(g.getNodeByLabel(bn.getName()));
                 if (bn.getClass() == Actor.class || bn.getClass() == Event.class) {
                     neg.getNegated().add(g.getNodeByLabel(bn.getId()));
@@ -236,130 +233,104 @@ public class GraphController implements Parametrable<Formula> {
     }
 
 
-
-    public void addGraph(Graph g) {
+    private void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         layout = new FRLayout<>(jungGraph);
         layout.setSize(new Dimension(800, 400));
         vv = new CustomVisualizationServer(layout);
 
         //links text
-        vv.getRenderContext().setEdgeLabelTransformer(new Transformer<Link, String>() {
-            @Override
-            public String transform(Link link) {
-                return link.getText();
-            }
-        });
+        vv.getRenderContext().setEdgeLabelTransformer(Link::getText);
 
         //node text
-        /**
-         * Replace events label like "ewalk1"
+        /*
+          Replace events label like "ewalk1"
          */
-        vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>() {
-            @Override
-            public String transform(Node node) {
-                String res = node.getLabel();
-                if (node.getNodeType() == NodeType.EVENT && node.getLabel().matches(".*\\d+.*")) {
-                    res = node.getLabel().substring(0, 1);
-                }
-                return res;
+        vv.getRenderContext().setVertexLabelTransformer(node -> {
+            String res = node.getLabel();
+            if (node.getNodeType() == NodeType.EVENT && node.getLabel().matches(".*\\d+.*")) {
+                res = node.getLabel().substring(0, 1);
             }
+            return res;
         });
 
-        vv.getRenderContext().setVertexShapeTransformer(new Transformer<Node, Shape>() {
-            @Override
-            public Shape transform(Node node) {
-                Shape s = null;
-                switch (node.getNodeType()) {
-                    case ACTOR:
-                        s = new Ellipse2D.Double(-10, -10, 20, 20);
-                        break;
-                    case EVENT:
-                        s = new Rectangle(-10, -10, 20, 20);
-                        break;
-                    case CONJUNCTION:
-                        s = new Ellipse2D.Double(-10, -10, 20, 20);
-                        break;
-                    case DISJUNCTION:
-                        s = new Ellipse2D.Double(-10, -10, 25, 25);
-                        break;
-                }
-                return s;
+        vv.getRenderContext().setVertexShapeTransformer(node -> {
+            Shape s = null;
+            switch (node.getNodeType()) {
+                case ACTOR:
+                    s = new Ellipse2D.Double(-10, -10, 20, 20);
+                    break;
+                case EVENT:
+                    s = new Rectangle(-10, -10, 20, 20);
+                    break;
+                case CONJUNCTION:
+                    s = new Ellipse2D.Double(-10, -10, 20, 20);
+                    break;
+                case DISJUNCTION:
+                    s = new Ellipse2D.Double(-10, -10, 25, 25);
+                    break;
             }
+            return s;
         });
         //node color
-        vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Node, Paint>() {
-            @Override
-            public Paint transform(Node node) {
-                Paint p = null;
-                switch (node.getNodeType()) {
-                    case ACTOR:
-                        p = Color.BLUE;
-                        break;
-                    case EVENT:
-                        p = Color.RED;
-                        break;
-                    case CONJUNCTION:
-                        p = Color.GREEN;
-                        break;
-                    case DISJUNCTION:
-                        p = Color.YELLOW;
-                        break;
-                }
-                return p;
+        vv.getRenderContext().setVertexFillPaintTransformer(node -> {
+            Paint p = null;
+            switch (node.getNodeType()) {
+                case ACTOR:
+                    p = Color.BLUE;
+                    break;
+                case EVENT:
+                    p = Color.RED;
+                    break;
+                case CONJUNCTION:
+                    p = Color.GREEN;
+                    break;
+                case DISJUNCTION:
+                    p = Color.YELLOW;
+                    break;
             }
+            return p;
         });
         //link color
-        vv.getRenderContext().setEdgeDrawPaintTransformer(new Transformer<Link, Paint>() {
-            @Override
-            public Paint transform(Link link) {
-                Paint p = null;
-                switch (link.getDestination().getNodeType()) {
-                    case ACTOR:
-                        p = Color.BLUE;
-                        break;
-                    case EVENT:
-                        p = Color.RED;
-                        break;
-                    case CONJUNCTION:
-                        p = Color.GREEN;
-                        break;
-                    case DISJUNCTION:
-                        p = Color.YELLOW;
-                        break;
-                }
-                return p;
+        vv.getRenderContext().setEdgeDrawPaintTransformer(link -> {
+            Paint p = null;
+            switch (link.getDestination().getNodeType()) {
+                case ACTOR:
+                    p = Color.BLUE;
+                    break;
+                case EVENT:
+                    p = Color.RED;
+                    break;
+                case CONJUNCTION:
+                    p = Color.GREEN;
+                    break;
+                case DISJUNCTION:
+                    p = Color.YELLOW;
+                    break;
             }
+            return p;
         });
 
-        vv.getRenderContext().setArrowFillPaintTransformer(new Transformer<Link, Paint>() {
-            @Override
-            public Paint transform(Link link) {
-                Paint p = null;
-                switch (link.getDestination().getNodeType()) {
-                    case ACTOR:
-                        p = Color.BLUE;
-                        break;
-                    case EVENT:
-                        p = Color.RED;
-                        break;
-                    case CONJUNCTION:
-                        p = Color.GREEN;
-                        break;
-                    case DISJUNCTION:
-                        p = Color.YELLOW;
-                        break;
-                }
-                return p;
+        vv.getRenderContext().setArrowFillPaintTransformer(link -> {
+            Paint p = null;
+            switch (link.getDestination().getNodeType()) {
+                case ACTOR:
+                    p = Color.BLUE;
+                    break;
+                case EVENT:
+                    p = Color.RED;
+                    break;
+                case CONJUNCTION:
+                    p = Color.GREEN;
+                    break;
+                case DISJUNCTION:
+                    p = Color.YELLOW;
+                    break;
             }
+            return p;
         });
 
-        vv.getRenderContext().setVertexFontTransformer(new Transformer<Node, Font>() {
-            @Override
-            public Font transform(Node node) {
-                return new Font("Arial", 1, 25);
-            }
-        });
+        vv.getRenderContext().setVertexFontTransformer(node -> new Font("Arial", Font.BOLD, 25));
 
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
@@ -412,23 +383,17 @@ public class GraphController implements Parametrable<Formula> {
             Anchor anchor = new Anchor(getSelectedNode(xProperty.intValue(), yProperty.intValue()));
 
             //layout.setLocation(selected, new Point2D.Double(event.getX(), event.getY()));
-            xProperty.addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    points.set(idx, (double) newValue);
-                    layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
-                    vv.repaint();
-                }
+            xProperty.addListener((observable, oldValue, newValue) -> {
+                points.set(idx, (double) newValue);
+                layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
+                vv.repaint();
             });
 
-            yProperty.addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    points.set(idx + 1, (double) newValue);
+            yProperty.addListener((observable, oldValue, newValue) -> {
+                points.set(idx + 1, (double) newValue);
 
-                    layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
-                    vv.repaint();
-                }
+                layout.setLocation(anchor.getSelected(), xProperty.doubleValue(), yProperty.doubleValue());
+                vv.repaint();
             });
 
             anchor.init(javafx.scene.paint.Color.GOLD, xProperty, yProperty);
@@ -439,7 +404,7 @@ public class GraphController implements Parametrable<Formula> {
         return anchors;
     }
 
-    public boolean SimilarAnchor(Anchor anchor) {
+    private boolean SimilarAnchor(Anchor anchor) {
         boolean res = false;
         for (javafx.scene.Node a : container.getChildren()) {
             if (a.getClass() == Anchor.class) {
@@ -452,7 +417,7 @@ public class GraphController implements Parametrable<Formula> {
         return res;
     }
 
-    public Node getSelectedNode(int x, int y) {
+    private Node getSelectedNode(int x, int y) {
         Node res = null;
 
         for (Node n : layout.getGraph().getVertices()) {

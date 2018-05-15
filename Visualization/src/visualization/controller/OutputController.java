@@ -232,7 +232,6 @@ public class OutputController implements Stageable {
      */
     private void getLambdas() {
         formulaList = Tools.getSemanticsFormulas(Main.xmlSemanticsFile);
-        System.out.println(formulaList);
         lambdaListViewItems.addAll(formulaList);
         lambdaListView.setItems(lambdaListViewItems);
     }

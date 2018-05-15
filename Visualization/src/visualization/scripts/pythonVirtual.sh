@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 !# /bin/bash
 
+PYTHON_LOCATION=$1
 
-virtualenv --no-site-packages --distribute -p /usr/bin/python3 py3
+virtualenv --no-site-packages --distribute -p $1 py3
 
 source py3/bin/activate
 
