@@ -1,22 +1,24 @@
 package visualization.utils.formula.node;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Disjunction extends BaseNode {
 
-    private BaseNode arg1;
-    private BaseNode arg2;
-    private BaseNode origin;
+    private FormulaNode arg1;
+    private List<FormulaNode> arg1List;
+    private FormulaNode arg2;
+    private List<FormulaNode> arg2List;
+    private FormulaNode origin;
 
-    public Disjunction(){
+    public Disjunction() {
         super();
     }
 
-    public String toString(){
+    public String toString() {
         return origin.toString() + " -> " + arg1.toString() + " || " + arg2.toString();
     }
 
-    public BaseNode getOrigin() {
+    public FormulaNode getOrigin() {
         return origin;
     }
 
@@ -24,7 +26,7 @@ public class Disjunction extends BaseNode {
         this.origin = origin;
     }
 
-    public BaseNode getArg2() {
+    public FormulaNode getArg2() {
         return arg2;
     }
 
@@ -32,7 +34,7 @@ public class Disjunction extends BaseNode {
         this.arg2 = arg2;
     }
 
-    public BaseNode getArg1() {
+    public FormulaNode getArg1() {
         return arg1;
     }
 

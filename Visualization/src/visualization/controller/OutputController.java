@@ -25,7 +25,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -213,7 +212,6 @@ public class OutputController implements Stageable {
      */
     private void getLambdas() {
         formulaList = Tools.getSemanticsFormulas(Main.xmlSemanticsFile);
-        System.out.println(formulaList);
         lambdaListViewItems.addAll(formulaList);
         lambdaListView.setItems(lambdaListViewItems);
     }

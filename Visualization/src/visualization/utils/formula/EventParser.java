@@ -228,7 +228,6 @@ public class EventParser extends BaseParser {
             varName = parts[0].substring(1);
             conjunctionNumber++;
 
-            System.out.println(varName);
             if (!registeredNodes.contains(new Conjunction(varId, varName))) {
                 String[] joined = parts[1].split("\\)");
                 joined = joined[0].split(",");
