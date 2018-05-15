@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.RadioMenuItem?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-
-<BorderPane xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.InputController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+            fx:controller="visualization.controller.InputController">
    <center>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0">
           <top>
@@ -80,22 +70,18 @@
                          text="Jigg location"/>
            </Menu>
            <Menu mnemonicParsing="false" text="Parser">
-               <items>
-                   <RadioMenuItem fx:id="radioCandCOnlyItem" mnemonicParsing="false" onAction="#setCandCOnly"
-                                  text="C&amp;C only"/>
-                   <RadioMenuItem fx:id="radioALL_EN_ParserItem" mnemonicParsing="false" onAction="#setEN_AllParser"
-                                  text="C&amp;C, easyCCG and depCCG"/>
-                   <RadioMenuItem fx:id="radioJA_ParserItem" mnemonicParsing="false" onAction="#setJAParser"
-                                  text="JA Parser"/>
-               </items>
+               <RadioMenuItem fx:id="radioCandCOnlyItem" mnemonicParsing="false" onAction="#setCandCOnly"
+                              text="C&amp;C only"/>
+               <RadioMenuItem fx:id="radioALL_EN_ParserItem" mnemonicParsing="false" onAction="#setEN_AllParser"
+                              text="C&amp;C, easyCCG and depCCG"/>
+               <RadioMenuItem fx:id="radioJA_ParserItem" mnemonicParsing="false" onAction="#setJAParser"
+                              text="JA Parser"/>
            </Menu>
            <Menu fx:id="menuTemplate" mnemonicParsing="false" text="Template">
-               <items>
-                   <RadioMenuItem fx:id="radioTemplateEvent" mnemonicParsing="false" onAction="#setTemplateEvent"
-                                  text="EVENT"/>
-                   <RadioMenuItem fx:id="radioTemplateClassic" mnemonicParsing="false" onAction="#setTemplateClassic"
-                                  text="CLASSIC EMNLP"/>
-               </items>
+               <RadioMenuItem fx:id="radioTemplateEvent" mnemonicParsing="false" onAction="#setTemplateEvent"
+                              text="EVENT"/>
+               <RadioMenuItem fx:id="radioTemplateClassic" mnemonicParsing="false" onAction="#setTemplateClassic"
+                              text="CLASSIC EMNLP"/>
            </Menu>
            <Menu mnemonicParsing="false" text="Help">
                <MenuItem fx:id="showInformationItem" mnemonicParsing="false" onAction="#displayInformation" text="About" />

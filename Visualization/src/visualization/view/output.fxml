@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
-
-<SplitPane fx:id="splitContainer" dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.controller.OutputController">
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" fx:id="splitContainer" dividerPositions="0.8" orientation="VERTICAL"
+           xmlns="http://javafx.com/javafx/8" fx:controller="visualization.controller.OutputController">
     <TabPane fx:id="tabPanel" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" SplitPane.resizableWithParent="false">
         <Tab fx:id="graphTab" text="Graph">
             <VBox fx:id="graphCont" prefHeight="65.0" prefWidth="388.0" />
@@ -18,11 +15,9 @@
         <Tab fx:id="boxTab" text="Box">
             <VBox fx:id="boxCont" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" />
         </Tab>
-      <Tab text="Tree">
-         <content>
-            <VBox fx:id="treeCont" prefHeight="200.0" prefWidth="100.0" />
-         </content>
-      </Tab>
+        <Tab text="Tree">
+            <VBox fx:id="treeCont" prefHeight="200.0" prefWidth="100.0"/>
+        </Tab>
         <Tab fx:id="treeTab" disable="true" text="HTML Tree">
             <WebView fx:id="treeContHtml" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
         </Tab>

@@ -30,7 +30,7 @@ public class Disjunction extends BaseNode {
         return arg2;
     }
 
-    public void setArg2(BaseNode arg2) {
+    public void setArg2(FormulaNode arg2) {
         this.arg2 = arg2;
     }
 
@@ -38,7 +38,7 @@ public class Disjunction extends BaseNode {
         return arg1;
     }
 
-    public void setArg1(BaseNode arg1) {
+    public void setArg1(FormulaNode arg1) {
         this.arg1 = arg1;
     }
 }

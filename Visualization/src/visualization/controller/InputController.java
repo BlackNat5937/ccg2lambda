@@ -16,7 +16,6 @@ import visualization.Main;
 import visualization.utils.Tools;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Objects;
 
@@ -61,6 +60,22 @@ public class InputController implements Stageable {
      */
     @FXML
     public RadioMenuItem radioTemplateClassic;
+    /**
+     * Item for setting C&C location
+     */
+    public MenuItem setCandCLocationItem;
+    /**
+     * Item for setting easyCCG location
+     */
+    public MenuItem setEasyCGCLocationItem;
+    /**
+     * Item for setting depCCG location
+     */
+    public MenuItem setdepCCGLocationItem;
+    /**
+     * Item for setting Jigg location
+     */
+    public MenuItem setJiggLocationItem;
     /**
      * Radio menu parser for only C&C
      */
@@ -320,15 +335,15 @@ public class InputController implements Stageable {
         System.out.println("  template type : " + Main.selectedTemplateType);
 
         String ccg2lambdaPath = Main.ccg2lambdaLocation.getAbsolutePath();
-        Process process = null;
+        Process process;
 
         File parsedDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_parsed");
         File resultDirectoryEN = new File(Main.ccg2lambdaLocation + "/en_results");
 
         try {
             if (parsedDirectoryEN.exists() && resultDirectoryEN.exists()) {
-                /**
-                 * Check if their is file in the directory, if yes, delete them
+                /*
+                  Check if their is file in the directory, if yes, delete them
                  */
                 for (File file : parsedDirectoryEN.listFiles()) {
                     Files.deleteIfExists(file.toPath());
@@ -336,8 +351,8 @@ public class InputController implements Stageable {
                 for (File file : resultDirectoryEN.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-                /**
-                 * If the file already exist, delete them
+                /*
+                  If the file already exist, delete them
                  */
                 Files.deleteIfExists(parsedDirectoryEN.toPath());
                 Files.deleteIfExists(resultDirectoryEN.toPath());
@@ -352,8 +367,8 @@ public class InputController implements Stageable {
 
         try {
             if (parsedDirectoryDefault.exists() && resultDirectoryDefault.exists()) {
-                /**
-                 * Check if their is file in the directory, if yes, delete them
+                /*
+                  Check if their is file in the directory, if yes, delete them
                  */
                 for (File file : parsedDirectoryDefault.listFiles()) {
                     Files.deleteIfExists(file.toPath());
@@ -361,8 +376,8 @@ public class InputController implements Stageable {
                 for (File file : resultDirectoryDefault.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-                /**
-                 * If the file already exist, delete them
+                /*
+                  If the file already exist, delete them
                  */
                 Files.deleteIfExists(parsedDirectoryDefault.toPath());
                 Files.deleteIfExists(resultDirectoryDefault.toPath());
@@ -375,8 +390,8 @@ public class InputController implements Stageable {
 
         try {
             if (parsedDirectoryJA.exists() && resultDirectoryJA.exists()) {
-                /**
-                 * Check if their is file in the directory, if yes, delete them
+                /*
+                  Check if their is file in the directory, if yes, delete them
                  */
                 for (File file : parsedDirectoryJA.listFiles()) {
                     Files.deleteIfExists(file.toPath());
@@ -384,8 +399,8 @@ public class InputController implements Stageable {
                 for (File file : resultDirectoryJA.listFiles()) {
                     Files.deleteIfExists(file.toPath());
                 }
-                /**
-                 * If the file already exist, delete them
+                /*
+                  If the file already exist, delete them
                  */
                 Files.deleteIfExists(parsedDirectoryJA.toPath());
                 Files.deleteIfExists(resultDirectoryJA.toPath());
@@ -538,8 +553,8 @@ public class InputController implements Stageable {
             System.out.println("------------------------First Time ----------------------------");
 
 
-            /**
-             * If the file already exist, delete them
+            /*
+              If the file already exist, delete them
              */
 
             File ConfigDirectory = new File("./config");
@@ -654,7 +669,6 @@ public class InputController implements Stageable {
     }
 
 
-
     private void copyRessourceToTmpFile(InputStream source, File destination) {
         InputStreamReader fr = null;
         FileWriter fw = null;
@@ -694,7 +708,7 @@ public class InputController implements Stageable {
      */
     private void defineEN_ALL_ParserLocation() {
         System.out.println("EN parser location location");
-        boolean okParserLocation = true;
+        boolean okParserLocation;
 
         try {
             okParserLocation = Tools.configENParserLocation.createNewFile();
@@ -720,7 +734,7 @@ public class InputController implements Stageable {
      */
     private void defineJA_ParserLocation() {
         System.out.println("JA parser location location");
-        boolean okJA_ParserLocation = true;
+        boolean okJA_ParserLocation;
 
         try {
             okJA_ParserLocation = Tools.configJAParserLocation.createNewFile();
@@ -970,7 +984,7 @@ public class InputController implements Stageable {
                 firstTimeAlertCandC.showAndWait();
                 File f2 = setCandCLocation();
                 System.out.println("------------------------------------------------ " + f2.toPath().toString());
-                FileWriter fwCandC = null;
+                FileWriter fwCandC;
                 fwCandC = new FileWriter(Tools.configCandC);
                 fwCandC.write(f2.getAbsolutePath());
                 fwCandC.close();
@@ -989,7 +1003,7 @@ public class InputController implements Stageable {
             try {
                 firstTimeAlertEasyCCG.showAndWait();
                 File f3 = setEasyCCGLocation();
-                FileWriter fwEasyCCG = null;
+                FileWriter fwEasyCCG;
                 fwEasyCCG = new FileWriter(Tools.configEasyCCG);
                 fwEasyCCG.write(f3.getAbsolutePath());
                 fwEasyCCG.close();
@@ -1071,7 +1085,7 @@ public class InputController implements Stageable {
     /**
      * For setting the template
      */
-    public void setTemplate() {
+    private void setTemplate() {
         if (radioTemplateEvent.isSelected()) {
             System.out.println("||||||||||||||||| template event");
             Main.selectedTemplateType = Tools.TemplateType.EVENT;

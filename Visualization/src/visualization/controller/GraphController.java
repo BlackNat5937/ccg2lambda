@@ -215,7 +215,7 @@ public class GraphController implements Parametrable<Formula> {
         for (Negation negation : this.formula.getNegations()) {
             visualization.graph.Negation neg = new visualization.graph.Negation();
 
-            for (BaseNode bn : negation.getNegated()) {
+            for (FormulaNode bn : negation.getNegated()) {
                 neg.getNegated().add(g.getNodeByLabel(bn.getName()));
                 if (bn.getClass() == Actor.class || bn.getClass() == Event.class) {
                     neg.getNegated().add(g.getNodeByLabel(bn.getId()));

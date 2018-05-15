@@ -6,7 +6,7 @@ public class Negation extends BaseNode {
     /**
      * Contains a list of node that are negated
      */
-    private ArrayList<BaseNode> negated = new ArrayList<>();
+    private ArrayList<FormulaNode> negated = new ArrayList<>();
 
     public Negation() {
         super();
@@ -19,13 +19,13 @@ public class Negation extends BaseNode {
 
     public String toString() {
         StringBuilder res = new StringBuilder("Negation : ");
-        for (BaseNode bn : negated) {
+        for (FormulaNode bn : negated) {
             res.append(" ").append(bn.toString());
         }
         return res.toString();
     }
 
-    public ArrayList<BaseNode> getNegated() {
+    public ArrayList<FormulaNode> getNegated() {
         return negated;
     }
 }
