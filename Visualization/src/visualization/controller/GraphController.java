@@ -8,20 +8,17 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import org.apache.commons.collections15.Transformer;
 import visualization.Main;
+import visualization.controller.graphVisual.CustomVisualizationServer;
 import visualization.graph.*;
 import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
@@ -29,15 +26,8 @@ import visualization.utils.formula.node.*;
 import visualization.utils.formula.node.Event;
 import visualization.utils.formula.node.Negation;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
@@ -250,8 +240,8 @@ public class GraphController implements Parametrable<Formula> {
     public void addGraph(Graph g) {
         DirectedSparseGraph<Node, Link> jungGraph = g.graph2Jung();
         layout = new FRLayout<>(jungGraph);
-        layout.setSize(new Dimension(600, 500));
-        vv = new BasicVisualizationServer<>(layout);
+        layout.setSize(new Dimension(800, 400));
+        vv = new CustomVisualizationServer(layout);
 
         //links text
         vv.getRenderContext().setEdgeLabelTransformer(new Transformer<Link, String>() {
@@ -454,13 +444,11 @@ public class GraphController implements Parametrable<Formula> {
         for (javafx.scene.Node a : container.getChildren()) {
             if (a.getClass() == Anchor.class) {
                 Anchor castedAnchor = (Anchor) a;
-                System.out.println("    --> " + castedAnchor.getSelected().getLabel() + " ?= " + anchor.getSelected().getLabel());
                 if (castedAnchor.getSelected().getLabel().equals(anchor.getSelected().getLabel())) {
                     res = true;
                 }
             }
         }
-
         return res;
     }
 

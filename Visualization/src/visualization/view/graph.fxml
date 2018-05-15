@@ -8,7 +8,7 @@
    <content>
       <ScrollPane fx:id="sp" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <content>
-            <Pane fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+            <Pane fx:id="container" />
          </content>
       </ScrollPane>
    </content>

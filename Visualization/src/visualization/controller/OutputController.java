@@ -1,9 +1,14 @@
 package visualization.controller;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,6 +16,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -18,6 +25,9 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import visualization.Main;
+import visualization.controller.graphVisual.CustomVisualizationServer;
+import visualization.graph.Anchor;
+import visualization.graph.Link;
 import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 
@@ -25,12 +35,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.awt.geom.Point2D;
 
 public class OutputController implements Stageable {
     /**
@@ -102,6 +112,10 @@ public class OutputController implements Stageable {
 
     private final ContextMenu contextMenu = new ContextMenu();
 
+    private DoubleProperty graphSizeW = new SimpleDoubleProperty(600);
+
+    private DoubleProperty graphSizeH = new SimpleDoubleProperty(600);
+
     /**
      * Initializes the window, loads the formulas
      */
@@ -110,6 +124,7 @@ public class OutputController implements Stageable {
         getLambdas();
         initVisualizations();
         initControls();
+        bindGraph();
     }
 
     /**
@@ -134,6 +149,9 @@ public class OutputController implements Stageable {
         lambdaListView.setContextMenu(contextMenu);
     }
 
+    /**
+     * Print the graph into a png file
+     */
     private final EventHandler<ActionEvent> printEvent = event -> {
         Node n = graphCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
         //here save the image
@@ -143,6 +161,7 @@ public class OutputController implements Stageable {
             if (n2.getClass() == ScrollPane.class) {
                 ScrollPane sp = (ScrollPane) n2;
                 Node n3 = sp.getContent();
+                //resizeGraphPane(900,900);
                 WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
 
                 n3.snapshot(new SnapshotParameters(), wi);
@@ -325,11 +344,101 @@ public class OutputController implements Stageable {
         this.view = primaryStage;
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(this::setDividerPosition);
-            /*System.out.println("divider : " + splitContainer.getDividers().get(0).getPosition());
-        System.out.println("test initStage");*/
         };
+
+        //first time
+        for (Node n : graphCont.getChildren()) {
+            if (n.getClass() == TitledPane.class) {
+                TitledPane tp = (TitledPane) n;
+                if (tp.getContent().getClass() == ScrollPane.class) {
+                    ScrollPane sp = (ScrollPane) tp.getContent();
+                    Pane p = (Pane) sp.getContent();
+                    p.setPrefWidth(800);
+                    p.setMinHeight(400);
+                    for (Node childPane : p.getChildren()) {
+                        if (childPane.getClass() == SwingNode.class) {
+                            SwingNode sn = (SwingNode)childPane;
+                            sn.resize(p.getWidth(), sn.getBoundsInLocal().getHeight());
+                            CustomVisualizationServer vv = (CustomVisualizationServer)((SwingNode) childPane).getContent();
+                            vv.reload((int)p.getWidth(), (int)p.getHeight());
+                            sn.setContent(vv);
+                        }
+                    }
+                }
+            }
+        }
+
+        ChangeListener<Number> changeWidthListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                for (Node n : graphCont.getChildren()) {
+                    Layout<visualization.graph.Node,Link> l = null;
+                    if (n.getClass() == TitledPane.class) {
+                        TitledPane tp = (TitledPane) n;
+                        //System.out.println("Tp Width : " + tp.getWidth());
+                        if (tp.getContent().getClass() == ScrollPane.class) {
+                            ScrollPane sp = (ScrollPane) tp.getContent();
+                            //System.out.println("Sp Width : " + sp.getWidth());
+                            Pane p = (Pane) sp.getContent();
+                            p.setPrefWidth(newValue.doubleValue());
+                            //System.out.println("Pane Width : " + p.getWidth());
+                            for (Node childPane : p.getChildren()) {
+                                if (childPane.getClass() == SwingNode.class) {
+                                    SwingNode sn = (SwingNode)childPane;
+                                    sn.resize(p.getWidth(), sn.getBoundsInLocal().getHeight());
+                                    //System.out.println("SwingNode Width : " + sn.getBoundsInLocal().getWidth());
+                                    CustomVisualizationServer vv = (CustomVisualizationServer)((SwingNode) childPane).getContent();
+                                    vv.reload((int)p.getWidth(), (int)p.getHeight());
+                                    if(l == null){
+                                        l = vv.getGraphLayout();
+                                    }
+                                    sn.setContent(vv);
+                                }
+                                else if(childPane.getClass() == Anchor.class){
+                                    Anchor a = (Anchor)childPane;
+                                    Point2D pos = l.transform(a.getSelected());
+                                    a.setCenterY(pos.getY());
+                                    a.setCenterX(pos.getX());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        ChangeListener<Number> changeHeightListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                for (Node n : graphCont.getChildren()) {
+                    if (n.getClass() == TitledPane.class) {
+                        TitledPane tp = (TitledPane) n;
+                        if (tp.getContent().getClass() == ScrollPane.class) {
+                            ScrollPane sp = (ScrollPane) tp.getContent();
+                            Pane p = (Pane) sp.getContent();
+                            p.setPrefHeight(newValue.doubleValue());
+                            for (Node childPane : p.getChildren()) {
+                                if (childPane.getClass() == SwingNode.class) {
+                                    SwingNode sn = (SwingNode)childPane;
+                                    sn.resize(sn.getBoundsInLocal().getWidth(), p.getHeight());
+                                    CustomVisualizationServer vv = (CustomVisualizationServer)((SwingNode) childPane).getContent();
+                                    vv.reload((int)p.getWidth(), (int)p.getHeight());
+                                    sn.setContent(vv);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+
+        view.widthProperty().addListener(changeWidthListener);
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
+
+
+
     }
 
     /**
@@ -337,5 +446,20 @@ public class OutputController implements Stageable {
      */
     private void setDividerPosition() {
         splitContainer.setDividerPositions(0.8);
+    }
+
+
+    public void bindGraph(){
+        for(Node n : graphCont.getChildren()){
+            if(n.getClass() == TitledPane.class){
+                TitledPane tp = (TitledPane)n;
+                if(tp.getContent().getClass() == ScrollPane.class){
+                    ScrollPane sp = (ScrollPane)tp.getContent();
+                    Pane p = (Pane)sp.getContent();
+                    graphSizeW.bindBidirectional(p.minWidthProperty());
+                    graphSizeH.bindBidirectional(p.minHeightProperty());
+                }
+            }
+        }
     }
 }
