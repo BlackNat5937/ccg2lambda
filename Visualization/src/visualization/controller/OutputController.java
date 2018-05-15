@@ -173,7 +173,6 @@ public class OutputController implements Stageable {
         Pane[] containers = {
                 boxCont,
                 graphCont,
-                treeCont
         };
         for (Pane container : containers) {
             container.getChildren().forEach(node -> {
