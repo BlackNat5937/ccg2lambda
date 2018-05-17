@@ -102,7 +102,6 @@ public class BoxController implements Parametrable<Object> {
                     boxContent.remove(bn.getName() + "(" + bn.getId() + ")");
                 }
                 boxContent.remove(bn.toString());
-
             }
         }
 

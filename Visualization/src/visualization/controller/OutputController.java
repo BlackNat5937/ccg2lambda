@@ -14,11 +14,15 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -38,6 +42,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.awt.geom.Point2D;
@@ -161,12 +166,9 @@ public class OutputController implements Stageable {
             if (n2.getClass() == ScrollPane.class) {
                 ScrollPane sp = (ScrollPane) n2;
                 Node n3 = sp.getContent();
-                //resizeGraphPane(900,900);
                 WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
-
                 n3.snapshot(new SnapshotParameters(), wi);
                 BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
-
                     try {
                         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
                         Date date = new Date();
@@ -429,14 +431,64 @@ public class OutputController implements Stageable {
                 }
             }
         };
-
-
         view.widthProperty().addListener(changeWidthListener);
         view.widthProperty().addListener(stageSizeListener);
         view.heightProperty().addListener(stageSizeListener);
+    }
+
+    /**
+     * display inferences
+     */
+    public void displayInferences(){
+        ArrayList<BorderPane> panes = getInferencesPane();
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("visualization/view/inferences.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            Parametrable<Object> controller = loader.getController();
+            controller.initData(panes);
+            Stage stage = new Stage();
+            stage.setTitle(Tools.windowTitleBase);
+            stage.setScene(new Scene(root));
+            stage.setMinWidth(Tools.windowSize[0].doubleValue());
+            stage.setMinHeight(Tools.windowSize[1].doubleValue());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
+    }
 
+    public ArrayList<BorderPane> getInferencesPane(){
+        ArrayList<BorderPane> inferencesGraph = new ArrayList<>();
+
+        for(Node n : graphCont.getChildren()){
+            BorderPane bp = new BorderPane();
+            if (n.getClass() == TitledPane.class) {
+                TitledPane tp = (TitledPane) n;
+                Node n2 = tp.getContent();
+                if (n2.getClass() == ScrollPane.class) {
+                    ScrollPane sp = (ScrollPane) n2;
+                    Node n3 = sp.getContent();
+                    WritableImage wi = new WritableImage((int) n3.getBoundsInLocal().getWidth(), (int) n3.getBoundsInLocal().getHeight());
+                    n3.snapshot(new SnapshotParameters(), wi);
+                    ImageView iv = new ImageView(wi);
+                    iv.setFitHeight(n3.getBoundsInLocal().getWidth()/graphCont.getChildren().size());
+                    iv.setFitWidth(n3.getBoundsInLocal().getHeight()/graphCont.getChildren().size());
+                    iv.setPreserveRatio(true);
+                    bp.setCenter(iv);
+                    if(graphCont.getChildren().indexOf(n) == graphCont.getChildren().size()-1){
+                        bp.setTop(new Label("Conclusion"));
+                    }
+                    else{
+                        bp.setTop(new Label("Premice" + graphCont.getChildren().indexOf(n)));
+                    }
+                }
+            }
+            inferencesGraph.add(bp);
+        }
+        return inferencesGraph;
     }
 
     /**
@@ -446,7 +498,9 @@ public class OutputController implements Stageable {
         splitContainer.setDividerPositions(0.8);
     }
 
-
+    /**
+     *
+     */
     public void bindGraph(){
         for(Node n : graphCont.getChildren()){
             if(n.getClass() == TitledPane.class){
