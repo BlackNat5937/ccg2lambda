@@ -331,7 +331,7 @@ public class GraphController implements Parametrable<Formula> {
         });
 
         vv.getRenderContext().setVertexFontTransformer(node -> new Font("Arial", Font.BOLD, 25));
-
+        vv.getRenderContext().setEdgeFontTransformer(node -> new Font("Arial", Font.BOLD, 20));
         final SwingNode sn = new SwingNode();
         sn.setContent(vv);
 
