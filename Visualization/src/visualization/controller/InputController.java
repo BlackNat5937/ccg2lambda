@@ -955,10 +955,6 @@ public class InputController implements Stageable {
             Tools.createPathFileALL_EN();
         }
 
-
-        System.out.println("ccg2lambda location : " + Main.ccg2lambdaLocation);
-        System.out.println("all parser location :" + Tools.configENParserLocation);
-
         if (!Tools.configENParserLocation.exists()) {
 
 
