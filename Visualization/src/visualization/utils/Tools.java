@@ -145,10 +145,25 @@ public class Tools {
         return formulas;
     }
 
-    public static void createPathFile() {
+    /**
+     * For only C&C Parser
+     */
+    public static void createPathFileCandC() {
         configCandC = new File(Main.ccg2lambdaLocation + "/en/candc_location.txt");
+    }
+
+    /**
+     * For All EN Parser
+     */
+    public static void createPathFileALL_EN() {
         configEasyCCG = new File(Main.ccg2lambdaLocation + "/en/easyccg_location.txt");
         configENParserLocation = new File(Main.ccg2lambdaLocation + "/en/parser_location.txt");
+    }
+
+    /**
+     * For JA parser
+     */
+    public static void createPathFileJA() {
         configJAParserLocation = new File(Main.ccg2lambdaLocation + "/ja/parser_location_ja.txt");
     }
 

@@ -801,7 +801,9 @@ public class InputController implements Stageable {
         if (selected.isDirectory()) {
             if (selected.canRead() && selected.canExecute() && selected.canWrite())
                 Main.ccg2lambdaLocation = selected;
-            Tools.createPathFile();
+            Tools.createPathFileCandC();
+            Tools.createPathFileALL_EN();
+            Tools.createPathFileJA();
         }
         if (CandCDefined && easyCCGDefined) {
             defineEN_ALL_ParserLocation();
@@ -924,6 +926,10 @@ public class InputController implements Stageable {
      */
     @FXML
     private void setCandCOnly() {
+        if (Tools.configCandC == null) {
+            Tools.createPathFileCandC();
+        }
+
         radioCandCOnlyItem.setSelected(true);
         radioALL_EN_ParserItem.setSelected(false);
         radioJA_ParserItem.setSelected(false);
@@ -945,7 +951,15 @@ public class InputController implements Stageable {
 
         Main.selectedParserType = Tools.ParserType.ALL;
 
-        if ((!Tools.configENParserLocation.exists())) {
+        if (Tools.configENParserLocation == null || Tools.configEasyCCG == null) {
+            Tools.createPathFileALL_EN();
+        }
+
+
+        System.out.println("ccg2lambda location : " + Main.ccg2lambdaLocation);
+        System.out.println("all parser location :" + Tools.configENParserLocation);
+
+        if (!Tools.configENParserLocation.exists()) {
 
 
             try {
@@ -1036,6 +1050,10 @@ public class InputController implements Stageable {
      */
     @FXML
     private void setJAParser() {
+        if (Tools.configJAParserLocation == null) {
+            Tools.createPathFileJA();
+        }
+
         radioCandCOnlyItem.setSelected(false);
         radioALL_EN_ParserItem.setSelected(false);
         radioJA_ParserItem.setSelected(true);
