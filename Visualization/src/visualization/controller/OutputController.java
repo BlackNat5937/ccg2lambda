@@ -440,7 +440,8 @@ public class OutputController implements Stageable {
      * display inferences
      */
     public void displayInferences(){
-        ArrayList<BorderPane> panes = getInferencesPane();
+        ArrayList<Object> panes = getInferencesPane();
+        panes.add("AHAH LA BITE");
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("visualization/view/inferences.fxml"));
         Parent root = null;
         try {
@@ -460,8 +461,8 @@ public class OutputController implements Stageable {
 
     }
 
-    public ArrayList<BorderPane> getInferencesPane(){
-        ArrayList<BorderPane> inferencesGraph = new ArrayList<>();
+    public ArrayList<Object> getInferencesPane(){
+        ArrayList<Object> inferencesGraph = new ArrayList<>();
 
         for(Node n : graphCont.getChildren()){
             BorderPane bp = new BorderPane();
