@@ -88,11 +88,6 @@ public class OutputController implements Stageable {
     @FXML
     public VBox graphCont;
     /**
-     * tree representation container
-     */
-    @FXML
-    private VBox treeCont;
-    /**
      * ccg2lambda tree representations container.
      */
     @FXML
@@ -186,6 +181,9 @@ public class OutputController implements Stageable {
         }
     };
 
+    /**
+     * Print the box into a png file
+     */
     private final EventHandler<ActionEvent> printBoxEvent = event -> {
         Node n = boxCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
 
@@ -246,17 +244,13 @@ public class OutputController implements Stageable {
         for (Formula formula : formulaList) {
             TitledPane boxPane = initBox(formula);
             TitledPane graphPane = initGraph(formula);
-            //   TitledPane treePane = initTree(formula);
             boxPane.setExpanded(false);
             graphPane.setExpanded(false);
-            //   treePane.setExpanded(false);
             boxCont.getChildren().add(boxPane);
             graphCont.getChildren().add(graphPane);
-            //    treeCont.getChildren().add(treePane);
         }
         ((TitledPane) boxCont.getChildren().get(0)).setExpanded(true);
         ((TitledPane) graphCont.getChildren().get(0)).setExpanded(true);
-        //  ((TitledPane) treeCont.getChildren().get(0)).setExpanded(true);
     }
 
     /**
@@ -355,15 +349,6 @@ public class OutputController implements Stageable {
         return getLoadedPane(formula, "visualization/view/box.fxml");
     }
 
-    /**
-     * Initializes a Tree representation of a formula
-     *
-     * @param formula the formula to get a representation of
-     * @return a TitledPane with the Tree representation of the formula
-     */
-    private TitledPane initTree(Formula formula) {
-        return getLoadedPane(formula, "visualization/view/tree.fxml");
-    }
 
     /**
      * Enables stage events processing in this controller by providing the controller in an encapsulated method.

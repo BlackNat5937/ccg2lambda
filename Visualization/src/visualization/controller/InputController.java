@@ -309,6 +309,7 @@ public class InputController implements Stageable {
 
             //Browse the list and write each items to "sentences.txt"
             for (String s : listSentencesItems) {
+                s = s.toLowerCase();
                 writer.write(s);
 
                 //add a dot if there isn't
