@@ -7,6 +7,8 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import visualization.Main;
+import visualization.utils.Tools;
 import visualization.utils.formula.Formula;
 import visualization.utils.formula.node.*;
 
@@ -68,7 +70,6 @@ public class BoxController implements Parametrable<Object> {
             box.setDisable(true);
             container.setText(setHeaderNegation((Negation) data));
         } else if (data instanceof Disjunction) {
-
             container.setContent(createContentDisjunction((Disjunction) data));
             box.setDisable(true);
             container.setText(setHeaderDisjunction((Disjunction) data));
@@ -83,19 +84,45 @@ public class BoxController implements Parametrable<Object> {
      * Creates the content of the box by using the formula.
      */
     private void createContent() {
-        for (Actor actor : formula.getActors().values()) {
-            boxContent.add(actor.toString());
-            for(BaseNode equals : actor.getEqualities()){
-                boxContent.add(actor.toString()+ " = " + equals.toString());
+        /**
+         * For classic template
+         */
+        if (Main.selectedTemplateType == Tools.TemplateType.CLASSIC) {
+            for (Actor actor : formula.getActors().values()) {
+                boxContent.add(actor.toString());
+                for (BaseNode equals : actor.getEqualities()) {
+                    boxContent.add(actor.toString() + " = " + equals.toString());
+                }
+            }
+            for (Event event : formula.getEvents().values()) {
+                boxContent.add(event.getName() + '(' + event.getId() + ')');
+                boxContent.add(event.toString());
+            }
+            for (Conjunction conjunction : formula.getConjunctions().values()) {
+                boxContent.add(conjunction.toString());
             }
         }
-        for (Event event : formula.getEvents().values()) {
-            boxContent.add(event.getName() + '(' + event.getId() + ')');
-            boxContent.add(event.toString());
+        /**
+         * For event template
+         */
+        else if (Main.selectedTemplateType == Tools.TemplateType.EVENT) {
+            for (Actor actor : formula.getEventActors()) {
+                boxContent.add(actor.toString());
+                for (BaseNode equals : actor.getEqualities()) {
+                    boxContent.add(actor.toString() + " = " + equals.toString());
+                }
+            }
+            for (Event event : formula.getEventEvents()) {
+                boxContent.add(event.getName() + '(' + event.getId() + ')');
+                boxContent.add(event.toString());
+            }
+            for (Conjunction conjunction : formula.getEventConjunctions()) {
+                boxContent.add(conjunction.toString());
+            }
         }
-        for (Conjunction conjunction : formula.getConjunctions().values()) {
-            boxContent.add(conjunction.toString());
-        }
+
+
+
         for (Negation negation : this.formula.getNegations()) {
             for (FormulaNode bn : negation.getNegated()) {
                 if (bn.getClass() == Event.class) {
