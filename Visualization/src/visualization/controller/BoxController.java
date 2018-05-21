@@ -85,8 +85,8 @@ public class BoxController implements Parametrable<Object> {
     private void createContent() {
         for (Actor actor : formula.getActors().values()) {
             boxContent.add(actor.toString());
-            if (!actor.getEqualities().isEmpty()) {
-                boxContent.add(actor.getEqualities().toString());
+            for(BaseNode equals : actor.getEqualities()){
+                boxContent.add(actor.toString()+ " = " + equals.toString());
             }
         }
         for (Event event : formula.getEvents().values()) {

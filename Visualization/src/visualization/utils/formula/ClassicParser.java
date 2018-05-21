@@ -33,15 +33,19 @@ public class ClassicParser extends BaseParser {
         String tmp = parseResult.getLambda();
         String disjunctionScope = "";
         boolean disjunctionTreated = false;
+        System.out.println("LAMBDA : " + tmp);
         if (tmp.contains("|")) {
             //the disjunction scope is saved for later, and isn't processed by the scanner
             disjunctionScope = getDisjunctionScope(tmp.indexOf("|"), tmp);
-
+            System.out.println("Complete sentence : "+ tmp);
+            System.out.println("Disjunction : " + disjunctionScope);
             //if the subject is in the disjonction it is necessary to process it first
             if (tmp.contains("exists x." + disjunctionScope)) {
                 String[] subj = disjunctionScope.split("\\|");
                 String subj1 = subj[0].substring(subj[0].indexOf('_') + 1).substring(0, subj[0].substring(subj[0].indexOf('_') + 1).indexOf('('));
                 String subj2 = subj[1].substring(subj[1].indexOf('_') + 1).substring(0, subj[1].substring(subj[1].indexOf('_') + 1).indexOf('('));
+
+                System.out.println("Subj1 : " + subj1 + ", Subj2 : " + subj2);
 
                 parseResult.getActors().put("x", new Actor("x", subj1 + "|" + subj2));
                 disjunctionTreated = true;
@@ -66,7 +70,7 @@ public class ClassicParser extends BaseParser {
                 }
                 // if it is not anything else, then it is a conjunction, we need to add it to the conjunctions map
                 else {
-                    addConj(token, varId, varName);
+                    addConj(token);
                 }
             }
         } while (sc.hasNext());
@@ -85,7 +89,7 @@ public class ClassicParser extends BaseParser {
                     } else if (s.matches(".*Prog\\(.*")) {
                         addEvent(s, varId, varName);
                     } else {
-                        addConj(s, varId, varName);
+                        addConj(s);
                     }
                 }
             }
@@ -182,6 +186,15 @@ public class ClassicParser extends BaseParser {
             String ssubstring = substring.substring(substring.indexOf("(_") + 2, substring.indexOf("))"));
             n.getNegated().add(parseResult.getActors().get(parseResult.getActorByName(ssubstring)));
             parseResult.getNegations().add(n);
+        }
+
+        //equalities
+        if(parseResult.getLambda().contains("=")){
+            String[] equals = getEqualityScope(parseResult.getLambda().indexOf("=")).split("=");
+            equals[0] = equals[0].trim();
+            equals[1] = equals[1].trim();
+            parseResult.getActors().get(equals[0]).getEqualities().add(parseResult.getActors().get(equals[1]));
+
         }
 
 
@@ -321,6 +334,20 @@ public class ClassicParser extends BaseParser {
         return sentence.substring(indexLeft, indexRight);
     }
 
+    public String getEqualityScope(int index){
+        int indexLeft = index;
+        int indexRight = index;
+
+        while(parseResult.getLambda().charAt(indexLeft) != '('){
+            indexLeft --;
+        }
+        while(parseResult.getLambda().charAt(indexRight) != ')'){
+            indexRight++;
+        }
+
+        return parseResult.getLambda().substring(indexLeft + 1, indexRight);
+    }
+
 
     public boolean containsProgArg(String[] args) {
         boolean res = false;
@@ -394,14 +421,14 @@ public class ClassicParser extends BaseParser {
         }
     }
 
-    public void addConj(String s, String varId, String varName) {
+    public void addConj(String s) {
         String joinedId;
         Matcher m = varNamePattern.matcher(s);
         Matcher n = varIdPattern.matcher(s);
 
         if (m.find() && n.find()) {
-            varName = m.group().substring(1);
-            varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
+            String varName = m.group().substring(1);
+            String varId = getEventKey(parseResult.getLambda().indexOf('_' + varName + '(' + n.group().substring(1)), varName);
             conjunctionNumber++;
 
             joinedId = n.group();
@@ -415,10 +442,15 @@ public class ClassicParser extends BaseParser {
                         id = parseResult.getActorByName(id.substring(1));
                     }
                     // else we just add it to the list of actors joined
+                    System.out.println("ID : " + id);
+                    System.out.println(parseResult.getActors().get(id));
                     joined.add(parseResult.getActors().get(id));
                 }
             }
-            parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new BaseNode[0])));
+            System.out.println("!------"+varId +"|"+varName+"|"+joined.toString());
+
+           // System.out.println(new Conjunction(varId, varName, joined.toArray(new FormulaNode[0])).toString());
+            parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new FormulaNode[0])));
         }
     }
 

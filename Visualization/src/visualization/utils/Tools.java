@@ -135,6 +135,7 @@ public class Tools {
                 }
 
                 lambda = FormulaParser.simplifyLambda(lambda);
+                System.out.println(sentence);
                 Formula formula = formulaParser.parse(lambda, sentence);
                 formulas.add(formula);
             }
