@@ -23,6 +23,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -146,9 +147,11 @@ public class OutputController implements Stageable {
                 .addListener((observable, oldValue, newValue) ->
                         currentTabIndex = tabPanel.getSelectionModel().getSelectedIndex());
 
-        MenuItem item1 = new MenuItem("Print");
+        MenuItem item1 = new MenuItem("Print graph");
+        MenuItem item2 = new MenuItem("Print box");
         item1.setOnAction(printEvent);
-        contextMenu.getItems().add(item1);
+        item2.setOnAction(printBoxEvent);
+        contextMenu.getItems().addAll(item1, item2);
 
         lambdaListView.setContextMenu(contextMenu);
     }
@@ -181,6 +184,35 @@ public class OutputController implements Stageable {
                 }
             }
         }
+    };
+
+    private final EventHandler<ActionEvent> printBoxEvent = event -> {
+        Node n = boxCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
+
+        if (n.getClass() == TitledPane.class) {
+            TitledPane tp = (TitledPane) n;
+            Node content = tp.getContent();
+            if(content.getClass() == HBox.class){
+                HBox hb = (HBox) content;
+                Node box = hb.getChildren().get(0);
+                WritableImage wi = new WritableImage((int) box.getBoundsInLocal().getWidth(), (int) box.getBoundsInLocal().getHeight());
+                box.snapshot(new SnapshotParameters(), wi);
+                BufferedImage image = javafx.embed.swing.SwingFXUtils.fromFXImage(wi, null);
+                try {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+                    Date date = new Date();
+                    String path = "box" + boxCont.getChildren().indexOf(n) + "_" + dateFormat.format(date) + ".png";
+                    ImageIO.write(image, "png", new File(path));
+                    Alert success = new Alert(Alert.AlertType.CONFIRMATION);
+                    success.setContentText("Your box was saved in : " + path);
+                    success.showAndWait();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
 
     };
 
