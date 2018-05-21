@@ -181,6 +181,9 @@ public class OutputController implements Stageable {
         }
     };
 
+    /**
+     * Print the box into a png file
+     */
     private final EventHandler<ActionEvent> printBoxEvent = event -> {
         Node n = boxCont.getChildren().get(lambdaListView.getSelectionModel().getSelectedIndex());
 
