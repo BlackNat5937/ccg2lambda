@@ -126,7 +126,7 @@ public class GraphController implements Parametrable<Formula> {
                     x.addLink(or, "is-a");
 
                     String actors[] = actor.getName().split("\\|");
-                    System.out.println(actor.getName());
+
 
                     Node actor1 = new Node(actors[0], NodeType.ACTOR);
                     Node actor2 = new Node(actors[1], NodeType.ACTOR);

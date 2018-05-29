@@ -174,9 +174,6 @@ public class BoxController implements Parametrable<Object> {
 
         for (Disjunction disjunction : this.formula.getDisjunctions()) {
 
-            System.out.println("in disjunction for");
-            System.out.println("disjunction :" + disjunction);
-
             HBox hBoxDisj = new HBox(15);
 
 
@@ -264,10 +261,6 @@ public class BoxController implements Parametrable<Object> {
 
     private Node createContentDisjunction(Disjunction disjunction) {
 
-        System.out.println("in createContentDisjunction : " + disjunction);
-        System.out.println("disjunction origin " + disjunction.getOrigin().toString());
-        System.out.println("disjunction arg1 " + disjunction.getArg1().toString());
-        System.out.println("disjunction arg2 " + disjunction.getArg2().toString());
 
         HBox HBOX = new HBox(15);
         Text disjText = new Text("∨");

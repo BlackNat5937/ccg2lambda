@@ -1,7 +1,10 @@
 package visualization.utils.formula;
 
+import visualization.Main;
+import visualization.utils.Tools;
 import visualization.utils.formula.node.*;
 
+import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -37,15 +40,11 @@ public class ClassicParser extends BaseParser {
         if (tmp.contains("|")) {
             //the disjunction scope is saved for later, and isn't processed by the scanner
             disjunctionScope = getDisjunctionScope(tmp.indexOf("|"), tmp);
-            System.out.println("Complete sentence : "+ tmp);
-            System.out.println("Disjunction : " + disjunctionScope);
             //if the subject is in the disjonction it is necessary to process it first
             if (tmp.contains("exists x." + disjunctionScope)) {
                 String[] subj = disjunctionScope.split("\\|");
                 String subj1 = subj[0].substring(subj[0].indexOf('_') + 1).substring(0, subj[0].substring(subj[0].indexOf('_') + 1).indexOf('('));
                 String subj2 = subj[1].substring(subj[1].indexOf('_') + 1).substring(0, subj[1].substring(subj[1].indexOf('_') + 1).indexOf('('));
-
-                System.out.println("Subj1 : " + subj1 + ", Subj2 : " + subj2);
 
                 parseResult.getActors().put("x", new Actor("x", subj1 + "|" + subj2));
                 disjunctionTreated = true;
@@ -114,7 +113,6 @@ public class ClassicParser extends BaseParser {
             }
             //case Prog || Prog AND Conj || Conj (Capital letter on John for example)
             else if(containsConjArg(args1) && containsConjArg(args2) && containsProgArg(args1) && containsProgArg(args2)){
-                System.out.println("CONTAINS JOHN");
                 Disjunction disjunction = new Disjunction();
                 String conj1 = getConjArgs(args1);
                 String conj2 = getConjArgs(args2);
@@ -127,7 +125,6 @@ public class ClassicParser extends BaseParser {
 
                 String nameOrigin = conj1.substring(conj1.indexOf('(') + 1, conj1.indexOf(','));
                 String keyOrigin = getActorKey(nameOrigin);
-
                 disjunction.setOrigin(parseResult.getActors().get(keyOrigin));
 
                 parseResult.getDisjunctions().add(disjunction);
@@ -189,7 +186,7 @@ public class ClassicParser extends BaseParser {
         }
 
         //equalities
-        if(parseResult.getLambda().contains("=")){
+        if (parseResult.getLambda().contains("=") && !(Main.selectedParserType == Tools.ParserType.JA)) {
             String[] equals = getEqualityScope(parseResult.getLambda().indexOf("=")).split("=");
             equals[0] = equals[0].trim();
             equals[1] = equals[1].trim();
@@ -442,14 +439,11 @@ public class ClassicParser extends BaseParser {
                         id = parseResult.getActorByName(id.substring(1));
                     }
                     // else we just add it to the list of actors joined
-                    System.out.println("ID : " + id);
-                    System.out.println(parseResult.getActors().get(id));
+
                     joined.add(parseResult.getActors().get(id));
                 }
             }
-            System.out.println("!------"+varId +"|"+varName+"|"+joined.toString());
 
-           // System.out.println(new Conjunction(varId, varName, joined.toArray(new FormulaNode[0])).toString());
             parseResult.getConjunctions().put(varId, new Conjunction(varId, varName, joined.toArray(new FormulaNode[0])));
         }
     }
@@ -457,6 +451,8 @@ public class ClassicParser extends BaseParser {
     public String getActorKey(String name){
         String res = "";
         if(parseResult.getLambda().contains(" = " + name)){
+
+
             //index of '('
             int i = parseResult.getLambda().indexOf(" = " + name);
             while (parseResult.getLambda().charAt(i) != '('){
@@ -464,6 +460,8 @@ public class ClassicParser extends BaseParser {
             }
             res = parseResult.getLambda().substring(i + 1);
             res = res.substring(0,res.indexOf(' '));
+        } else {
+            res = name;
         }
         return res;
     }
