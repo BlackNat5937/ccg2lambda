@@ -104,17 +104,6 @@ public class EventParser extends BaseParser {
                 String varId;
                 String otherId;
                 token = sc.next().trim();
-                /*if (token.contains("|") && disjunction == null) {
-                    String disjunctionScope = getDisjunctionScope(scope);
-                    Pair<FormulaNode, FormulaNode> disjunctionArgs = getDisjunctionArgs(disjunctionScope);
-                    Disjunction newDisjunction = new Disjunction();
-                    newDisjunction.setArg1(disjunctionArgs.getKey());
-                    newDisjunction.setArg2(disjunctionArgs.getValue());
-                    newDisjunction.setOrigin(nodes.get(disjunctionArgs.getKey().getId()));
-
-                    parseResult.getDisjunctions().add(newDisjunction);
-                    //parse(lambda, nodes, negation, newDisjunction);
-                }*/
                 if (token.contains("exists")) {
                     if (token.matches(varDeclaration)) {
                         varId = token.split("\\.")[0].split(" ")[1].trim();
